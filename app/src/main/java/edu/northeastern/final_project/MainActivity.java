@@ -70,8 +70,6 @@ public class MainActivity extends AppCompatActivity {
             //ask for permission
             requestPermissions(new String[]{permission.ACTIVITY_RECOGNITION}, 0);
         }
-
-        StepCounter stepCounter = new StepCounter(this.getApplicationContext());
     }
 
 }
