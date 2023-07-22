@@ -56,7 +56,7 @@ public class WeeklyChartActivity extends AppCompatActivity {
 
     }
 
-    /*** reference: https://stackoverflow.com/questions/33240002/mpandroidchart-combined-chart-bar-line-with-space***/
+    /*** reference: MPChartAndroid sample codee***/
     private void setupChart() {
 
         chart.setDrawOrder(new CombinedChart.DrawOrder[] { CombinedChart.DrawOrder.BAR, CombinedChart.DrawOrder.LINE});
@@ -96,7 +96,6 @@ public class WeeklyChartActivity extends AppCompatActivity {
 
         /*** TODO - change the data by pulling from firebase***/
         ArrayList<Entry> entries = new ArrayList<Entry>();
-        //ArrayList<String> labels = new ArrayList<String>();
 
         LineData ld = new LineData();
 
@@ -124,7 +123,8 @@ public class WeeklyChartActivity extends AppCompatActivity {
     }
 
     private BarData getBarData() {
-        //ArrayList<String> labels = new ArrayList<String>();
+
+        /*** TODO - change the data by pulling from firebase***/
         ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
 
         for (int i = 0; i < itemcount; i++) {
