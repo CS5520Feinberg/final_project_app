@@ -1,3 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    
     <string name="app_name">final_project</string>
+    <string-array name="mealTypeSpinner">
+        <item>Breakfast</item>
+        <item>Lunch</item>
+        <item>Dinner</item>
+        <item>Snack</item>
+        <item>Other</item>
+    </string-array>
+
 </resources>
