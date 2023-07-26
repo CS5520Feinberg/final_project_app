@@ -40,7 +40,7 @@ public class DBHandler extends SQLiteOpenHelper{
     }
 
     //add new daily intake to sqlite db
-    private void ADdDailyIntake (String mealType, String mealName, String calories, String protein, String carbs, String macros) {
+    public void addDailyIntake (String mealType, String mealName, String calories, String protein, String carbs, String macros) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         //create a variable for content values

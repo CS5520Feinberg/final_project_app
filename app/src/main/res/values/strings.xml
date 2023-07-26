@@ -2,7 +2,7 @@
 <resources>
     
     <string name="app_name">final_project</string>
-    <string-array name="mealTypeSpinner">
+    <string-array name="mealType_array">
         <item>Breakfast</item>
         <item>Lunch</item>
         <item>Dinner</item>
