@@ -67,6 +67,7 @@ public class DailyIntakeActivity extends AppCompatActivity {
 
                 dbHandler.addDailyIntake(mealType, mealName, calories, protein, carbs, macros);
 
+
                 //add toast and set empty strings
                 Toast.makeText(DailyIntakeActivity.this, "Daily intake has been added", Toast.LENGTH_LONG).show();
                 mealNameEt.setText("");

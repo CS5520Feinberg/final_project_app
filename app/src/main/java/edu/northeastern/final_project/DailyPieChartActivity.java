@@ -27,6 +27,7 @@ public class DailyPieChartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_daily_pie_chart);
         pieChart = findViewById(R.id.pieChart_daily);
 
+        /*** TODO: NEED A METHOD TO READ SQLITE DATA AND FEED IT TO THE CHART***/
         initPieChart();
         showPieChart();
     }

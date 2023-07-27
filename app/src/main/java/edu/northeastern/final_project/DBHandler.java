@@ -72,7 +72,6 @@ public class DBHandler extends SQLiteOpenHelper{
         db.close();
     }
 
-
     //read data from sqlite
     public ArrayList<Intake> readIntake() {
         SQLiteDatabase db = this.getReadableDatabase();
