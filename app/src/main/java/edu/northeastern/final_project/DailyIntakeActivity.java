@@ -12,7 +12,8 @@ import android.widget.Toast;
 
 public class DailyIntakeActivity extends AppCompatActivity {
 
-    private EditText mealTypeEt; /*** TODO: maybe change into spinner***/
+    /*** TODO: maybe change into spinner - string variable has the options***/
+    private EditText mealTypeEt;
     private EditText mealNameEt, caloriesEt, proteinEt, carbsEt, macrosEt;
     private Button addDailyIntakeBtn;
     private DBHandler dbHandler;
@@ -27,6 +28,7 @@ public class DailyIntakeActivity extends AppCompatActivity {
         mealNameEt = findViewById(R.id.mealNameET);
         caloriesEt = findViewById(R.id.calories);
         proteinEt = findViewById(R.id.proteins);
+        carbsEt = findViewById(R.id.carbs);
         macrosEt = findViewById(R.id.macros);
         addDailyIntakeBtn = findViewById(R.id.AddDailyBtn);
 

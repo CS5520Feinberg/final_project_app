@@ -23,7 +23,7 @@ public class DBHandler extends SQLiteOpenHelper{
         super (context, DB_NAME, null, DB_VERSION);
     }
 
-    // create a database by runing a sqlite query
+    // create a database by running a sqlite query
     @Override
     public void onCreate(SQLiteDatabase db) {
         //create a query for data
@@ -34,8 +34,8 @@ public class DBHandler extends SQLiteOpenHelper{
                 + CALORIES + " TEXT, "
                 + PROTEIN + " TEXT, "
                 + CARBS + " TEXT, "
-                + MACROS + " TEXT,"
-                + MODIFIED_TIME + " TEXT)" ;
+                + MACROS + " TEXT)" ;
+                //+ MODIFIED_TIME + " TEXT)" ;
         db.execSQL(query);
     }
 
@@ -52,7 +52,7 @@ public class DBHandler extends SQLiteOpenHelper{
         values.put(PROTEIN, protein);
         values.put(CARBS, carbs);
         values.put(MACROS, macros);
-        /*** how to do time?***/
+        /*** TODO: how to do time? for modified_time column***/
 
         db.insert(TABLE_NAME, null, values);
 
