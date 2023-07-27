@@ -2,8 +2,16 @@ package edu.northeastern.final_project;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 public class DBHandler extends SQLiteOpenHelper{
 
@@ -36,7 +44,12 @@ public class DBHandler extends SQLiteOpenHelper{
                 + CARBS + " TEXT, "
                 + MACROS + " TEXT)" ;
                 //+ MODIFIED_TIME + " TEXT)" ;
+
+        Log.d("Table create SQL",  "CREATE_DAILYINTAKE_TABLE");
+
         db.execSQL(query);
+
+        Log.d("DB creation", "DB was created");
     }
 
     //add new daily intake to sqlite db
@@ -57,6 +70,39 @@ public class DBHandler extends SQLiteOpenHelper{
         db.insert(TABLE_NAME, null, values);
 
         db.close();
+    }
+
+
+    //read data from sqlite
+    public ArrayList<Intake> readIntake() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursorIntake = db.rawQuery("SELECT * FROM "+ TABLE_NAME, null);
+
+        ArrayList<Intake> intakeArrayList = new ArrayList<>();
+
+        if (cursorIntake.moveToFirst()) {
+            do {
+                    intakeArrayList.add (new Intake(cursorIntake.getString(1),
+                            cursorIntake.getString(2),
+                            cursorIntake.getString(3),
+                            cursorIntake.getString(4),
+                            cursorIntake.getString(5),
+                            cursorIntake.getString(6))) ;
+
+                } while (cursorIntake.moveToNext());
+        }
+
+        cursorIntake.close();
+        return intakeArrayList;
+    }
+
+    //push intake into firebase
+    public void pushFirebase(ArrayList<Intake> dataList) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("DETAILS");
+        for(Intake d : dataList){
+            ref.push().setValue(d);
+        }
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion ){

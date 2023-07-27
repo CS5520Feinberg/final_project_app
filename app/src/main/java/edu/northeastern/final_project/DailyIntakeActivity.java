@@ -2,13 +2,26 @@ package edu.northeastern.final_project;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.net.NetworkRequest;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DailyIntakeActivity extends AppCompatActivity {
 
@@ -17,6 +30,8 @@ public class DailyIntakeActivity extends AppCompatActivity {
     private EditText mealNameEt, caloriesEt, proteinEt, carbsEt, macrosEt;
     private Button addDailyIntakeBtn;
     private DBHandler dbHandler;
+
+    public ArrayList<Intake> intakeData;
 
 
     @Override
@@ -59,7 +74,40 @@ public class DailyIntakeActivity extends AppCompatActivity {
                 proteinEt.setText("");
                 carbsEt.setText("");
                 macrosEt.setText("");
+
+                //read intake from DB and push the data into the firebase
+                intakeData = dbHandler.readIntake();
+
+                //push the data into firebase
+                if (isOnLine() && intakeData.size()>0) {
+                    dbHandler.pushFirebase(intakeData);
+                }
             }
+
+            //check whether the device is online
+            public boolean isOnLine() {
+
+                ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(ConnectivityManager.class);
+                //SDK version 29 and above
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
+
+                    if (networkCapabilities == null) {
+                        Log.d("Network Unavail", "Device offline");
+                        return false;
+                    } else {
+                        Log.d("Network Avail", "Device online");
+                        return true;
+                    }
+
+                } else {
+                    /*** TODO: deal with SDK before 29 for network info***/
+
+                }
+                return false;
+            }
+
         });
-    }
+    };
+
 }
