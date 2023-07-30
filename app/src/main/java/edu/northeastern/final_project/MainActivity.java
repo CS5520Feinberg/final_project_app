@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -13,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.JsonObject;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -63,15 +65,10 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        FDAThread runnableAPIThread = new FDAThread();
-        new Thread(runnableAPIThread).start();
+        FDAKeywordQuery kwQuery = new FDAKeywordQuery("kangaroo meat");
+        JsonObject jsonResponse = kwQuery.search();
+
+        Log.d("FDAKeywordQuery", String.valueOf(jsonResponse.get("foods")));
     }
 
-    class FDAThread implements Runnable {
-        @Override
-        public void run() {
-            FDAFoodDatabaseConnector FDADBConn = new FDAFoodDatabaseConnector();
-            String searchResponse = FDADBConn.search("kangaroo");
-        }
-    }
 }

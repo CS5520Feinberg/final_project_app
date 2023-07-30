@@ -10,6 +10,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 public class FDAFoodDatabaseConnector {
     private String API_KEY = BuildConfig.API_KEY;
     private String BASE_URL_FOOD="https://api.nal.usda.gov/fdc/v1/food";
@@ -21,12 +25,18 @@ public class FDAFoodDatabaseConnector {
     }
 
     public String search(String searchString) {
-        // https://api.nal.usda.gov/fdc/v1/foods/search?api_key=DEMO_KEY&query=Cheddar%20Cheese
-        URL searchURL = checkURLFormation(SEARCH_BASE_URL + "kangaroo");
-        Log.d("FDAFoodDatabaseConnector", "searchURL is null!");
+        String fmtSearchString = formatSearchString(searchString);
+        URL searchURL = checkURLFormation(SEARCH_BASE_URL + fmtSearchString);
+        Log.d("FDAFoodDatabaseConnector", searchURL.toString());
         String returnString = getRequest(searchURL);
-        Log.d("FDAFoodDatabaseConnector", returnString);
+        // Log.d("FDAFoodDatabaseConnector", returnString);
         return returnString;
+
+    }
+
+    protected String formatSearchString(String searchString) {
+        searchString = searchString.replace(" ", "%20");
+        return searchString;
     }
 
     public static String getRequest(URL url) {
@@ -71,5 +81,45 @@ public class FDAFoodDatabaseConnector {
             e.printStackTrace();
         }
         return null;
+    }
+
+}
+
+
+class FDAKeywordQuery {
+    private String kwQuery = null;
+    private String queryResponse = null;
+    public FDAKeywordQuery(String keyword) {
+        Log.d("FDAKeywordQuery", "Starting FDA Keyword search");
+        kwQuery = keyword;
+    }
+
+    public JsonObject search() {
+        Log.d("FDAKeywordQuery", "Starting FDA Keyword search");
+        // TODO: Error handling
+        FDAThread runnableAPIThread = new FDAThread();
+        Thread apiThread = new Thread(runnableAPIThread);
+        apiThread.start();
+        try {
+            apiThread.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        JsonObject jsonResponse = null;
+        if (queryResponse != null) {
+            jsonResponse = (JsonObject) JsonParser.parseString(queryResponse);
+        }
+        Log.d("FDAKeywordQuery", String.valueOf(jsonResponse));
+        return jsonResponse;
+    }
+
+    class FDAThread implements Runnable {
+        @Override
+        public void run() {
+            Log.d("FDAKeywordQuery", "Connecting to FDA DB through thread");
+            FDAFoodDatabaseConnector FDADBConn = new FDAFoodDatabaseConnector();
+            queryResponse = FDADBConn.search(kwQuery);
+        }
     }
 }

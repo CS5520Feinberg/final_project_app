@@ -68,8 +68,8 @@ public class DailyPieChartActivity extends AppCompatActivity {
         /*** TODO: change the data into firebase type data ***/
         typeAmountMap.put("Carbs", 1000);
         typeAmountMap.put("Protein", 500);
-        typeAmountMap.put("Macros", 350);
-        typeAmountMap.put("Fibers", 125);
+        typeAmountMap.put("Fat", 250);
+        typeAmountMap.put("Fiber", 125);
 
         //initialing color
         ArrayList<Integer> colors = new ArrayList<>();
