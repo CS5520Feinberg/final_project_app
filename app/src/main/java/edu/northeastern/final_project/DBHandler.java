@@ -98,7 +98,7 @@ public class DBHandler extends SQLiteOpenHelper{
 
     //push intake into firebase
     public void pushFirebase(ArrayList<Intake> dataList) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("DETAILS");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("DailyIntake").child("DETAILS");
         for(Intake d : dataList){
             ref.push().setValue(d);
         }

@@ -80,9 +80,10 @@ public class DailyIntakeActivity extends AppCompatActivity {
                 intakeData = dbHandler.readIntake();
 
                 //push the data into firebase
-                if (isOnLine() && intakeData.size()>0) {
-                    dbHandler.pushFirebase(intakeData);
-                }
+//                if (isOnLine() && intakeData.size()>0) {
+//                    dbHandler.pushFirebase(intakeData);
+//                }
+                dbHandler.pushFirebase(intakeData);
             }
 
             //check whether the device is online
