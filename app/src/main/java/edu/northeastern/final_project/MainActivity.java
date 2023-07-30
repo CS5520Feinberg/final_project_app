@@ -62,5 +62,16 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         });
+
+        FDAThread runnableAPIThread = new FDAThread();
+        new Thread(runnableAPIThread).start();
+    }
+
+    class FDAThread implements Runnable {
+        @Override
+        public void run() {
+            FDAFoodDatabaseConnector FDADBConn = new FDAFoodDatabaseConnector();
+            String searchResponse = FDADBConn.search("kangaroo");
+        }
     }
 }
