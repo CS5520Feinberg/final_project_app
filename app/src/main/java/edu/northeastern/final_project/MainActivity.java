@@ -16,6 +16,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.JsonObject;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
@@ -65,10 +67,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        FDAKeywordQuery kwQuery = new FDAKeywordQuery("kangaroo meat");
-        JsonObject jsonResponse = kwQuery.search();
-
-        Log.d("FDAKeywordQuery", String.valueOf(jsonResponse.get("foods")));
+        FDAKeywordQuery kwQuery = new FDAKeywordQuery("chicken breast");
+        kwQuery.search();
     }
 
 }

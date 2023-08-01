@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -109,9 +110,28 @@ class FDAKeywordQuery {
         JsonObject jsonResponse = null;
         if (queryResponse != null) {
             jsonResponse = (JsonObject) JsonParser.parseString(queryResponse);
+            ArrayList<FoodData> foodResponse = parseFoodResponseToList(jsonResponse);
         }
-        Log.d("FDAKeywordQuery", String.valueOf(jsonResponse));
+        // Log.d("FDAKeywordQuery", String.valueOf(jsonResponse));
         return jsonResponse;
+    }
+
+    private ArrayList<FoodData> parseFoodResponseToList(JsonObject jsonResponse) {
+        ArrayList<FoodData> outputList = new ArrayList<FoodData>();
+        JsonArray foods = (JsonArray) jsonResponse.get("foods");
+        for (int i = 0, size = foods.size(); i < size; i++) {
+            JsonObject food = (JsonObject) foods.get(i);
+            FoodData foodData = new FoodData(food);
+            Log.d("FoodDataParsing", "FDC ID " + String.valueOf(foodData.getFdcId()));
+            Log.d("FoodDataParsing", "Name " + String.valueOf(foodData.getName()));
+            Log.d("FoodDataParsing", "Serving Size " + String.valueOf(foodData.getServingSize()));
+            Log.d("FoodDataParsing", "Protein " + String.valueOf(foodData.getProtein()));
+            Log.d("FoodDataParsing", "Fats " + String.valueOf(foodData.getFats()));
+            Log.d("FoodDataParsing", "Carbs " + String.valueOf(foodData.getCarbs()));
+            Log.d("FoodDataParsing", "Calories " + String.valueOf(foodData.getCals()));
+            outputList.add(foodData);
+        }
+        return outputList;
     }
 
     class FDAThread implements Runnable {
