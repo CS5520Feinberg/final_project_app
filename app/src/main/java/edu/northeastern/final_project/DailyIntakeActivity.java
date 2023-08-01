@@ -78,36 +78,9 @@ public class DailyIntakeActivity extends AppCompatActivity {
 
                 //read intake from DB and push the data into the firebase
                 intakeData = dbHandler.readIntake();
-
-                //push the data into firebase
-//                if (isOnLine() && intakeData.size()>0) {
-//                    dbHandler.pushFirebase(intakeData);
-//                }
-                dbHandler.pushFirebase(intakeData);
             }
 
-            //check whether the device is online
-            public boolean isOnLine() {
 
-                ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(ConnectivityManager.class);
-                //SDK version 29 and above
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
-
-                    if (networkCapabilities == null) {
-                        Log.d("Network Unavail", "Device offline");
-                        return false;
-                    } else {
-                        Log.d("Network Avail", "Device online");
-                        return true;
-                    }
-
-                } else {
-                    /*** TODO: deal with SDK before 29 for network info***/
-
-                }
-                return false;
-            }
 
         });
     };

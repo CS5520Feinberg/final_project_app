@@ -96,13 +96,6 @@ public class DBHandler extends SQLiteOpenHelper{
         return intakeArrayList;
     }
 
-    //push intake into firebase
-    public void pushFirebase(ArrayList<Intake> dataList) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("DailyIntake").child("DETAILS");
-        for(Intake d : dataList){
-            ref.push().setValue(d);
-        }
-    }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion ){
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
