@@ -2,10 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <!-- add SQLlite DB for the app -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <!-- access internet for data storage -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- access internet for data storage -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -18,13 +17,10 @@
         android:theme="@style/Theme.Final_project"
         tools:targetApi="31">
         <activity
+            android:name=".ProfileActivity"
+            android:exported="true" />
+        <activity
             android:name=".DailyIntakeActivity"
-            android:exported="true" />
-        <activity
-            android:name=".DailyPieChartActivity"
-            android:exported="true" />
-        <activity
-            android:name=".WeeklyChartActivity"
             android:exported="true" />
         <activity
             android:name=".LoginActivity"

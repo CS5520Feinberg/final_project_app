@@ -1,10 +1,15 @@
 package edu.northeastern.final_project;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
@@ -16,16 +21,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DailyPieChartActivity extends AppCompatActivity {
+public class DailyPieChartFragment extends Fragment {
 
     private PieChart pieChart;
 
+    public DailyPieChartFragment() {
+        // Required empty public constructor
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.activity_daily_pie_chart, container, false);
+    }
+
     @SuppressLint("MissingInflatedId")
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_daily_pie_chart);
-        pieChart = findViewById(R.id.pieChart_daily);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        pieChart = view.findViewById(R.id.pieChart_daily);
 
         /*** TODO: NEED A METHOD TO READ SQLITE DATA AND FEED IT TO THE CHART***/
         initPieChart();
@@ -97,6 +111,5 @@ public class DailyPieChartActivity extends AppCompatActivity {
 
         pieChart.setData(pieData);
         pieChart.invalidate();
-
     }
 }
