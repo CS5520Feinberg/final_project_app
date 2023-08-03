@@ -1,19 +1,20 @@
 package edu.northeastern.final_project;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.Chart;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -25,38 +26,38 @@ import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.model.GradientColor;
-import com.google.firebase.database.collection.LLRBNode;
 
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
-public class WeeklyChartActivity extends AppCompatActivity {
+public class WeeklyChartFragment extends Fragment {
 
     private CombinedChart chart;
     final Integer itemcount = 12;
 
     private Random rand = new Random();
 
-    @SuppressLint("MissingInflatedId")
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_weekly_chart);
-
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        chart = findViewById(R.id.weeklyCombinedChart);
-
-        setupChart();
-
+    public WeeklyChartFragment() {
+        // Required empty public constructor
     }
 
-    /*** reference: https://stackoverflow.com/questions/33240002/mpandroidchart-combined-chart-bar-line-with-space***/
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.activity_weekly_chart, container, false);
+    }
+
+    @SuppressLint("MissingInflatedId")
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        chart = view.findViewById(R.id.weeklyCombinedChart);
+
+        setupChart();
+    }
+
+    /*** reference: MPChartAndroid sample code ***/
     private void setupChart() {
 
         chart.setDrawOrder(new CombinedChart.DrawOrder[] { CombinedChart.DrawOrder.BAR, CombinedChart.DrawOrder.LINE});
@@ -91,12 +92,10 @@ public class WeeklyChartActivity extends AppCompatActivity {
         legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
     }
 
-
     private LineData getLineData() {
 
-        /*** TODO - change the data by pulling from firebase***/
+        /*** TODO - change the data by pulling from firebase ***/
         ArrayList<Entry> entries = new ArrayList<Entry>();
-        //ArrayList<String> labels = new ArrayList<String>();
 
         LineData ld = new LineData();
 
@@ -124,7 +123,8 @@ public class WeeklyChartActivity extends AppCompatActivity {
     }
 
     private BarData getBarData() {
-        //ArrayList<String> labels = new ArrayList<String>();
+
+        /*** TODO - change the data by pulling from firebase ***/
         ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
 
         for (int i = 0; i < itemcount; i++) {
