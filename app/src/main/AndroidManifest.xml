@@ -26,6 +26,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
+        <activity android:name=".activity.AddFriendsActivity"
+            android:screenOrientation="fullSensor" />
+        <activity android:name=".activity.TestingRecyclerView"
+/>    </application>
 
 </manifest>

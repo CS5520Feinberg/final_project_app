@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -13,6 +14,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+
+import edu.northeastern.final_project.activity.AddFriendsActivity;
+import edu.northeastern.final_project.activity.TestingRecyclerView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -62,5 +67,10 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         });
+    }
+
+    public void launch_add_friends(View view){
+        Intent intent = new Intent(MainActivity.this, AddFriendsActivity.class);
+        startActivity(intent);
     }
 }
