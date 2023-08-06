@@ -31,7 +31,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
     private SignalContainer signalContainer = new SignalContainer(NUM_ELEMENTS);
     private SensorManager sensorManager;
     private Sensor accelerometer;
-    private static final double thresh = 15;
+    private static final double thresh = 1;
     private static final int delay = 200; //ms
     private long lastTime;
     private double lastAccel;

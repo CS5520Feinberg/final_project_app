@@ -47,7 +47,7 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         stepCounterShortcutBtn.setOnClickListener(v -> {
-            Intent intent = new Intent();
+            Intent intent = new Intent(this, StepCounterActivity.class);
             startActivity(intent);
         });
 
