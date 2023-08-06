@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
                     .addOnCompleteListener(LoginActivity.this, task -> {
                         if (task.isSuccessful()) {
                             Toast.makeText(LoginActivity.this, "Sign In Successfully!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(this, StepCounterActivity.class);
+                            Intent intent = new Intent(this, ProfileActivity.class);
                             startActivity(intent);
                         } else {
                             Toast.makeText(LoginActivity.this, "Incorrect Email or Password!", Toast.LENGTH_SHORT).show();

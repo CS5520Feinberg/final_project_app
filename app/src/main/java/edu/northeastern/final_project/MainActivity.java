@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 import android.Manifest.permission;
@@ -16,6 +17,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.JsonObject;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -55,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
                             Toast.makeText(MainActivity.this, "Sign Up Successfully!", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(this, ProfileActivity.class);
+                            startActivity(intent);
                         } else {
                             Toast.makeText(MainActivity.this, "Account already exists", Toast.LENGTH_SHORT).show();
                         }
@@ -70,6 +76,8 @@ public class MainActivity extends AppCompatActivity {
             //ask for permission
             requestPermissions(new String[]{permission.ACTIVITY_RECOGNITION}, 0);
         }
+        FDAKeywordQuery kwQuery = new FDAKeywordQuery("chicken breast");
+        kwQuery.search();
     }
 
 }
