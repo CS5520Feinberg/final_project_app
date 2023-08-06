@@ -1,12 +1,15 @@
 package edu.northeastern.final_project;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
+import android.Manifest.permission;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -69,6 +72,10 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        if(ContextCompat.checkSelfPermission(this, permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED){
+            //ask for permission
+            requestPermissions(new String[]{permission.ACTIVITY_RECOGNITION}, 0);
+        }
         FDAKeywordQuery kwQuery = new FDAKeywordQuery("chicken breast");
         kwQuery.search();
     }

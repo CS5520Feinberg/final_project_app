@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+
+    <uses-feature
+        android:name="android.hardware.sensor.accelerometer"
+        android:required="true" />
     <!-- add SQLlite DB for the app -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- access internet for data storage -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -36,6 +41,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".StepCounterActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
