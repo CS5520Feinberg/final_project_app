@@ -17,7 +17,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 
 import edu.northeastern.final_project.activity.AddFriendsActivity;
-import edu.northeastern.final_project.activity.TestingRecyclerView;
 
 public class MainActivity extends AppCompatActivity {
 

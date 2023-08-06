@@ -15,29 +15,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.northeastern.final_project.adapter.ContactsAdapter;
-import edu.northeastern.final_project.adapter.CustomAdapter;
 import edu.northeastern.final_project.entity.Contact;
 
-public class GetContactsThread extends AsyncTask<Void, Void, List<Contact>> {
+public class GetContactsThread extends AsyncTask<Void, Void, List<List<Contact>>> {
     Context context;
     private RecyclerView contactsRV;
-    ContactsAdapter adapter;
+    ContactsAdapter contactsAdapter;
+    RecyclerView    add_friends_RV;
+    ContactsAdapter add_friends_adapter;
 
 
-    public GetContactsThread(Context context, RecyclerView contactsRv, ContactsAdapter adapter) {
+    public GetContactsThread(Context context, RecyclerView contactsRv, RecyclerView add_friends_RV,ContactsAdapter contactsAdapter, ContactsAdapter add_friends_adapter) {
         this.context = context;
         this.contactsRV = contactsRv;
-        this.adapter = adapter;
+        this.contactsAdapter = contactsAdapter;
+        this.add_friends_RV = add_friends_RV;
+        this.add_friends_adapter = add_friends_adapter;
     }
 
     @Override
-    protected List<Contact> doInBackground(Void... voids) {
+    protected List<List<Contact>> doInBackground(Void... voids) {
         List<Contact> contacts =  getContacts();
         Log.d("ListSize", "" + contacts.size());
+        //call db to get contacts registered under FoodFit
+        List<Contact> add_friends_list = filter_contacts(contacts);
+        List<List<Contact>> filtered_lists = new ArrayList<>();
+        filtered_lists.add(contacts);
+        filtered_lists.add(add_friends_list);
 
-
-        return contacts;
+        return filtered_lists;
     }
+
+    private List<Contact> filter_contacts(List<Contact> contacts) {
+       List<Contact> add_friends_list = new ArrayList<>();
+       add_friends_list.add(new Contact("Vaibhav","23332333"));
+        return add_friends_list;
+    }
+
     protected List<Contact> getContacts(){
         ArrayList<Contact> contactList = new ArrayList<>();
         // projecting which column is needed from address book. Taken help from documentation
@@ -74,12 +88,14 @@ public class GetContactsThread extends AsyncTask<Void, Void, List<Contact>> {
         }
         return contactList;
     }
-    protected void onPostExecute(List<Contact> contacts) {
+    protected void onPostExecute(List<List<Contact>> contacts) {
         super.onPostExecute(contacts);
 
         Log.d("Before Adapter Set", "" + "Before Adapter SEt in post execute");
 
-        adapter.setContacts(contacts);
-        adapter.notifyDataSetChanged();
+        contactsAdapter.setContacts(contacts.get(0));
+        contactsAdapter.notifyDataSetChanged();
+        add_friends_adapter.setContacts(contacts.get(1));
+        add_friends_adapter.notifyDataSetChanged();
     }
 }

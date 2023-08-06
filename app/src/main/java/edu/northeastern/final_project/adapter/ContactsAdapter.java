@@ -17,10 +17,12 @@ import edu.northeastern.final_project.viewHolder.ContactsViewHolder;
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsViewHolder> {
     List<Contact> contacts;
     Context context;
+    String action;
 
-    public ContactsAdapter(List<Contact> contacts, Context context) {
+    public ContactsAdapter(List<Contact> contacts, Context context, String action) {
         this.contacts = contacts;
         this.context = context;
+        this.action = action;
     }
 
     @NonNull
@@ -36,6 +38,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ContactsViewHolder holder, int position) {
         holder.contact_name.setText(contacts.get(position).getName());
+        holder.action_on_contact.setText(action);
     }
 
     @Override

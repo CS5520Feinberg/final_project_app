@@ -28,7 +28,6 @@
         </activity>
         <activity android:name=".activity.AddFriendsActivity"
             android:screenOrientation="fullSensor" />
-        <activity android:name=".activity.TestingRecyclerView"
-/>    </application>
+    </application>
 
 </manifest>

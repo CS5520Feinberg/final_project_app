@@ -12,7 +12,7 @@ import edu.northeastern.final_project.R;
 public class ContactsViewHolder extends RecyclerView.ViewHolder {
 
     public TextView contact_name;
-    private Button action_on_contact;
+    public Button action_on_contact;
 
     public TextView getContact_name() {
         return contact_name;
