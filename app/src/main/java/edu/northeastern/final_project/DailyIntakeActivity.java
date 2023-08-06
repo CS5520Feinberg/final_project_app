@@ -9,28 +9,39 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.net.NetworkRequest;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class DailyIntakeActivity extends AppCompatActivity {
 
     /*** TODO: maybe change into spinner - string variable has the options***/
-    private EditText mealTypeEt;
-    private EditText mealNameEt, caloriesEt, proteinEt, carbsEt, macrosEt;
+    private TextInputLayout mealTypeLayout, mealNameLayout, caloriesLayout, proteinLayout, carbsLayout, macrosLayout;
+    private TextInputEditText mealNameEt, caloriesEt, proteinEt, carbsEt, macrosEt;
+    private AutoCompleteTextView mealTypeEt;
     private Button addDailyIntakeBtn;
     private DBHandler dbHandler;
-
     public ArrayList<Intake> intakeData;
 
 
@@ -39,15 +50,59 @@ public class DailyIntakeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_daily_intake);
 
-        mealTypeEt = findViewById(R.id.mealTypeET);
+        mealTypeLayout = findViewById(R.id.mealTypeLayout);
+        mealNameLayout = findViewById(R.id.mealNameLayout);
+        caloriesLayout = findViewById(R.id.caloriesLayout);
+        proteinLayout = findViewById(R.id.proteinsLayout);
+        carbsLayout = findViewById(R.id.carbsLayout);
+        macrosLayout = findViewById(R.id.macrosLayout);
+
+        mealTypeEt = findViewById(R.id.mealTypeACTV);
         mealNameEt = findViewById(R.id.mealNameET);
         caloriesEt = findViewById(R.id.calories);
         proteinEt = findViewById(R.id.proteins);
         carbsEt = findViewById(R.id.carbs);
         macrosEt = findViewById(R.id.macros);
+
         addDailyIntakeBtn = findViewById(R.id.AddDailyBtn);
 
         dbHandler = new DBHandler(DailyIntakeActivity.this);
+
+
+        Executor executor = Executors.newSingleThreadExecutor();
+        mealTypeEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String input = s.toString().trim();
+
+                executor.execute(() -> {
+                    FDAKeywordQuery fdaKeywordQuery = new FDAKeywordQuery(input);
+                    ArrayList<FoodData> searchResult = fdaKeywordQuery.search();
+                    if (searchResult != null) {
+                        List<String> foodNames = new ArrayList<>();
+                        int count = 0;
+                        for (FoodData foodData : searchResult) {
+                            if (count >= 5) break;
+                            foodNames.add(foodData.getName());
+                            count++;
+                        }
+
+                        runOnUiThread(() -> {
+                            ArrayAdapter<String> adapter = new ArrayAdapter<>(DailyIntakeActivity.this, android.R.layout.simple_dropdown_item_1line, foodNames);
+                            mealTypeEt.setAdapter(adapter);
+                        });
+                    }
+                });
+            }
+        });
 
         addDailyIntakeBtn.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -95,7 +95,7 @@ class FDAKeywordQuery {
         kwQuery = keyword;
     }
 
-    public JsonObject search() {
+    public ArrayList<FoodData> search() {
         Log.d("FDAKeywordQuery", "Starting FDA Keyword search");
         // TODO: Error handling
         FDAThread runnableAPIThread = new FDAThread();
@@ -108,12 +108,14 @@ class FDAKeywordQuery {
         }
 
         JsonObject jsonResponse = null;
+        ArrayList<FoodData> foodResponse = new ArrayList<>();
         if (queryResponse != null) {
             jsonResponse = (JsonObject) JsonParser.parseString(queryResponse);
-            ArrayList<FoodData> foodResponse = parseFoodResponseToList(jsonResponse);
+            foodResponse = parseFoodResponseToList(jsonResponse);
         }
         // Log.d("FDAKeywordQuery", String.valueOf(jsonResponse));
-        return jsonResponse;
+        //return jsonResponse;
+        return foodResponse;
     }
 
     private ArrayList<FoodData> parseFoodResponseToList(JsonObject jsonResponse) {

@@ -33,10 +33,10 @@
             android:layout_weight="1111"/>
 
         <Button
-            android:id="@+id/LogOutButtonProfile"
+            android:id="@+id/AddDailyIntakeBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Logout"
+            android:text="Add"
             android:backgroundTint="@android:color/transparent"
             android:textColor="@android:color/holo_purple"
             android:layout_weight="1"/>
@@ -77,37 +77,32 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:weightSum="3"
         app:layout_constraintBottom_toBottomOf="parent" >
 
         <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@mipmap/stepcounter_icon_round" />
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:id="@+id/stepCounterShortcut"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
             android:layout_weight="1"
-            android:text="1" />
+            android:background="@drawable/roundbtn"
+            android:src="@drawable/stepcounter_icon_foreground"/>
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+        <ImageButton
+            android:id="@+id/recipeGeneratorShortcut"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
             android:layout_weight="1"
-            android:text="2" />
+            android:background="@drawable/roundbtn"
+            android:src="@drawable/recipe_generator_icon_foreground"/>
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+        <ImageButton
+            android:id="@+id/friendsShortcut"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
             android:layout_weight="1"
-            android:text="3" />
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="4" />
-
+            android:background="@drawable/roundbtn"
+            android:src="@drawable/friends_icon_foreground"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
