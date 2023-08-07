@@ -84,8 +84,28 @@ public class FoodData {
         return kcal;
     }
 
-    public String getServingSize() {
+
+    /*
+     * Edited for display purposes.
+     */
+/*    public String getServingSize() {
+        if (servingSizeUnit == null) {
+            servingSizeUnit = "portion";
+        }
         return String.valueOf(servingSize) + " " + servingSizeUnit;
+    }*/
+
+    public String getServingSize() {
+        if (servingSize == -1) {
+            return "1";
+        }
+        return String.valueOf(servingSize);
     }
 
+    public String getPortionUnit() {
+        if (servingSizeUnit == null) {
+            return "portion";
+        }
+        return servingSizeUnit;
+    }
 }
