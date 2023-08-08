@@ -49,12 +49,14 @@ public class DailyIntakeActivity extends AppCompatActivity {
     private Button addDailyIntakeBtn;
     private DBHandler dbHandler;
     public ArrayList<Intake> intakeData;
+    public float originalPortion, originalCalories, originalProtein, originalCarbs, originalFats;
 
 
     // Testing
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final long DELAY = 300;
     private boolean itemSelected = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,6 +127,12 @@ public class DailyIntakeActivity extends AppCompatActivity {
                                         carbsEt.setText(String.valueOf(selectedFood.getCarbs()));
                                         fatsEt.setText(String.valueOf(selectedFood.getFats()));
 
+                                        originalPortion = Float.parseFloat(selectedFood.getServingSize());
+                                        originalCalories = selectedFood.getCals();
+                                        originalProtein = selectedFood.getProtein();
+                                        originalCarbs = selectedFood.getCarbs();
+                                        originalFats = selectedFood.getFats();
+
                                         mealTypeEt.dismissDropDown();
                                         mealTypeEt.clearFocus();
                                     });
@@ -147,6 +155,18 @@ public class DailyIntakeActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                try {
+                    float newPortion = Float.parseFloat(s.toString());
+                    if (originalPortion != 0) {
+                        float ratio = newPortion / originalPortion;
+                        caloriesEt.setText(String.valueOf(originalCalories * ratio));
+                        proteinEt.setText(String.valueOf(originalProtein * ratio));
+                        carbsEt.setText(String.valueOf(originalCarbs * ratio));
+                        fatsEt.setText(String.valueOf(originalFats * ratio));
+                    }
+                } catch (NumberFormatException nfe) {
+
+                }
             }
 
             @Override
@@ -165,7 +185,7 @@ public class DailyIntakeActivity extends AppCompatActivity {
                 String carbs = carbsEt.getText().toString();
                 String macros = fatsEt.getText().toString();
 
-                if  (mealType.isEmpty() && mealName.isEmpty() && calories.isEmpty() && protein.isEmpty() && calories.isEmpty() && carbs.isEmpty() && macros.isEmpty()) {
+                if (mealType.isEmpty() && mealName.isEmpty() && calories.isEmpty() && protein.isEmpty() && calories.isEmpty() && carbs.isEmpty() && macros.isEmpty()) {
                     Toast.makeText(DailyIntakeActivity.this, "Please enter all the data..", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -215,6 +235,8 @@ public class DailyIntakeActivity extends AppCompatActivity {
             }
 
         });
-    };
+    }
+
+    ;
 
 }
