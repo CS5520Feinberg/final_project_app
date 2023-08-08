@@ -89,7 +89,7 @@ Our Android project follows the MVVM (Model-View-ViewModel) architectural patter
 In order to leverage the FDA API used as part of this app, you will need to get
 an API key. Navigate to the [FDA API Key Signup
 page](https://fdc.nal.usda.gov/api-key-signup.html), and create an API key.
-Create a file called `fda_api_key.properties` in the gradle scripts location.
+Create a file called `fda_api_key.properties` in the gradle scripts location (on the app file level).
 This file should have the following structure:
 
 ```
