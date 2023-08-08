@@ -10,8 +10,10 @@ import android.util.Log;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 public class DBHandler extends SQLiteOpenHelper{
 
@@ -24,7 +26,7 @@ public class DBHandler extends SQLiteOpenHelper{
     private static final String CALORIES = "calories";
     private static final String PROTEIN = "protein";
     private static final String CARBS = "carbs";
-    private static final String MACROS = "macros";
+    private static final String FATS = "fats";
     private static final String MODIFIED_TIME = "modified_time";
 
     public DBHandler(Context context) {
@@ -42,8 +44,8 @@ public class DBHandler extends SQLiteOpenHelper{
                 + CALORIES + " TEXT, "
                 + PROTEIN + " TEXT, "
                 + CARBS + " TEXT, "
-                + MACROS + " TEXT)" ;
-                //+ MODIFIED_TIME + " TEXT)" ;
+                + FATS + " TEXT, "
+                + MODIFIED_TIME + " TEXT)" ;
 
         Log.d("Table create SQL",  "CREATE_DAILYINTAKE_TABLE");
 
@@ -59,12 +61,19 @@ public class DBHandler extends SQLiteOpenHelper{
         //create a variable for content values
         ContentValues values = new ContentValues();
 
+        // timestamp
+        ZonedDateTime gmt = ZonedDateTime.now(ZoneOffset.UTC);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedTime = gmt.format(formatter);
+
         values.put(MEAL_TYPE, mealType);
         values.put(MEAL_NAME, mealName);
         values.put(CALORIES, calories);
         values.put(PROTEIN, protein);
         values.put(CARBS, carbs);
-        values.put(MACROS, macros);
+        values.put(FATS, macros);
+        values.put(MODIFIED_TIME, formattedTime);
+
         /*** TODO: how to do time? for modified_time column***/
 
         db.insert(TABLE_NAME, null, values);
