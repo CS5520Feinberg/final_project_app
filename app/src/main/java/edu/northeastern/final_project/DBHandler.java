@@ -66,6 +66,7 @@ public class DBHandler extends SQLiteOpenHelper{
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedTime = gmt.format(formatter);
 
+
         values.put(MEAL_TYPE, mealType);
         values.put(MEAL_NAME, mealName);
         values.put(CALORIES, calories);
