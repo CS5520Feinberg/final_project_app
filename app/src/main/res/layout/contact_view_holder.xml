@@ -26,9 +26,10 @@
 <TextView
     android:id="@+id/textview_contact"
     android:layout_width="0dp"
-    android:layout_height="match_parent"
+    android:layout_height="50dp"
 
     android:textAlignment="center"
+    android:gravity="center"
     android:textColor="@color/black"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="@id/vertical_70_30"
@@ -38,7 +39,7 @@
     <Button
         android:id="@+id/button_action_on_contact"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="50dp"
         android:text="Action"
         android:textColor="@color/white"
         app:layout_constraintStart_toEndOf="@id/textview_contact"

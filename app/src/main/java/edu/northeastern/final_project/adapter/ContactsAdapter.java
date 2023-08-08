@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,7 +33,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsViewHolder> {
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         view.setLayoutParams(layoutParams);
 
-        return new ContactsViewHolder(view);
+        return new ContactsViewHolder(view,this);
     }
 
     @Override
@@ -49,4 +50,17 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsViewHolder> {
     public void setContacts(List<Contact> contacts) {
         this.contacts = contacts;
     }
+
+    public void deletePosition(int position){
+        Contact contact = contacts.get(position);
+        // TODO: 8/8/23
+        //get current user
+        //add to its following list
+        //followed contact follower list should get the user
+
+        contacts.remove(position);
+        notifyDataSetChanged();
+        Toast.makeText(context,"Started Following",Toast.LENGTH_SHORT).show();
+    }
+
 }

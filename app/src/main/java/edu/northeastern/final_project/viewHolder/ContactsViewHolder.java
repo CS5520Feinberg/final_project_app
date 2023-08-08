@@ -8,11 +8,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import edu.northeastern.final_project.R;
+import edu.northeastern.final_project.adapter.ContactsAdapter;
 
-public class ContactsViewHolder extends RecyclerView.ViewHolder {
+public class ContactsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     public TextView contact_name;
     public Button action_on_contact;
+    private ContactsAdapter adapter;
 
     public TextView getContact_name() {
         return contact_name;
@@ -22,10 +24,24 @@ public class ContactsViewHolder extends RecyclerView.ViewHolder {
         return action_on_contact;
     }
 
-    public ContactsViewHolder(@NonNull View itemView) {
+    public ContactsViewHolder(@NonNull View itemView,RecyclerView.Adapter<ContactsViewHolder> adapter ) {
         super(itemView);
         this.contact_name = itemView.findViewById(R.id.textview_contact);
        this.action_on_contact = itemView.findViewById(R.id.button_action_on_contact);
+       action_on_contact.setOnClickListener(this);
+       this.adapter = (ContactsAdapter) adapter;
     }
 
+
+    @Override
+    public void onClick(View v) {
+        int position = getAdapterPosition();
+        if(position != RecyclerView.NO_POSITION){
+            if(action_on_contact.getText().equals("Add")){
+                // add the number to follower and following list
+                adapter.deletePosition(position);
+                action_on_contact.setText("FOLLOWED");
+            }
+        }
+    }
 }

@@ -1,5 +1,7 @@
 package edu.northeastern.final_project.entity;
 
+import java.util.List;
+
 public class Contact {
     public String getName() {
         return name;
@@ -15,5 +17,9 @@ public class Contact {
     }
 
     private String name;
+
     private String phone_number;
+    private List<String> following;
+    private List<String> follower;
+    private String image_uri;
 }
