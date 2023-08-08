@@ -1,14 +1,15 @@
 # final_project_app
 
 ## Introduction
+
 - This is the final project repo for 2023 summer mobile application class.
 - Team members: Kevin Lin, Shashank Manjunath, Akshat Alkash Gandhi, Vaibhav Garg, Jialin Huang
 
-## Relevant materials 
+## Relevant materials
+
 - We have used Figma to design UI for the app <NEED TO ADD LINK>.
 - We are using firebase for DB (e.g., profiles and data storage).
 - We are using github projects to manage and track weekly progress.
-
 
 # Project Structure
 
@@ -18,7 +19,7 @@ Our Android project follows the MVVM (Model-View-ViewModel) architectural patter
 
 ```
 
-- app/ 
+- app/
 	- src/
 		- main/
 			- java/
@@ -32,16 +33,16 @@ Our Android project follows the MVVM (Model-View-ViewModel) architectural patter
 							- activities/
 							- adapters/
 							- fragments/
-							- viewmodels/ 
+							- viewmodels/
 						- utils/
-						- notifications/ 
-						- location/ 
-						- services/ 
+						- notifications/
+						- location/
+						- services/
 				- res/
 					- layout/
 					- drawable/
-					- values/ 
-				- androidTest/ 
+					- values/
+				- androidTest/
 				- test/
 
 
@@ -75,7 +76,6 @@ Our Android project follows the MVVM (Model-View-ViewModel) architectural patter
 
 - **test**: This directory contains unit tests.
 
-
 ## Basic Flow
 
 1. User interacts with the UI (clicks a button, fills out a form, etc.)
@@ -83,3 +83,18 @@ Our Android project follows the MVVM (Model-View-ViewModel) architectural patter
 3. The ViewModel communicates with the Repository to get or modify data.
 4. Once data is retrieved or modified, the ViewModel exposes this data back to the UI, usually through LiveData or other observable constructs.
 5. The UI observes these changes in the ViewModel and updates accordingly.
+
+## FDA API Setup
+
+In order to leverage the FDA API used as part of this app, you will need to get
+an API key. Navigate to the [FDA API Key Signup
+page](https://fdc.nal.usda.gov/api-key-signup.html), and create an API key.
+Create a file called `fda_api_key.properties` in the gradle scripts location (on the app file level).
+This file should have the following structure:
+
+```
+API_KEY="XXX"
+```
+
+This file is automatically loaded if found, and the API is automatically
+accessed as part of the app.

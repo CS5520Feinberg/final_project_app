@@ -1,12 +1,19 @@
 package edu.northeastern.final_project;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+
+import android.util.Log;
+
 import android.view.View;
+
 import android.widget.Button;
 import android.widget.Toast;
+import android.Manifest.permission;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -14,6 +21,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.JsonObject;
+
+import java.util.ArrayList;
 
 
 import edu.northeastern.final_project.activity.AddFriendsActivity;
@@ -56,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
                             Toast.makeText(MainActivity.this, "Sign Up Successfully!", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(this, ProfileActivity.class);
+                            startActivity(intent);
                         } else {
                             Toast.makeText(MainActivity.this, "Account already exists", Toast.LENGTH_SHORT).show();
                         }
@@ -66,10 +78,11 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         });
-    }
 
-    public void launch_add_friends(View view){
-        Intent intent = new Intent(MainActivity.this, AddFriendsActivity.class);
-        startActivity(intent);
+        if(ContextCompat.checkSelfPermission(this, permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED){
+            //ask for permission
+            requestPermissions(new String[]{permission.ACTIVITY_RECOGNITION}, 0);
+        }
+        FDAKeywordQuery kwQuery = new FDAKeywordQuery("chicken breast");
+        kwQuery.search();
     }
-}
