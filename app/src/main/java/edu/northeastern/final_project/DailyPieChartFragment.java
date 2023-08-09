@@ -14,9 +14,12 @@ import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,6 +46,34 @@ public class DailyPieChartFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         pieChart = view.findViewById(R.id.pieChart_daily);
+
+        pieChart.setDrawCenterText(true);
+        pieChart.setCenterTextSize(10f);
+        pieChart.setCenterTextColor(Color.BLACK);
+
+        pieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                if (e instanceof PieEntry) {
+                    String label = ((PieEntry) e).getLabel();
+                    Float value = dailyMacros.get(label.toLowerCase());
+                    if (value != null) {
+                        if (label.equals("Calories")) {
+                            pieChart.setCenterText(label + ": " + value + " kcal");
+                        } else {
+                            pieChart.setCenterText(label + ": " + value + " g");
+                        }
+                        pieChart.invalidate();
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected() {
+                pieChart.setCenterText("");
+                pieChart.invalidate();
+            }
+        });
 
         /*** TODO: NEED A METHOD TO READ SQLITE DATA AND FEED IT TO THE CHART***/
         initPieChart();
@@ -104,12 +135,12 @@ public class DailyPieChartFragment extends Fragment {
         /*** TODO: change the data into firebase type data ***/
         typeAmountMap.put("Carbs", macrosMap.get("carbs"));
         typeAmountMap.put("Protein", macrosMap.get("protein"));
-        typeAmountMap.put("Fat", macrosMap.get("fats"));
+        typeAmountMap.put("Fats", macrosMap.get("fats"));
         typeAmountMap.put("Calories", macrosMap.get("calories"));
 
         //Log.d("DailyPieChartFragment", "carbs: " + typeAmountMap.get("Carbs"));
         //Log.d("DailyPieChartFragment", "protein: " + typeAmountMap.get("Protein"));
-        //Log.d("DailyPieChartFragment", "fats: " + typeAmountMap.get("Fat"));
+        Log.d("DailyPieChartFragment", "fats: " + typeAmountMap.get("Fat"));
         //Log.d("DailyPieChartFragment", "calories: " + typeAmountMap.get("Calories"));
 
         //initialing color
