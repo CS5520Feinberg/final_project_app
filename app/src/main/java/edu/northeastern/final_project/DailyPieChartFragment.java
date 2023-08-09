@@ -3,6 +3,7 @@ package edu.northeastern.final_project;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,9 @@ import java.util.Map;
 public class DailyPieChartFragment extends Fragment {
 
     private PieChart pieChart;
+    private DBHandler dbHandler;
+    private ArrayList<Intake> dailyIntake;
+    private HashMap<String, Float> dailyMacros;
 
     public DailyPieChartFragment() {
         // Required empty public constructor
@@ -42,7 +46,25 @@ public class DailyPieChartFragment extends Fragment {
 
         /*** TODO: NEED A METHOD TO READ SQLITE DATA AND FEED IT TO THE CHART***/
         initPieChart();
-        showPieChart();
+
+        dbHandler = new DBHandler(getContext());
+
+        refreshPieChart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        refreshPieChart();
+    }
+
+    private void refreshPieChart() {
+        initPieChart();
+
+        dailyIntake = dbHandler.readDailyIntake();
+        dailyMacros = dbHandler.getDailyMacros(dailyIntake);
+        showPieChart(dailyMacros);
     }
 
 
@@ -72,18 +94,23 @@ public class DailyPieChartFragment extends Fragment {
         pieChart.setHoleColor(Color.parseColor("#FFFFFF"));
     }
 
-    private void showPieChart() {
+    private void showPieChart(HashMap<String, Float> macrosMap) {
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
         String label = "type";
 
         //initializing data
-        Map<String, Integer> typeAmountMap = new HashMap<>();
+        Map<String, Float> typeAmountMap = new HashMap<>();
 
         /*** TODO: change the data into firebase type data ***/
-        typeAmountMap.put("Carbs", 1000);
-        typeAmountMap.put("Protein", 500);
-        typeAmountMap.put("Fat", 250);
-        typeAmountMap.put("Fiber", 125);
+        typeAmountMap.put("Carbs", macrosMap.get("carbs"));
+        typeAmountMap.put("Protein", macrosMap.get("protein"));
+        typeAmountMap.put("Fat", macrosMap.get("fats"));
+        typeAmountMap.put("Calories", macrosMap.get("calories"));
+
+        //Log.d("DailyPieChartFragment", "carbs: " + typeAmountMap.get("Carbs"));
+        //Log.d("DailyPieChartFragment", "protein: " + typeAmountMap.get("Protein"));
+        //Log.d("DailyPieChartFragment", "fats: " + typeAmountMap.get("Fat"));
+        //Log.d("DailyPieChartFragment", "calories: " + typeAmountMap.get("Calories"));
 
         //initialing color
         ArrayList<Integer> colors = new ArrayList<>();
@@ -94,7 +121,8 @@ public class DailyPieChartFragment extends Fragment {
 
         //input data and fit data int to pie chart entry
         for (String type: typeAmountMap.keySet()) {
-            pieEntries.add(new PieEntry(typeAmountMap.get(type).floatValue(), type));
+            pieEntries.add(new PieEntry(typeAmountMap.get(type), type));
+            //Log.d("DailyPieChartFragment", String.valueOf(typeAmountMap.get(type).floatValue()));
         }
 
         //collecting the entries with label name
@@ -109,6 +137,7 @@ public class DailyPieChartFragment extends Fragment {
         pieData.setDrawValues(true);
 
         pieChart.setData(pieData);
+        pieChart.notifyDataSetChanged();
         pieChart.invalidate();
     }
 }

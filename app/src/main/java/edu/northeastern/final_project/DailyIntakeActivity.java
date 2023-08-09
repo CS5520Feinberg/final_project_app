@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -50,7 +51,6 @@ public class DailyIntakeActivity extends AppCompatActivity {
     private DBHandler dbHandler;
     public ArrayList<Intake> intakeData;
     public float originalPortion, originalCalories, originalProtein, originalCarbs, originalFats;
-
 
     // Testing
     private final Handler handler = new Handler(Looper.getMainLooper());
@@ -194,12 +194,12 @@ public class DailyIntakeActivity extends AppCompatActivity {
 
 
                 //add toast and set empty strings
-                Toast.makeText(DailyIntakeActivity.this, "Daily intake has been added", Toast.LENGTH_LONG).show();
+/*                Toast.makeText(DailyIntakeActivity.this, "Daily intake has been added", Toast.LENGTH_LONG).show();
                 mealNameEt.setText("");
                 caloriesEt.setText("");
                 proteinEt.setText("");
                 carbsEt.setText("");
-                fatsEt.setText("");
+                fatsEt.setText("");*/
 
                 //read intake from DB and push the data into the firebase
                 intakeData = dbHandler.readIntake();
@@ -208,7 +208,13 @@ public class DailyIntakeActivity extends AppCompatActivity {
 //                if (isOnLine() && intakeData.size()>0) {
 //                    dbHandler.pushFirebase(intakeData);
 //                }
-                dbHandler.pushFirebase(intakeData);
+                //dbHandler.pushFirebase(intakeData);
+
+                Intent intent = new Intent(DailyIntakeActivity.this, ProfileActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+                Toast.makeText(DailyIntakeActivity.this, "Daily intake has been added", Toast.LENGTH_LONG).show();
             }
 
             //check whether the device is online

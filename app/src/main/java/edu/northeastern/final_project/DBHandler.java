@@ -14,6 +14,8 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class DBHandler extends SQLiteOpenHelper{
 
@@ -78,7 +80,6 @@ public class DBHandler extends SQLiteOpenHelper{
         /*** TODO: how to do time? for modified_time column***/
 
         db.insert(TABLE_NAME, null, values);
-
         db.close();
     }
 
@@ -97,13 +98,68 @@ public class DBHandler extends SQLiteOpenHelper{
                             cursorIntake.getString(3),
                             cursorIntake.getString(4),
                             cursorIntake.getString(5),
-                            cursorIntake.getString(6))) ;
+                            cursorIntake.getString(6),
+                            cursorIntake.getString(7))) ;
 
                 } while (cursorIntake.moveToNext());
         }
 
         cursorIntake.close();
         return intakeArrayList;
+    }
+
+    //read daily intake data
+    public ArrayList<Intake> readDailyIntake() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursorIntake = db.rawQuery("SELECT * FROM "+ TABLE_NAME, null);
+
+        ArrayList<Intake> intakeArrayList = new ArrayList<>();
+
+        ZonedDateTime currentGmt = ZonedDateTime.now(ZoneOffset.UTC);
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        String currentDate = currentGmt.format(dateFormatter);
+
+        if (cursorIntake.moveToFirst()) {
+            do {
+                String timestampString = cursorIntake.getString(7);
+                String datePart = timestampString.split(" ")[0];
+
+                if (currentDate.equals(datePart)) {
+                    intakeArrayList.add(new Intake(cursorIntake.getString(1),
+                            cursorIntake.getString(2),
+                            cursorIntake.getString(3),
+                            cursorIntake.getString(4),
+                            cursorIntake.getString(5),
+                            cursorIntake.getString(6),
+                            cursorIntake.getString(7)));
+                }
+            } while (cursorIntake.moveToNext());
+        }
+        return intakeArrayList;
+    }
+
+    public HashMap<String, Float> getDailyMacros(ArrayList<Intake> dailyIntake) {
+        float totalCalories = 0;
+        float totalProtein = 0;
+        float totalCarbs = 0;
+        float totalFats = 0;
+
+        for (Intake intake : dailyIntake) {
+            totalCalories += intake.getCal();
+            totalProtein += intake.getProtein();
+            totalCarbs += intake.getCarbs();
+            totalFats += intake.getFats();
+        }
+
+        HashMap<String, Float> macrosMap = new HashMap<>();
+        macrosMap.put("calories", totalCalories);
+        macrosMap.put("protein", totalProtein);
+        macrosMap.put("carbs", totalCarbs);
+        macrosMap.put("fats", totalFats);
+
+        return macrosMap;
     }
 
     //push intake into firebase
