@@ -28,10 +28,12 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
     private int SAMPLING_TIME = 1 / SAMPLING_RATE;
     // Calculating the number of elements to keep in the queue
     private int NUM_ELEMENTS = MAX_TIME * SAMPLING_RATE;
+    // 1-second window for step counting
+    private int WINDOW_SIZE = 1 * SAMPLING_RATE;
     private SignalContainer signalContainer = new SignalContainer(NUM_ELEMENTS);
     private SensorManager sensorManager;
     private Sensor accelerometer;
-    private static final double thresh = 1;
+    private static final double thresh = 10;
     private static final int delay = 200; //ms
     private long lastTime;
     private double lastAccel;
@@ -108,18 +110,17 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         boolean procReady = signalContainer.add(currentAccel);
 
         if (procReady) {
-            Log.d("Acc", "Ready to Process!");
+            int num_steps = signalContainer.findPeaks(WINDOW_SIZE, thresh);
+            Log.d("Acc", "Num steps: " + String.valueOf(num_steps));
+            stepCount += num_steps;
+            stepCountTextView.setText("Steps: " + stepCount);
+            // if (accelDiff > thresh) {
+            //     stepCount++;
+            //     stepCountTextView.setText("Steps: " + stepCount);
+            // }
             signalContainer.clear();
         }
 
-        if (accelDiff > thresh) {
-            long currentTime = System.currentTimeMillis();
-            if ((currentTime - lastTime) > delay) {
-                stepCount++;
-                stepCountTextView.setText("Steps: " + stepCount);
-            }
-            lastTime = currentTime;
-        }
     }
 
     @Override

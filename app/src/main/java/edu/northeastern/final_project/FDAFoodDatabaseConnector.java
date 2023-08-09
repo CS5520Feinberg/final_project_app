@@ -126,11 +126,11 @@ class FDAKeywordQuery {
             FoodData foodData = new FoodData(food);
             Log.d("FoodDataParsing", "FDC ID " + String.valueOf(foodData.getFdcId()));
             Log.d("FoodDataParsing", "Name " + String.valueOf(foodData.getName()));
-            Log.d("FoodDataParsing", "Serving Size " + String.valueOf(foodData.getServingSize()));
-            Log.d("FoodDataParsing", "Protein " + String.valueOf(foodData.getProtein()));
-            Log.d("FoodDataParsing", "Fats " + String.valueOf(foodData.getFats()));
-            Log.d("FoodDataParsing", "Carbs " + String.valueOf(foodData.getCarbs()));
-            Log.d("FoodDataParsing", "Calories " + String.valueOf(foodData.getCals()));
+            // Log.d("FoodDataParsing", "Serving Size " + String.valueOf(foodData.getServingSize()));
+            // Log.d("FoodDataParsing", "Protein " + String.valueOf(foodData.getProtein()));
+            // Log.d("FoodDataParsing", "Fats " + String.valueOf(foodData.getFats()));
+            // Log.d("FoodDataParsing", "Carbs " + String.valueOf(foodData.getCarbs()));
+            // Log.d("FoodDataParsing", "Calories " + String.valueOf(foodData.getCals()));
             outputList.add(foodData);
         }
         return outputList;
