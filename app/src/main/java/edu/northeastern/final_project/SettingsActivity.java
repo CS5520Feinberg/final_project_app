@@ -41,11 +41,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         DBHandler dbHandler = new DBHandler(SettingsActivity.this);
         Integer goal = dbHandler.readWeeklyDailyGoal();
-        if (goal != null) {
-            weeklyDailyGoal.setText(String.valueOf(goal));
-        } else {
-            weeklyDailyGoal.setText("");
-        }
+        weeklyDailyGoal.setText(String.valueOf(goal));
 
         logoutBtn.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
