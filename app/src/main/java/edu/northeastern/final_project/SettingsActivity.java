@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,6 +24,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private Button logoutBtn, doneBtn, deleteAccBtn, changePasswordBtn;
     private Switch notificationSwitch, darkModeSwitch;
+    private TextInputEditText weeklyDailyGoal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,15 @@ public class SettingsActivity extends AppCompatActivity {
         changePasswordBtn = findViewById(R.id.changePasswordBtn);
         notificationSwitch = findViewById(R.id.notificationsSwitch);
         darkModeSwitch = findViewById(R.id.darkModeSwitch);
+        weeklyDailyGoal = findViewById(R.id.weeklyDailyGoalTIET);
+
+        DBHandler dbHandler = new DBHandler(SettingsActivity.this);
+        Integer goal = dbHandler.readWeeklyDailyGoal();
+        if (goal != null) {
+            weeklyDailyGoal.setText(String.valueOf(goal));
+        } else {
+            weeklyDailyGoal.setText("");
+        }
 
         logoutBtn.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
@@ -47,6 +58,11 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         doneBtn.setOnClickListener(v -> {
+            Integer newGoal = Integer.parseInt(weeklyDailyGoal.getText().toString());
+            if (!newGoal.equals(goal)) {
+                Toast.makeText(this, "Weekly daily goal updated.", Toast.LENGTH_SHORT).show();
+                dbHandler.updateWeeklyGoal(newGoal);
+            }
             finish();
         });
 

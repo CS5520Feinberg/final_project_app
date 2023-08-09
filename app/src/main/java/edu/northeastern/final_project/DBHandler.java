@@ -31,6 +31,11 @@ public class DBHandler extends SQLiteOpenHelper{
     private static final String FATS = "fats";
     private static final String MODIFIED_TIME = "modified_time";
 
+    // Test
+    private static final String TABLE_NAME_GOAL = "weekly_daily_goal";
+    private static final String ID_COL_GOAL = "id";
+    private static final String GOAL = "goal";
+
     public DBHandler(Context context) {
         super (context, DB_NAME, null, DB_VERSION);
     }
@@ -49,11 +54,33 @@ public class DBHandler extends SQLiteOpenHelper{
                 + FATS + " TEXT, "
                 + MODIFIED_TIME + " TEXT)" ;
 
+        String queryGoal = "CREATE TABLE " + TABLE_NAME_GOAL + " ("
+                + GOAL + " INTEGER)";
+
         Log.d("Table create SQL",  "CREATE_DAILYINTAKE_TABLE");
 
         db.execSQL(query);
+        db.execSQL(queryGoal);
+
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(GOAL, 0);
+        db.insert(TABLE_NAME_GOAL, null, initialValues);
 
         Log.d("DB creation", "DB was created");
+    }
+
+    //add weekly daily goal to sqlite db
+    public void updateWeeklyGoal(int goal) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(GOAL, goal);
+
+        db.delete(TABLE_NAME_GOAL, null, null);
+
+        db.insert(TABLE_NAME_GOAL, null, values);
+        db.close();
     }
 
     //add new daily intake to sqlite db
@@ -138,6 +165,19 @@ public class DBHandler extends SQLiteOpenHelper{
             } while (cursorIntake.moveToNext());
         }
         return intakeArrayList;
+    }
+
+    public Integer readWeeklyDailyGoal() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursorGoal = db.rawQuery("SELECT * FROM " + TABLE_NAME_GOAL, null);
+
+        Integer goal = null;
+
+        if (cursorGoal.moveToFirst()) {
+            goal = cursorGoal.getInt(0);
+        }
+        cursorGoal.close();
+        return goal;
     }
 
     public HashMap<String, Float> getDailyMacros(ArrayList<Intake> dailyIntake) {

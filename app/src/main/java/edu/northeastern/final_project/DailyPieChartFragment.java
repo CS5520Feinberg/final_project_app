@@ -75,7 +75,6 @@ public class DailyPieChartFragment extends Fragment {
             }
         });
 
-        /*** TODO: NEED A METHOD TO READ SQLITE DATA AND FEED IT TO THE CHART***/
         initPieChart();
 
         dbHandler = new DBHandler(getContext());
@@ -140,15 +139,15 @@ public class DailyPieChartFragment extends Fragment {
 
         //Log.d("DailyPieChartFragment", "carbs: " + typeAmountMap.get("Carbs"));
         //Log.d("DailyPieChartFragment", "protein: " + typeAmountMap.get("Protein"));
-        Log.d("DailyPieChartFragment", "fats: " + typeAmountMap.get("Fat"));
+        //Log.d("DailyPieChartFragment", "fats: " + typeAmountMap.get("Fat"));
         //Log.d("DailyPieChartFragment", "calories: " + typeAmountMap.get("Calories"));
 
         //initialing color
         ArrayList<Integer> colors = new ArrayList<>();
-        colors.add(Color.parseColor("#d63c31")); // carbs
-        colors.add(Color.parseColor("#285ded")); // protein
-        colors.add(Color.parseColor("#9128ed")); // macros
-        colors.add(Color.parseColor("#79db37")); // fibers
+        colors.add(Color.parseColor("#fd0085")); // carbs
+        colors.add(Color.parseColor("#ffbf7b")); // fats
+        colors.add(Color.parseColor("#9128ed")); // protein
+        colors.add(Color.parseColor("#F44336")); // cals
 
         //input data and fit data int to pie chart entry
         for (String type: typeAmountMap.keySet()) {
