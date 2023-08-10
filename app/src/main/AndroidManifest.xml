@@ -50,6 +50,8 @@
 
         <activity android:name=".activity.AddFriendsActivity"
             android:screenOrientation="fullSensor" />
+        <activity android:name=".activity.SocialMediaActivity"
+            android:screenOrientation="fullSensor"></activity>
 
     </application>
 
