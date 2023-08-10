@@ -9,6 +9,7 @@ public class SignalContainer extends LinkedList<Double> {
     private Boolean full = false;
 
     public SignalContainer(int size) {
+        Log.d("StepCounter", "Signal Container Initialized");
         maxSize = size;
     }
 
