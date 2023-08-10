@@ -41,7 +41,7 @@ public class SignalContainer extends LinkedList<Double> {
             // Method: check if peak is (thresh) above 10-element window
             LinkedList<Double> window = new LinkedList<Double>();
             int half_window = window_size / 2;
-            Log.e("SignalContainer", "Half window size" + String.valueOf(half_window));
+            Log.e("SignalContainer", "Half window size " + String.valueOf(half_window));
 
             // filling initial window
             for (int i=0; i < window_size; i++) {

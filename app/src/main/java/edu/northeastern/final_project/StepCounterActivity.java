@@ -29,7 +29,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
     // Calculating the number of elements to keep in the queue
     private int NUM_ELEMENTS = MAX_TIME * SAMPLING_RATE;
     // 1-second window for step counting
-    private int WINDOW_SIZE = 1 * SAMPLING_RATE;
+    private int WINDOW_SIZE = (int) Math.ceil(0.5 * SAMPLING_RATE);
     private SignalContainer signalContainer = new SignalContainer(NUM_ELEMENTS);
     private SensorManager sensorManager;
     private Sensor accelerometer;
