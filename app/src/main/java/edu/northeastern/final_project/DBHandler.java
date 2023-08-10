@@ -15,7 +15,10 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class DBHandler extends SQLiteOpenHelper{
 
@@ -30,6 +33,7 @@ public class DBHandler extends SQLiteOpenHelper{
     private static final String CARBS = "carbs";
     private static final String FATS = "fats";
     private static final String MODIFIED_TIME = "modified_time";
+    private static final String STEP_TABLE_NAME = "step_table";
     private static final String STEPS = "steps";
 
     public DBHandler(Context context) {
@@ -48,12 +52,18 @@ public class DBHandler extends SQLiteOpenHelper{
                 + PROTEIN + " TEXT, "
                 + CARBS + " TEXT, "
                 + FATS + " TEXT, "
-                + MODIFIED_TIME + " TEXT, "
-                + STEPS + " TEXT)";
+                + MODIFIED_TIME + " TEXT)";
 
         Log.d("Table create SQL",  "CREATE_DAILYINTAKE_TABLE");
 
         db.execSQL(query);
+
+        String query_steps = "CREATE TABLE " + STEP_TABLE_NAME + " ("
+                + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + STEPS + " TEXT, "
+                + MODIFIED_TIME + " TEXT)";
+        Log.d("Table create SQL",  "CREATE_STEP_TABLE");
+        db.execSQL(query_steps);
 
         Log.d("DB creation", "DB was created");
     }
@@ -179,25 +189,50 @@ public class DBHandler extends SQLiteOpenHelper{
         values.put(STEPS, numSteps);
         values.put(MODIFIED_TIME, formattedTime);
 
-        db.insert(TABLE_NAME, null, values);
+        db.insert(STEP_TABLE_NAME, null, values);
         db.close();
     }
 
     public HashMap<String, Integer> readSteps() {
         SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursorIntake = db.rawQuery("SELECT * FROM "+ TABLE_NAME, null);
-        HashMap<String, Integer> steps = new HashMap<String, Integer>();
+        Cursor cursorIntake = db.rawQuery("SELECT * FROM "+ STEP_TABLE_NAME, null);
+        HashMap<String, Integer> steps = new HashMap<>();
 
         if (cursorIntake.moveToFirst()) {
             do {
-                String timestampString = cursorIntake.getString(1);
-                int curSteps = cursorIntake.getInt(0);
+                int curSteps = cursorIntake.getInt(1);
+                String timestampString = cursorIntake.getString(2);
 
                 steps.put(timestampString, curSteps);
             } while (cursorIntake.moveToNext());
         }
         return steps;
+    }
+
+    public HashMap<String, Integer> getDailySteps() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        HashMap<String, Integer> dailySteps = new HashMap<>();
+        HashMap<String, Integer> allSteps = readSteps();
+
+        for (Map.Entry<String, Integer> allStepsEntry : allSteps.entrySet()) {
+            String date = allStepsEntry.getKey();
+            int curSteps = allStepsEntry.getValue();
+            // Log.d("getDailySteps", "DB Steps: (" + date + ": " + curSteps + ")");
+            String datePart = date.split(" ")[0];
+
+            if (dailySteps.containsKey(datePart)) {
+                int daySteps = dailySteps.get(datePart);
+                Log.d("getDailySteps", datePart + " Loaded: " + daySteps);
+                daySteps += curSteps;
+                Log.d("getDailySteps", datePart + " Updated: " + daySteps);
+                dailySteps.put(datePart, daySteps);
+            } else {
+                dailySteps.put(datePart, curSteps);
+            }
+
+        }
+
+        return dailySteps;
     }
 
     //push intake into firebase

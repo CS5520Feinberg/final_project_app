@@ -71,10 +71,19 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
 
         dbHandler = new DBHandler(StepCounterActivity.this);
 
-        stepCount = 0;
+        ZonedDateTime gmt = ZonedDateTime.now(ZoneOffset.UTC);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedTime = gmt.format(formatter);
+        String datePart = formattedTime.split(" ")[0];
+
+        HashMap<String, Integer> dailySteps = dbHandler.getDailySteps();
+
+        stepCount = dailySteps.getOrDefault(datePart, 0);
         lastSteps = stepCount;
+        Log.d("Acc", "Initializing stepCount as: " + stepCount);
 
         stepCountTextView = findViewById(R.id.stepCountTextView);
+        stepCountTextView.setText("Steps: " + stepCount);
 
         chart = findViewById(R.id.chart);
         chart.getDescription().setEnabled(false);
