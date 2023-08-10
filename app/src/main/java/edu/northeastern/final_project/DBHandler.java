@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -36,8 +38,8 @@ public class DBHandler extends SQLiteOpenHelper{
     private static final String STEP_TABLE_NAME = "step_table";
     private static final String STEPS = "steps";
 
-    public DBHandler(Context context) {
-        super (context, DB_NAME, null, DB_VERSION);
+    public DBHandler(Context context, String userId) {
+        super (context, DB_NAME + "_" + userId, null, DB_VERSION);
     }
 
     // create a database by running a sqlite query

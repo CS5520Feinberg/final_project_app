@@ -17,6 +17,8 @@ import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +30,7 @@ public class DailyPieChartFragment extends Fragment {
     private DBHandler dbHandler;
     private ArrayList<Intake> dailyIntake;
     private HashMap<String, Float> dailyMacros;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     public DailyPieChartFragment() {
         // Required empty public constructor
@@ -47,7 +50,14 @@ public class DailyPieChartFragment extends Fragment {
         /*** TODO: NEED A METHOD TO READ SQLITE DATA AND FEED IT TO THE CHART***/
         initPieChart();
 
-        dbHandler = new DBHandler(getContext());
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser == null) {
+            Log.e("StepCounterActivity", "No user found!");
+        }
+
+        String uid = currentUser.getUid();
+        dbHandler = new DBHandler(getContext(), uid);
 
         refreshPieChart();
     }

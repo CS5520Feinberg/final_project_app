@@ -18,6 +18,8 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -52,6 +54,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
     private LineChart chart;
     private LineData data;
     private LineDataSet set;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +72,14 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
             sensorManager.registerListener(this, accelerometer, SAMPLING_TIME);
         }
 
-        dbHandler = new DBHandler(StepCounterActivity.this);
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser == null) {
+            Log.e("StepCounterActivity", "No user found!");
+        }
+
+        String uid = currentUser.getUid();
+        dbHandler = new DBHandler(StepCounterActivity.this, uid);
 
         ZonedDateTime gmt = ZonedDateTime.now(ZoneOffset.UTC);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
