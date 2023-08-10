@@ -30,6 +30,7 @@ public class DBHandler extends SQLiteOpenHelper{
     private static final String CARBS = "carbs";
     private static final String FATS = "fats";
     private static final String MODIFIED_TIME = "modified_time";
+    private static final String STEPS = "steps";
 
     public DBHandler(Context context) {
         super (context, DB_NAME, null, DB_VERSION);
@@ -47,7 +48,8 @@ public class DBHandler extends SQLiteOpenHelper{
                 + PROTEIN + " TEXT, "
                 + CARBS + " TEXT, "
                 + FATS + " TEXT, "
-                + MODIFIED_TIME + " TEXT)" ;
+                + MODIFIED_TIME + " TEXT, "
+                + STEPS + " TEXT)";
 
         Log.d("Table create SQL",  "CREATE_DAILYINTAKE_TABLE");
 
@@ -82,6 +84,7 @@ public class DBHandler extends SQLiteOpenHelper{
         db.insert(TABLE_NAME, null, values);
         db.close();
     }
+
 
     //read data from sqlite
     public ArrayList<Intake> readIntake() {
@@ -160,6 +163,41 @@ public class DBHandler extends SQLiteOpenHelper{
         macrosMap.put("fats", totalFats);
 
         return macrosMap;
+    }
+
+    // add steps to sqlite db
+    public void addSteps (int numSteps) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        ZonedDateTime gmt = ZonedDateTime.now(ZoneOffset.UTC);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedTime = gmt.format(formatter);
+        Log.d("dbHandler", "Writing " + numSteps + " steps to DB at " + formattedTime);
+
+        values.put(STEPS, numSteps);
+        values.put(MODIFIED_TIME, formattedTime);
+
+        db.insert(TABLE_NAME, null, values);
+        db.close();
+    }
+
+    public HashMap<String, Integer> readSteps() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursorIntake = db.rawQuery("SELECT * FROM "+ TABLE_NAME, null);
+        HashMap<String, Integer> steps = new HashMap<String, Integer>();
+
+        if (cursorIntake.moveToFirst()) {
+            do {
+                String timestampString = cursorIntake.getString(1);
+                int curSteps = cursorIntake.getInt(0);
+
+                steps.put(timestampString, curSteps);
+            } while (cursorIntake.moveToNext());
+        }
+        return steps;
     }
 
     //push intake into firebase

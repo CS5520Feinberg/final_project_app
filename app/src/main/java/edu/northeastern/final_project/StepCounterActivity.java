@@ -1,5 +1,6 @@
 package edu.northeastern.final_project;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.hardware.Sensor;
@@ -18,6 +19,13 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+
 public class StepCounterActivity extends AppCompatActivity implements SensorEventListener {
 
     private final int SAMPLING_RATE = 100;
@@ -30,14 +38,16 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
     private int NUM_ELEMENTS = MAX_TIME * SAMPLING_RATE;
     // 1-second window for step counting
     private int WINDOW_SIZE = (int) Math.ceil(0.5 * SAMPLING_RATE);
+    private int WRITE_DURATION = 10;
     private SignalContainer signalContainer = new SignalContainer(NUM_ELEMENTS);
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private static final double thresh = 10;
     private static final int delay = 200; //ms
-    private long lastTime;
-    private double lastAccel;
     private int stepCount;
+    private DBHandler dbHandler;
+    private int lastSteps = 0;
+    private Instant lastWriteTime = Instant.now();
     private TextView stepCountTextView;
     private LineChart chart;
     private LineData data;
@@ -59,9 +69,10 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
             sensorManager.registerListener(this, accelerometer, SAMPLING_TIME);
         }
 
-        lastTime = System.currentTimeMillis();
-        lastAccel = 0.0;
+        dbHandler = new DBHandler(StepCounterActivity.this);
+
         stepCount = 0;
+        lastSteps = stepCount;
 
         stepCountTextView = findViewById(R.id.stepCountTextView);
 
@@ -92,6 +103,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
     }
 
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onSensorChanged(SensorEvent event) {
         double x = event.values[0];
@@ -99,7 +111,6 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         double z = event.values[2];
 
         double currentAccel = Math.sqrt(x * x + y * y + z * z);
-        double accelDiff = Math.abs(lastAccel - currentAccel);
 
         data.addEntry(new Entry(set.getEntryCount(), (float) currentAccel), 0);
         data.notifyDataChanged();
@@ -111,14 +122,19 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
 
         if (procReady) {
             int num_steps = signalContainer.findPeaks(WINDOW_SIZE, thresh);
-            Log.d("Acc", "Num steps: " + String.valueOf(num_steps));
             stepCount += num_steps;
             stepCountTextView.setText("Steps: " + stepCount);
-            // if (accelDiff > thresh) {
-            //     stepCount++;
-            //     stepCountTextView.setText("Steps: " + stepCount);
-            // }
             signalContainer.clear();
+
+            Instant curInstant = Instant.now();
+            Duration timeDiff = Duration.between(lastWriteTime, curInstant);
+            int diffSteps = stepCount - lastSteps;
+
+            if (timeDiff.getSeconds() > WRITE_DURATION || diffSteps > 100) {
+                dbHandler.addSteps(diffSteps);
+                lastWriteTime = Instant.now();
+                lastSteps = stepCount;
+            }
         }
 
     }
