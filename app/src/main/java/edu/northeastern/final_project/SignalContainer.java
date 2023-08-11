@@ -39,7 +39,7 @@ public class SignalContainer extends LinkedList<Double> {
 
         if (full) {
             // Method: check if peak is (thresh) above 10-element window
-            LinkedList<Double> window = new LinkedList<Double>();
+            LinkedList<Double> window = new LinkedList<>();
             int half_window = window_size / 2;
 
             // filling initial window

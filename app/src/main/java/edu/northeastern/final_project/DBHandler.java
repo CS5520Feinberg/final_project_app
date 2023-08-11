@@ -7,20 +7,20 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import androidx.annotation.NonNull;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class DBHandler extends SQLiteOpenHelper{
 
@@ -37,9 +37,22 @@ public class DBHandler extends SQLiteOpenHelper{
     private static final String MODIFIED_TIME = "modified_time";
     private static final String STEP_TABLE_NAME = "step_table";
     private static final String STEPS = "steps";
+    private static String targetUserId = null;
+    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     public DBHandler(Context context, String userId) {
         super (context, DB_NAME + "_" + userId, null, DB_VERSION);
+        targetUserId = userId;
+
+        // Syncing steps in thread
+        syncStepsFirebase stepSync = new syncStepsFirebase();
+        Thread stepThread = new Thread(stepSync);
+        stepThread.start();
+
+        // Syncing intake in thread
+        syncIntakeFirebase intakeSync = new syncIntakeFirebase();
+        Thread intakeThread = new Thread(intakeSync);
+        intakeThread.start();
     }
 
     // create a database by running a sqlite query
@@ -71,7 +84,7 @@ public class DBHandler extends SQLiteOpenHelper{
     }
 
     //add new daily intake to sqlite db
-    public void addDailyIntake (String mealType, String mealName, String calories, String protein, String carbs, String macros) {
+    public void addDailyIntake (String mealType, String mealName, String calories, String protein, String carbs, String fats) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         //create a variable for content values
@@ -82,21 +95,26 @@ public class DBHandler extends SQLiteOpenHelper{
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedTime = gmt.format(formatter);
 
+        Intake addedIntake = new Intake(mealType, mealName, calories, protein, carbs, fats, formattedTime);
+        writeCustomIntake(addedIntake);
+        uploadIntakeFirebase();
+    }
 
-        values.put(MEAL_TYPE, mealType);
-        values.put(MEAL_NAME, mealName);
-        values.put(CALORIES, calories);
-        values.put(PROTEIN, protein);
-        values.put(CARBS, carbs);
-        values.put(FATS, macros);
-        values.put(MODIFIED_TIME, formattedTime);
+    private void writeCustomIntake(Intake addIntake) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
 
-        /*** TODO: how to do time? for modified_time column***/
+        values.put(MEAL_TYPE, addIntake.mealType);
+        values.put(MEAL_NAME, addIntake.mealName);
+        values.put(CALORIES, addIntake.calories);
+        values.put(PROTEIN, addIntake.protein);
+        values.put(CARBS, addIntake.carbs);
+        values.put(FATS, addIntake.fats);
+        values.put(MODIFIED_TIME, addIntake.timestamp);
 
         db.insert(TABLE_NAME, null, values);
         db.close();
     }
-
 
     //read data from sqlite
     public ArrayList<Intake> readIntake() {
@@ -162,10 +180,10 @@ public class DBHandler extends SQLiteOpenHelper{
         float totalFats = 0;
 
         for (Intake intake : dailyIntake) {
-            totalCalories += intake.getCal();
-            totalProtein += intake.getProtein();
-            totalCarbs += intake.getCarbs();
-            totalFats += intake.getFats();
+            totalCalories += Float.parseFloat(intake.calories);
+            totalProtein += Float.parseFloat(intake.protein);
+            totalCarbs += Float.parseFloat(intake.carbs);
+            totalFats += Float.parseFloat(intake.fats);
         }
 
         HashMap<String, Float> macrosMap = new HashMap<>();
@@ -179,14 +197,18 @@ public class DBHandler extends SQLiteOpenHelper{
 
     // add steps to sqlite db
     public void addSteps (int numSteps) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-
         ZonedDateTime gmt = ZonedDateTime.now(ZoneOffset.UTC);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedTime = gmt.format(formatter);
         Log.d("dbHandler", "Writing " + numSteps + " steps to DB at " + formattedTime);
+
+        writeCustomSteps(formattedTime, numSteps);
+        uploadStepsFirebase();
+    }
+
+    private void writeCustomSteps(String formattedTime, int numSteps) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
 
         values.put(STEPS, numSteps);
         values.put(MODIFIED_TIME, formattedTime);
@@ -212,7 +234,6 @@ public class DBHandler extends SQLiteOpenHelper{
     }
 
     public HashMap<String, Integer> getDailySteps() {
-        SQLiteDatabase db = this.getReadableDatabase();
         HashMap<String, Integer> dailySteps = new HashMap<>();
         HashMap<String, Integer> allSteps = readSteps();
 
@@ -237,11 +258,70 @@ public class DBHandler extends SQLiteOpenHelper{
         return dailySteps;
     }
 
-    //push intake into firebase
-    public void pushFirebase(ArrayList<Intake> dataList) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("DailyIntake").child("DETAILS");
-        for(Intake d : dataList){
-            ref.push().setValue(d);
+    class syncIntakeFirebase implements Runnable {
+        @Override
+        public void run() {
+            Log.d("syncIntakeFirebase", "Starting");
+            ValueEventListener stepListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Log.d("syncIntakeFirebase", "Received Data");
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Intake iterIntake = snapshot.getValue(Intake.class);
+                        // Log.d("syncStepsFirebase", "Time: " + iterIntake.timestamp + " Name: " + iterIntake.mealName);
+                        writeCustomIntake(iterIntake);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    return;
+                }
+            };
+            mDatabase.child("users").child(targetUserId).child("DailyIntake").child("DETAILS").addListenerForSingleValueEvent(stepListener);
+        }
+    }
+    public void uploadIntakeFirebase() {
+        ArrayList<Intake> intakeDataList = readIntake();
+
+        for (Intake intakeData : intakeDataList) {
+            mDatabase.child("users").child(targetUserId).child("DailyIntake").child("DETAILS").child(intakeData.timestamp).setValue(intakeData);
+        }
+    }
+
+    class syncStepsFirebase implements Runnable {
+        @Override
+        public void run() {
+            Log.d("syncStepsFirebase", "Starting");
+            ValueEventListener stepListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Log.d("syncStepsFirebase", "Received Data");
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        String time = snapshot.getKey();
+                        long rawSteps = (long) snapshot.getValue();
+                        int steps = Math.toIntExact(rawSteps);
+                        // Log.d("syncStepsFirebase", "Time: " + time + " Steps: " + steps);
+                        writeCustomSteps(time, steps);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    return;
+                }
+            };
+            mDatabase.child("users").child(targetUserId).child("Steps").addListenerForSingleValueEvent(stepListener);
+        }
+    }
+
+    public void uploadStepsFirebase() {
+        HashMap<String, Integer> allSteps = readSteps();
+
+        for (Map.Entry<String, Integer> allStepsEntry : allSteps.entrySet()) {
+            String date = allStepsEntry.getKey();
+            int curSteps = allStepsEntry.getValue();
+            mDatabase.child("users").child(targetUserId).child("Steps").child(date).setValue(curSteps);
         }
     }
 
