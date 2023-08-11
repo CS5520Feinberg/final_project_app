@@ -49,14 +49,14 @@ public class DBHandler extends SQLiteOpenHelper{
         targetUserId = userId;
 
         // Syncing steps in thread
-        syncStepsFirebase stepSync = new syncStepsFirebase();
+/*        syncStepsFirebase stepSync = new syncStepsFirebase();
         Thread stepThread = new Thread(stepSync);
         stepThread.start();
 
         // Syncing intake in thread
         syncIntakeFirebase intakeSync = new syncIntakeFirebase();
         Thread intakeThread = new Thread(intakeSync);
-        intakeThread.start();
+        intakeThread.start();*/
     }
 
     // create a database by running a sqlite query
@@ -136,7 +136,7 @@ public class DBHandler extends SQLiteOpenHelper{
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedTime = gmt.format(formatter);
 
-        Intake addedIntake = new Intake(mealType, mealName, calories, protein, carbs, fats, formattedTime);
+        Intake addedIntake = new Intake(mealType, mealName, calories, protein, carbs, fats, formattedTime, "0");
         writeCustomIntake(addedIntake);
         uploadIntakeFirebase();
     }
@@ -152,6 +152,7 @@ public class DBHandler extends SQLiteOpenHelper{
         values.put(CARBS, addIntake.carbs);
         values.put(FATS, addIntake.fats);
         values.put(MODIFIED_TIME, addIntake.timestamp);
+        values.put(FLAG, addIntake.isCouldSynced);
 
         db.insert(TABLE_NAME, null, values);
         db.close();
@@ -173,7 +174,8 @@ public class DBHandler extends SQLiteOpenHelper{
                             cursorIntake.getString(4),
                             cursorIntake.getString(5),
                             cursorIntake.getString(6),
-                            cursorIntake.getString(7))) ;
+                            cursorIntake.getString(7),
+                            cursorIntake.getString(8))) ;
 
                 } while (cursorIntake.moveToNext());
         }
@@ -207,7 +209,8 @@ public class DBHandler extends SQLiteOpenHelper{
                             cursorIntake.getString(4),
                             cursorIntake.getString(5),
                             cursorIntake.getString(6),
-                            cursorIntake.getString(7)));
+                            cursorIntake.getString(7),
+                            cursorIntake.getString(8)));
                 }
             } while (cursorIntake.moveToNext());
         }
