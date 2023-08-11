@@ -35,6 +35,7 @@ public class DBHandler extends SQLiteOpenHelper{
     private static final String CARBS = "carbs";
     private static final String FATS = "fats";
     private static final String MODIFIED_TIME = "modified_time";
+    private static final String FLAG = "IsCouldSynced";
     private static final String STEP_TABLE_NAME = "step_table";
     private static final String STEPS = "steps";
     private static final String TABLE_NAME_GOAL = "weekly_daily_goal";
@@ -70,7 +71,8 @@ public class DBHandler extends SQLiteOpenHelper{
                 + PROTEIN + " TEXT, "
                 + CARBS + " TEXT, "
                 + FATS + " TEXT, "
-                + MODIFIED_TIME + " TEXT)";
+                + MODIFIED_TIME + " TEXT, "
+                + FLAG + " TEXT)";
 
         Log.d("Table create SQL",  "CREATE_DAILYINTAKE_TABLE");
 

@@ -48,6 +48,9 @@
         <activity
             android:name=".StepCounterActivity"
             android:exported="true" />
+        <activity
+            android:name=".AddDataActivity"
+            android:exported="true" />
     </application>
 
 </manifest>
