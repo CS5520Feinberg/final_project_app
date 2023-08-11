@@ -18,6 +18,8 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
@@ -31,6 +33,7 @@ public class DailyPieChartFragment extends Fragment {
     private DBHandler dbHandler;
     private ArrayList<Intake> dailyIntake;
     private HashMap<String, Float> dailyMacros;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     public DailyPieChartFragment() {
         // Required empty public constructor
@@ -77,7 +80,14 @@ public class DailyPieChartFragment extends Fragment {
 
         initPieChart();
 
-        dbHandler = new DBHandler(getContext());
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser == null) {
+            Log.e("StepCounterActivity", "No user found!");
+        }
+
+        String uid = currentUser.getUid();
+        dbHandler = new DBHandler(getContext(), uid);
 
         refreshPieChart();
     }
