@@ -8,12 +8,14 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,6 +25,8 @@ public class SettingsActivity extends AppCompatActivity {
 
     private Button logoutBtn, doneBtn, deleteAccBtn, changePasswordBtn;
     private Switch notificationSwitch, darkModeSwitch;
+    private TextInputEditText weeklyDailyGoal;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +39,18 @@ public class SettingsActivity extends AppCompatActivity {
         changePasswordBtn = findViewById(R.id.changePasswordBtn);
         notificationSwitch = findViewById(R.id.notificationsSwitch);
         darkModeSwitch = findViewById(R.id.darkModeSwitch);
+        weeklyDailyGoal = findViewById(R.id.weeklyDailyGoalTIET);
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser == null) {
+            Log.e("SettingsActivity", "No user found!");
+        }
+
+        String uid = currentUser.getUid();
+        DBHandler dbHandler = new DBHandler(SettingsActivity.this, uid);
+        Integer goal = dbHandler.readWeeklyDailyGoal();
+        weeklyDailyGoal.setText(String.valueOf(goal));
 
         logoutBtn.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
@@ -47,6 +63,11 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         doneBtn.setOnClickListener(v -> {
+            Integer newGoal = Integer.parseInt(weeklyDailyGoal.getText().toString());
+            if (!newGoal.equals(goal)) {
+                Toast.makeText(this, "Weekly daily goal updated.", Toast.LENGTH_SHORT).show();
+                dbHandler.updateWeeklyGoal(newGoal);
+            }
             finish();
         });
 

@@ -37,6 +37,9 @@ public class DBHandler extends SQLiteOpenHelper{
     private static final String MODIFIED_TIME = "modified_time";
     private static final String STEP_TABLE_NAME = "step_table";
     private static final String STEPS = "steps";
+    private static final String TABLE_NAME_GOAL = "weekly_daily_goal";
+    private static final String ID_COL_GOAL = "id";
+    private static final String GOAL = "goal";
     private static String targetUserId = null;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -80,7 +83,43 @@ public class DBHandler extends SQLiteOpenHelper{
         Log.d("Table create SQL",  "CREATE_STEP_TABLE");
         db.execSQL(query_steps);
 
+        String queryGoal = "CREATE TABLE " + TABLE_NAME_GOAL + " ("
+                + GOAL + " INTEGER)";
+        Log.d("Table create SQL",  "CREATE_GOAL_TABLE");
+
+        db.execSQL(queryGoal);
+
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(GOAL, 0);
+        db.insert(TABLE_NAME_GOAL, null, initialValues);
+
         Log.d("DB creation", "DB was created");
+    }
+
+    public Integer readWeeklyDailyGoal() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursorGoal = db.rawQuery("SELECT * FROM " + TABLE_NAME_GOAL, null);
+
+        Integer goal = null;
+
+        if (cursorGoal.moveToFirst()) {
+            goal = cursorGoal.getInt(0);
+        }
+        cursorGoal.close();
+        return goal;
+    }
+
+    public void updateWeeklyGoal(int goal) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(GOAL, goal);
+
+        db.delete(TABLE_NAME_GOAL, null, null);
+
+        db.insert(TABLE_NAME_GOAL, null, values);
+        db.close();
     }
 
     //add new daily intake to sqlite db
@@ -194,6 +233,34 @@ public class DBHandler extends SQLiteOpenHelper{
 
         return macrosMap;
     }
+
+    public ArrayList<Float> getWeeklyCalories() {
+        ArrayList<Float> weeklyCalories = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        for (int i = 6; i >= 0; i--) {
+            ZonedDateTime zdt = ZonedDateTime.now(ZoneOffset.UTC).minusDays(i);
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            String targetDate = zdt.format(dateFormatter);
+
+            String query = "SELECT " + CALORIES + " FROM " + TABLE_NAME + " WHERE SUBSTR(" + MODIFIED_TIME + ", 1, 10) = '" + targetDate + "'";
+
+            Cursor cursor = db.rawQuery(query, null);
+            float totalCalories = 0;
+
+            if (cursor.moveToFirst()) {
+                do {
+                    totalCalories += Float.parseFloat(cursor.getString(0));
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+
+            weeklyCalories.add(totalCalories);
+        }
+
+        return weeklyCalories;
+    }
+
 
     // add steps to sqlite db
     public void addSteps (int numSteps) {

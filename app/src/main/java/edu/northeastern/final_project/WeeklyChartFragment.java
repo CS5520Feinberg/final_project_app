@@ -7,9 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +23,9 @@ import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -33,9 +33,11 @@ import java.util.Random;
 public class WeeklyChartFragment extends Fragment {
 
     private CombinedChart chart;
-    final Integer itemcount = 12;
+    final Integer itemcount = 7;
 
     private Random rand = new Random();
+    private DBHandler dbHandler;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     public WeeklyChartFragment() {
         // Required empty public constructor
@@ -52,6 +54,21 @@ public class WeeklyChartFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         chart = view.findViewById(R.id.weeklyCombinedChart);
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser == null) {
+            Log.e("SettingsActivity", "No user found!");
+        }
+
+        String uid = currentUser.getUid();
+        dbHandler = new DBHandler(getContext(), uid);
+
+        setupChart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
 
         setupChart();
     }
@@ -65,16 +82,23 @@ public class WeeklyChartFragment extends Fragment {
         chart.getXAxis().setDrawGridLines(false);
 
         XAxis x = chart.getXAxis();
-        x.setTextSize(14f);
+        x.setAxisMinimum(-0.5f);
+        x.setAxisMaximum(itemcount - 1);
+        x.setLabelCount(itemcount, false);
+        x.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return String.valueOf((int) value + 1); // Shift the labels by one
+            }
+        });
+        x.setGranularity(1f); // interval 1
         x.setPosition(XAxis.XAxisPosition.BOTTOM);
+        x.setTextSize(14f);
 
-        YAxis y = chart.getAxisLeft();
-        y.setEnabled(false);
 
         chart.setDrawGridBackground(false);
         chart.setDrawBarShadow(false);
-        chart.setVisibleXRangeMaximum(10f);
-        chart.setVisibleXRangeMinimum(10f);
+        chart.setVisibleXRange(0, itemcount);
         chart.getDescription().setEnabled(false);
 
         CombinedData data = new CombinedData();
@@ -98,8 +122,8 @@ public class WeeklyChartFragment extends Fragment {
 
         LineData ld = new LineData();
 
-        for (int index = 0; index< itemcount; index++) {
-            entries.add(new Entry(index+0.5f, rand.nextInt(15)));
+        for (int index = 0; index < itemcount; index++) {
+            entries.add(new Entry(index, dbHandler.readWeeklyDailyGoal()));
         }
 
         LineDataSet lset = new LineDataSet(entries, "Target Dataset");
@@ -113,6 +137,17 @@ public class WeeklyChartFragment extends Fragment {
         lset.setValueTextSize(10f);
         lset.setValueTextColor(Color.RED);
         lset.setAxisDependency(YAxis.AxisDependency.LEFT);
+        lset.setValueTextSize(15f);
+        lset.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getPointLabel(Entry entry) {
+                if (entry.getX() == itemcount - 1) {
+                    return String.valueOf(entry.getY());
+                } else {
+                    return  "";
+                }
+            }
+        });
 
         ld.addDataSet(lset);
 
@@ -127,12 +162,13 @@ public class WeeklyChartFragment extends Fragment {
         ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
 
         for (int i = 0; i < itemcount; i++) {
-            entries.add(new BarEntry(i, rand.nextInt(15)));
+            entries.add(new BarEntry(i, dbHandler.getWeeklyCalories().get(i)));
         }
 
         BarDataSet barDataSet = new BarDataSet(entries, "BarDataSet");
 
         barDataSet.setColor(Color.parseColor("#285ded"));
+        barDataSet.setValueTextSize(15f);
 
         BarData bd = new BarData(barDataSet);
         bd.addDataSet(barDataSet);
