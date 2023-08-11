@@ -1,6 +1,4 @@
 package edu.northeastern.final_project.backgroundThreadClass;
-
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -10,6 +8,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -21,21 +20,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import edu.northeastern.final_project.MainActivity;
+import edu.northeastern.final_project.Constants;
 import edu.northeastern.final_project.ProfileActivity;
 import edu.northeastern.final_project.dbConnectionHelpers.RealTimeDbConnectionService;
 
 
 public class UniquePhoneNumberThread extends GenericAsyncClassThreads<Void,Void, List<Boolean>>{
     FirebaseDatabase database;
-   FirebaseAuth mAuth;
+    FirebaseAuth mAuth;
     Context context;
     String phoneNumber;
     List<Boolean> flags_list;
     String email;
     String password;
+    String name;
 
-    public UniquePhoneNumberThread(FirebaseDatabase database, Context context, String phoneNumber, FirebaseAuth mAuth, String email, String password) {
+    public UniquePhoneNumberThread(FirebaseDatabase database, Context context, String phoneNumber, FirebaseAuth mAuth, String email, String password, String name) {
         this.database = database;
         this.context = context;
         this.mAuth = mAuth;
@@ -43,6 +43,7 @@ public class UniquePhoneNumberThread extends GenericAsyncClassThreads<Void,Void,
         this.flags_list = new ArrayList<>();
         this.email = email;
         this.password = password;
+        this.name = name;
     }
 
     @Override
@@ -110,15 +111,23 @@ public class UniquePhoneNumberThread extends GenericAsyncClassThreads<Void,Void,
                         if (task.isSuccessful()) {
                             // User created successfully
                             FirebaseUser user = mAuth.getCurrentUser();
-                            // TODO: 8/10/23 @everyone look into it 
-                            //new RealTimeDbConnectionService().saveUserDataToSocialMediaDatabase("Test",phoneNumber,email);
-                            Toast.makeText(context, "Sign Up Successfully!", Toast.LENGTH_SHORT).show();
+
+                            // TODO: 8/10/23 @everyone look into it
+                            new RealTimeDbConnectionService().saveUserDataToSocialMediaDatabase(new Constants().getUid(),name,phoneNumber,email);
                             Intent intent = new Intent(context, ProfileActivity.class);
                             context.startActivity(intent);
+
+                            Toast.makeText(context, "Sign Up Successfully!", Toast.LENGTH_SHORT).show();
+//
                         } else {
-                            // Failed to create user
-                            new RealTimeDbConnectionService().saveUserDataToSocialMediaDatabase("Test",phoneNumber,email);
-                            Toast.makeText(context, "Account already exists", Toast.LENGTH_SHORT).show();
+                            // Check if the error is due to an existing account
+                            if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                                Toast.makeText(context, "An account with this email already exists", Toast.LENGTH_SHORT).show();
+                            } else {
+                                // Handle other error cases
+                                System.out.println(task.getException());
+                                Toast.makeText(context, "Account creation failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
         }

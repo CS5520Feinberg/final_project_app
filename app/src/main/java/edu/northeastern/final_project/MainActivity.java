@@ -1,6 +1,6 @@
 package edu.northeastern.final_project;
 
-import androidx.annotation.NonNull;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
-import android.util.Log;
+
 
 import android.view.View;
 
@@ -18,21 +18,11 @@ import android.Manifest.permission;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.gson.JsonObject;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Pattern;
-
-
-import edu.northeastern.final_project.activity.AddFriendsActivity;
 import edu.northeastern.final_project.activity.SocialMediaActivity;
 import edu.northeastern.final_project.backgroundThreadClass.UniquePhoneNumberThread;
 import edu.northeastern.final_project.validation.GenericStringValidation;
@@ -47,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseApp.initializeApp(this);
         setContentView(R.layout.activity_main);
-
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         userRef = database.getReference("users");
@@ -68,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
             String email = emailInput.getText().toString();
             String password = passwordInput.getText().toString();
             String phoneNumber = phoneNumberInput.getText().toString();
+            String name = nameInput.getText().toString();
             if (email.isEmpty() || password.isEmpty() || phoneNumber.isEmpty() ) {
                 Toast.makeText(MainActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 return;
@@ -81,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            new UniquePhoneNumberThread(database,this,phoneNumber,mAuth,email,password).execute();
+            new UniquePhoneNumberThread(database,this,phoneNumber,mAuth,email,password,name).execute();
 
 
 
@@ -106,4 +97,5 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, SocialMediaActivity.class);
         startActivity(intent);
     }
+
 }

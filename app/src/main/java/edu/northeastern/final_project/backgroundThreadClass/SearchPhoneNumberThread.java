@@ -1,10 +1,13 @@
 package edu.northeastern.final_project.backgroundThreadClass;
+import android.app.Dialog;
 import android.content.Context;
 import android.widget.Toast;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+
+import edu.northeastern.final_project.R;
 import edu.northeastern.final_project.dbConnectionHelpers.RealTimeDbConnectionService;
 import edu.northeastern.final_project.entity.Contact;
 
@@ -46,6 +49,10 @@ public class SearchPhoneNumberThread extends GenericAsyncClassThreads<Void,Void,
         super.onPostExecute(contact);
         if(contact==null){
             Toast.makeText(context,"No such contact exist",Toast.LENGTH_SHORT).show();
+        }else{
+            Dialog dialog = new Dialog(context);
+            dialog.setContentView(R.layout.search_result_dialog);
+            dialog.show();
         }
     }
 }

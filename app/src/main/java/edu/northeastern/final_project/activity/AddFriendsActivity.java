@@ -62,9 +62,6 @@ public class AddFriendsActivity extends AppCompatActivity {
 
         if(new GenericStringValidation<Pattern>(pattern).validateString(editText.getText().toString())){
             new SearchPhoneNumberThread(this,editText.getText().toString()).execute();
-            Dialog dialog = new Dialog(this);
-            dialog.setContentView(R.layout.search_result_dialog);
-            dialog.show();
 
         }else{
             Toast.makeText(this,"only ten digit phone number is allowed",Toast.LENGTH_SHORT).show();
@@ -79,7 +76,7 @@ public class AddFriendsActivity extends AppCompatActivity {
         contactsRV.setLayoutManager(new LinearLayoutManager(this));
 
         contactsAdapter = new ContactsAdapter(new ArrayList<>(), this,"Invite");
-        ContactsAdapter add_friends_adapter = new ContactsAdapter(new ArrayList<>(),this,"Add");
+        ContactsAdapter add_friends_adapter = new ContactsAdapter(new ArrayList<>(),this,"Follow");
         contactsRV.setAdapter(contactsAdapter);
         add_friends_RV.setAdapter(add_friends_adapter);
         new GetContactsThread(this,contactsRV, add_friends_RV,contactsAdapter,add_friends_adapter).execute();

@@ -1,4 +1,5 @@
 package edu.northeastern.final_project.backgroundThreadClass;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 
@@ -15,6 +16,7 @@ import edu.northeastern.final_project.entity.Contact;
 
 
 public class GetContactsThread  extends GenericAsyncClassThreads<Void,Void,List<List<Contact>>> {
+
     Context context;
     private RecyclerView contactsRV;
     ContactsAdapter contactsAdapter;
@@ -46,9 +48,16 @@ public class GetContactsThread  extends GenericAsyncClassThreads<Void,Void,List<
         try {
             latch.await();
             Log.d("Registered_User",""+registered_user);
-            List<Contact> add_friends_list = filter_contacts(contacts,registered_user);
-            filtered_lists.add(contacts_not_registered);
-            filtered_lists.add(add_friends_list);
+            CountDownLatch latch2 = new CountDownLatch(1);
+            List<Contact> add_friends_list = filter_contacts(latch2,contacts,registered_user);
+            try{
+                latch2.await();
+                filtered_lists.add(contacts_not_registered);
+                filtered_lists.add(add_friends_list);
+            }catch(InterruptedException ex){
+                Log.d("Error", ex.getMessage());
+            }
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -56,17 +65,21 @@ public class GetContactsThread  extends GenericAsyncClassThreads<Void,Void,List<
 
     }
 
-    private List<Contact> filter_contacts(List<Contact> contacts, Set<String> registered_user) {
+    private List<Contact> filter_contacts(CountDownLatch latch,List<Contact> contacts, Set<String> registered_user) {
         Log.d("FilterContactsMethod",""+registered_user);
        List<Contact> add_friends_list = new ArrayList<>();
 
        for(Contact contact : contacts){
            if(registered_user.contains(contact.getPhone_number())){
-               add_friends_list.add(contact);
+
+               //get contact details from firebase db
+               add_friends_list.add(new RealTimeDbConnectionService().fetchContactDetails(contact.getPhone_number()));
+
            }else{
                contacts_not_registered.add(contact);
            }
        }
+       latch.countDown();
         return add_friends_list;
     }
 

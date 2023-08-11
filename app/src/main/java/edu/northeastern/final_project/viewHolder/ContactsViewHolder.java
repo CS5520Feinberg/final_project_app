@@ -2,6 +2,7 @@ package edu.northeastern.final_project.viewHolder;
 
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ public class ContactsViewHolder extends RecyclerView.ViewHolder implements View.
 
     public TextView contact_name;
     public Button action_on_contact;
+    public ImageView imageView;
     private ContactsAdapter adapter;
 
     public TextView getContact_name() {
@@ -28,6 +30,7 @@ public class ContactsViewHolder extends RecyclerView.ViewHolder implements View.
         super(itemView);
         this.contact_name = itemView.findViewById(R.id.textview_contact);
        this.action_on_contact = itemView.findViewById(R.id.button_action_on_contact);
+       this.imageView = itemView.findViewById(R.id.image_view_contact);
        action_on_contact.setOnClickListener(this);
        this.adapter = (ContactsAdapter) adapter;
     }
