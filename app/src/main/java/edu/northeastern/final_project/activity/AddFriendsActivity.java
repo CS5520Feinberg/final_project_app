@@ -1,7 +1,11 @@
 package edu.northeastern.final_project.activity;
+import android.app.Dialog;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 
@@ -12,13 +16,18 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 import edu.northeastern.final_project.R;
 import edu.northeastern.final_project.adapter.ContactsAdapter;
 import edu.northeastern.final_project.backgroundThreadClass.GetContactsThread;
+import edu.northeastern.final_project.backgroundThreadClass.SearchPhoneNumberThread;
+import edu.northeastern.final_project.validation.GenericStringValidation;
 
 public class AddFriendsActivity extends AppCompatActivity {
     RecyclerView contactsRV;
@@ -42,7 +51,23 @@ public class AddFriendsActivity extends AppCompatActivity {
 
 
     }
+    public void launch_search(View view){
+        //startSearchThread
+        TextInputLayout textInputLayout = findViewById(R.id.search_box_input_layout);
 
+        EditText editText = textInputLayout.getEditText();
+        Log.d("Search_Input",""+editText.getText());
+        String pattern_regex = "^[1-9]{1}[0-9]{9}";
+        Pattern pattern = Pattern.compile(pattern_regex) ;
+
+        if(new GenericStringValidation<Pattern>(pattern).validateString(editText.getText().toString())){
+            new SearchPhoneNumberThread(this,editText.getText().toString()).execute();
+
+        }else{
+            Toast.makeText(this,"only ten digit phone number is allowed",Toast.LENGTH_SHORT).show();
+        }
+
+    }
     private void setView() {
         add_friends_RV = findViewById(R.id.recycler_view_add_friends);
         contactsRV = findViewById(R.id.recycler_view_invite_friends);
@@ -51,7 +76,7 @@ public class AddFriendsActivity extends AppCompatActivity {
         contactsRV.setLayoutManager(new LinearLayoutManager(this));
 
         contactsAdapter = new ContactsAdapter(new ArrayList<>(), this,"Invite");
-        ContactsAdapter add_friends_adapter = new ContactsAdapter(new ArrayList<>(),this,"Add");
+        ContactsAdapter add_friends_adapter = new ContactsAdapter(new ArrayList<>(),this,"Follow");
         contactsRV.setAdapter(contactsAdapter);
         add_friends_RV.setAdapter(add_friends_adapter);
         new GetContactsThread(this,contactsRV, add_friends_RV,contactsAdapter,add_friends_adapter).execute();

@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "271132563463",
+    "firebase_url": "https://db-testing-page-default-rtdb.firebaseio.com",
     "project_id": "db-testing-page",
     "storage_bucket": "db-testing-page.appspot.com"
   },

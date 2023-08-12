@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import edu.northeastern.final_project.R;
+import edu.northeastern.final_project.backgroundThreadClass.AddFollowingDataToFirebase;
+import edu.northeastern.final_project.backgroundThreadClass.DownloadImageThread;
 import edu.northeastern.final_project.entity.Contact;
 import edu.northeastern.final_project.viewHolder.ContactsViewHolder;
 
@@ -40,6 +42,19 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsViewHolder> {
     public void onBindViewHolder(@NonNull ContactsViewHolder holder, int position) {
         holder.contact_name.setText(contacts.get(position).getName());
         holder.action_on_contact.setText(action);
+        if(action.equals("Follow")){
+            if(contacts.get(position).getImage_uri()!=null){
+                new DownloadImageThread(contacts.get(position).getImage_uri(),holder.imageView).execute();
+            }else{
+                holder.imageView.setImageResource(R.drawable.default_face_image_contacts);
+                //set default image avatar
+            }
+        }else{
+            holder.imageView.setImageResource(R.drawable.blank_face_invite_contacts);
+            //invite set default
+        }
+
+
     }
 
     @Override
@@ -54,13 +69,15 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsViewHolder> {
     public void deletePosition(int position){
         Contact contact = contacts.get(position);
         // TODO: 8/8/23
-        //get current user
-        //add to its following list
-        //followed contact follower list should get the user
 
-        contacts.remove(position);
-        notifyDataSetChanged();
-        Toast.makeText(context,"Started Following",Toast.LENGTH_SHORT).show();
+        if(action.equals("Follow")){
+            String following_contact_number = contact.getPhone_number();
+//            contacts.remove(position);
+//            notifyDataSetChanged();
+//            Toast.makeText(context,"Started Following",Toast.LENGTH_SHORT).show();
+            new AddFollowingDataToFirebase(following_contact_number,this,contacts,position,context).execute();
+        }
+
     }
 
 }
