@@ -3,9 +3,12 @@ package edu.northeastern.final_project;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -13,6 +16,8 @@ import android.widget.Toast;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.concurrent.TimeUnit;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -28,6 +33,8 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
+        scheduler();
 
         settingsButton = findViewById(R.id.SettingsButtonProfile);
         addDailyIntakeBtn = findViewById(R.id.AddDailyIntakeBtn);
@@ -71,5 +78,11 @@ public class ProfileActivity extends AppCompatActivity {
                     }
                 });
         tabLayoutMediator.attach();
+    }
+
+    private void scheduler() {
+        PeriodicWorkRequest notificationWorkRequest = new PeriodicWorkRequest.Builder(NotificationWorker.class, 60, TimeUnit.SECONDS).build();
+        WorkManager.getInstance(this).enqueue(notificationWorkRequest);
+        Log.d("Schedule", "Worker scheduled");
     }
 }
