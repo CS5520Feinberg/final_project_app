@@ -72,10 +72,10 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsViewHolder> {
 
         if(action.equals("Follow")){
             String following_contact_number = contact.getPhone_number();
-//            contacts.remove(position);
-//            notifyDataSetChanged();
-//            Toast.makeText(context,"Started Following",Toast.LENGTH_SHORT).show();
-            new AddFollowingDataToFirebase(following_contact_number,this,contacts,position,context).execute();
+            contacts.remove(position);
+            notifyDataSetChanged();
+            Toast.makeText(context,"Started Following",Toast.LENGTH_SHORT).show();
+            new AddFollowingDataToFirebase(following_contact_number).execute();
         }
 
     }

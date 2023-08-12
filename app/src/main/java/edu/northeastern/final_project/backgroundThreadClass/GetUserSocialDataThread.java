@@ -5,6 +5,8 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.concurrent.CountDownLatch;
+
 import edu.northeastern.final_project.R;
 import edu.northeastern.final_project.activity.SocialMediaActivity;
 import edu.northeastern.final_project.dbConnectionHelpers.RealTimeDbConnectionService;
@@ -17,34 +19,41 @@ public class GetUserSocialDataThread extends GenericAsyncClassThreads<Void,Void,
     TextView followers_number ;
     TextView following_number;
     ImageView imageView;
-    Contact user;
 
 
 
-    public GetUserSocialDataThread(SocialMediaActivity context, TextView profileName, TextView following_number, TextView followers_number, ImageView imageView, Contact user) {
+
+    public GetUserSocialDataThread(SocialMediaActivity context, TextView profileName, TextView following_number, TextView followers_number, ImageView imageView) {
         this.context = context;
         this.profileName = profileName;
         this.following_number = following_number;
         this.followers_number = followers_number;
         this.imageView = imageView;
-        this.user = user;
+
     }
 
     @Override
     protected Contact doInBackground(Void... voids) {
+        CountDownLatch latch = new CountDownLatch(1);
 
              new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
                  @Override
                  public void onSuccess(Contact contact) {
+                     latch.countDown();
                      onPostExecute(contact);
                  }
 
                  @Override
                  public void onError(String message) {
+                     latch.countDown();
                     onPostExecute(null);
                  }
              });
-
+        try{
+            latch.await();
+        }catch (InterruptedException ex){
+            Log.d("Error",ex.getMessage());
+        }
 
         return null;
 
@@ -75,7 +84,7 @@ public class GetUserSocialDataThread extends GenericAsyncClassThreads<Void,Void,
             }else{
                 new DownloadImageThread(contact.getImage_uri(),imageView).execute();
             }
-            this.user = contact;
+
         }
 
     }

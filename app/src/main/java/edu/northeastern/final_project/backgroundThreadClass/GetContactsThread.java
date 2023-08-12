@@ -12,6 +12,7 @@ import java.util.concurrent.CountDownLatch;
 import edu.northeastern.final_project.adapter.ContactsAdapter;
 import edu.northeastern.final_project.dbConnectionHelpers.RealTimeDbConnectionService;
 import edu.northeastern.final_project.entity.Contact;
+import edu.northeastern.final_project.interfaces.UserDataFetchedCallback;
 
 
 public class GetContactsThread  extends GenericAsyncClassThreads<Void,Void,List<List<Contact>>> {
@@ -62,11 +63,30 @@ public class GetContactsThread  extends GenericAsyncClassThreads<Void,Void,List<
 
        for(Contact contact : contacts){
            if(registered_user.contains(contact.getPhone_number())){
+               Log.d("Inside","inside-log");
                add_friends_list.add(new RealTimeDbConnectionService().fetchContactDetails(contact.getPhone_number()));
            }else{
                contacts_not_registered.add(contact);
            }
        }
+       //remove already followed contacts from list
+        new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
+            @Override
+            public void onSuccess(Contact contact) {
+                List<String> following = contact.getFollowing();
+                if(following!=null){
+                    add_friends_list.removeAll(following);
+                    add_friends_list.remove(contact.getPhone_number());
+                }else{
+                    add_friends_list.remove(contact.getPhone_number());
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+                Log.d("Error",message);
+            }
+        });
         return add_friends_list;
     }
 

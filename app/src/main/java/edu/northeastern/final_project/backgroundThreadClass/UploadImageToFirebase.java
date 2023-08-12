@@ -14,49 +14,59 @@ import com.google.firebase.storage.UploadTask;
 
 import edu.northeastern.final_project.Constants;
 import edu.northeastern.final_project.dbConnectionHelpers.RealTimeDbConnectionService;
-import edu.northeastern.final_project.entity.Contact;
 import edu.northeastern.final_project.interfaces.PhoneNumberFetchedCallback;
 
 public class UploadImageToFirebase extends GenericAsyncClassThreads<Void,Void,Boolean> {
-    Contact user;
     Context context;
     Uri imageUri;
 
 
-    public UploadImageToFirebase(Uri imageUri,Context context,Contact user ) {
+    public UploadImageToFirebase(Uri imageUri,Context context) {
         this.context = context;
         this.imageUri = imageUri;
-        this.user = user;
 
     }
 
     @Override
     protected Boolean doInBackground(Void... voids) {
+
+        try {
+             new RealTimeDbConnectionService().getPhoneNumberFromDatabase(new Constants().getUid(), new PhoneNumberFetchedCallback() {
+                @Override
+                public void onPhoneNumberFetched(String phoneNumber) {
                     StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-                    StorageReference profileImageRef = storageRef.child("user_profiles/" + user.getPhone_number() + "/profile_image.jpg");
+                    StorageReference profileImageRef = storageRef.child("user_profiles/" + phoneNumber + "/profile_image.jpg");
                     UploadTask uploadTask = profileImageRef.putFile(imageUri);
                     uploadTask.addOnSuccessListener(taskSnapshot -> {
+                        Log.d("UploadTask","Image uploaded successfully");
                         // Image uploaded successfully
                         // Get the download URL
                         profileImageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                             String imageUrl = uri.toString();
                             // Store the image URL in the Realtime Database or Firestore
-                            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("socialmedia").child(user.getPhone_number());
+                            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("socialmedia").child(phoneNumber);
                             userRef.child("image_uri").setValue(imageUrl);
-                            onPostExecute(true);
                         });
                     }).addOnFailureListener(e -> {
-                        Log.d("Error",e.getMessage());
-                        onPostExecute(false);
+                        Log.d("Failure","Image not uploaded");
                     });
+                }
 
-                    return null;
-
+                @Override
+                public void onError(Exception ex) {
+                    Log.d("Error",ex.getMessage());
+                }
+            });
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
-
-
+    @Override
     protected void onPostExecute(Boolean isSuccess) {
+        super.onPostExecute(isSuccess);
         if (isSuccess) {
             // Image upload was successful
             Toast.makeText(context, "Image uploaded successfully", Toast.LENGTH_SHORT).show();

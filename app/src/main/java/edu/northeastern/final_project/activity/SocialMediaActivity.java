@@ -22,7 +22,6 @@ import edu.northeastern.final_project.backgroundThreadClass.UploadImageToFirebas
 import edu.northeastern.final_project.entity.Contact;
 
 public class SocialMediaActivity extends AppCompatActivity {
-    Contact user = null;
     private static final int REQUEST_PERMISSION_CODE = 1;
     ActivityResultLauncher<Intent> imagePickerLauncher;
 
@@ -40,7 +39,7 @@ public class SocialMediaActivity extends AppCompatActivity {
                     // Use the imageUri to do further processing (e.g., display the selected image).
                     imageView.setImageURI(imageUri);
                     //upload image to firebase storage
-                    new UploadImageToFirebase(imageUri,this,user).execute();
+                    new UploadImageToFirebase(imageUri,this).execute();
                 }
             }
         });
@@ -67,7 +66,7 @@ public class SocialMediaActivity extends AppCompatActivity {
     }
 
     private void getUserProfileData(TextView profileName, TextView following_number, TextView followers_number, ImageView imageView) {
-        new GetUserSocialDataThread(this,profileName,following_number,followers_number,imageView,user).execute();
+        new GetUserSocialDataThread(this,profileName,following_number,followers_number,imageView).execute();
     }
     public void upload_image(View view){
         if (hasPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
