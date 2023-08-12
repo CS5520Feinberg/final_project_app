@@ -1,5 +1,4 @@
 package edu.northeastern.final_project.backgroundThreadClass;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 
@@ -16,7 +15,6 @@ import edu.northeastern.final_project.entity.Contact;
 
 
 public class GetContactsThread  extends GenericAsyncClassThreads<Void,Void,List<List<Contact>>> {
-
     Context context;
     private RecyclerView contactsRV;
     ContactsAdapter contactsAdapter;
@@ -64,7 +62,7 @@ public class GetContactsThread  extends GenericAsyncClassThreads<Void,Void,List<
 
        for(Contact contact : contacts){
            if(registered_user.contains(contact.getPhone_number())){
-               add_friends_list.add(contact);
+               add_friends_list.add(new RealTimeDbConnectionService().fetchContactDetails(contact.getPhone_number()));
            }else{
                contacts_not_registered.add(contact);
            }

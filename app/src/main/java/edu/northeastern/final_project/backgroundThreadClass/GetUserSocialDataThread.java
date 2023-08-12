@@ -17,15 +17,17 @@ public class GetUserSocialDataThread extends GenericAsyncClassThreads<Void,Void,
     TextView followers_number ;
     TextView following_number;
     ImageView imageView;
+    Contact user;
 
 
 
-    public GetUserSocialDataThread(SocialMediaActivity context, TextView profileName, TextView following_number, TextView followers_number, ImageView imageView) {
+    public GetUserSocialDataThread(SocialMediaActivity context, TextView profileName, TextView following_number, TextView followers_number, ImageView imageView, Contact user) {
         this.context = context;
         this.profileName = profileName;
         this.following_number = following_number;
         this.followers_number = followers_number;
         this.imageView = imageView;
+        this.user = user;
     }
 
     @Override
@@ -73,7 +75,7 @@ public class GetUserSocialDataThread extends GenericAsyncClassThreads<Void,Void,
             }else{
                 new DownloadImageThread(contact.getImage_uri(),imageView).execute();
             }
-
+            this.user = contact;
         }
 
     }

@@ -6,10 +6,13 @@ import android.util.Log;
 import android.widget.ImageView;
 
 
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 
 public class DownloadImageThread extends GenericAsyncClassThreads<Void,Void, Bitmap> {
     String imageUri;
@@ -26,31 +29,26 @@ public class DownloadImageThread extends GenericAsyncClassThreads<Void,Void, Bit
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReferenceFromUrl(imageUri);
 
-            final CountDownLatch latch = new CountDownLatch(1);
-
             // Download the image from Firebase Storage
-            storageRef.getBytes(Long.MAX_VALUE)
-                    .addOnSuccessListener(bytes -> {
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        onPostExecute(bitmap); // Call onPostExecute with the downloaded bitmap
-                        latch.countDown(); // Signal that the task is complete
-                    })
-                    .addOnFailureListener(e -> {
-                        e.printStackTrace();
-                        onPostExecute(null); // Call onPostExecute with null to indicate failure
-                        latch.countDown(); // Signal that the task is complete
-                    });
+            Task<byte[]> downloadTask = storageRef.getBytes(Long.MAX_VALUE);
 
-            // Wait for the latch to count down
-            latch.await();
-
-            // Return null, as the result is already handled in the callbacks
-            return null;
+            try {
+                byte[] bytes = Tasks.await(downloadTask); // Wait for the download task to complete
+                if (bytes != null && bytes.length > 0) {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    return bitmap;
+                }
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
+
+        return null; // Return null in case of failure
     }
+
+
 
 
     @Override
