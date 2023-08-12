@@ -58,37 +58,71 @@ public class GetContactsThread  extends GenericAsyncClassThreads<Void,Void,List<
     }
 
     private List<Contact> filter_contacts(List<Contact> contacts, Set<String> registered_user) {
-        Log.d("FilterContactsMethod",""+registered_user);
-       List<Contact> add_friends_list = new ArrayList<>();
+        Log.d("FilterContactsMethod", "" + registered_user);
+        List<Contact> add_friends_list = new ArrayList<>();
 
-       for(Contact contact : contacts){
-           if(registered_user.contains(contact.getPhone_number())){
-               Log.d("Inside","inside-log");
-               add_friends_list.add(new RealTimeDbConnectionService().fetchContactDetails(contact.getPhone_number()));
-           }else{
-               contacts_not_registered.add(contact);
-           }
-       }
-       //remove already followed contacts from list
+
+
+        // Use a separate latch for synchronization
+        CountDownLatch latch = new CountDownLatch(1);
+
         new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
             @Override
             public void onSuccess(Contact contact) {
                 List<String> following = contact.getFollowing();
-                if(following!=null){
-                    add_friends_list.removeAll(following);
-                    add_friends_list.remove(contact.getPhone_number());
-                }else{
-                    add_friends_list.remove(contact.getPhone_number());
+                Log.d("Got_User_DATA",""+contact);
+                if (following != null) {
+                    synchronized (registered_user) {
+                        registered_user.removeAll(following);
+                        registered_user.remove(contact.getPhone_number());
+                    }
+                    synchronized (contacts){
+                        contacts.removeAll(following);
+                        contacts.remove(contact.getPhone_number());
+                    }
+                } else {
+                    synchronized (registered_user) {
+
+                        registered_user.remove(contact.getPhone_number());
+                    }
+                    synchronized (contacts){
+                        contacts.remove(contact.getPhone_number());
+                    }
                 }
+
+                latch.countDown();
             }
 
             @Override
             public void onError(String message) {
-                Log.d("Error",message);
+                Log.d("Error", message);
+                latch.countDown();
             }
         });
-        return add_friends_list;
+
+        try {
+            latch.await();
+            synchronized (add_friends_list) {
+                for (Contact contact : contacts) {
+                    if (registered_user.contains(contact.getPhone_number())) {
+                        Log.d("Inside", "inside-log");
+                        add_friends_list.add(new RealTimeDbConnectionService().fetchContactDetails(contact.getPhone_number()));
+                    } else {
+                        contacts_not_registered.add(contact);
+                    }
+                }
+
+            }
+        } catch (InterruptedException ex) {
+            // Handle the exception appropriately
+        }
+
+        // Return a copy of the filtered list to prevent modification during iteration
+        synchronized (add_friends_list) {
+            return new ArrayList<>(add_friends_list);
+        }
     }
+//
 
     protected void onPostExecute(List<List<Contact>> contacts) {
         super.onPostExecute(contacts);
