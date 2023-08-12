@@ -76,8 +76,6 @@ public class MainActivity extends AppCompatActivity {
             //ask for permission
             requestPermissions(new String[]{permission.ACTIVITY_RECOGNITION}, 0);
         }
-        FDAKeywordQuery kwQuery = new FDAKeywordQuery("chicken breast");
-        kwQuery.search();
     }
 
 }

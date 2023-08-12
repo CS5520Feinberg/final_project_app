@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.concurrent.TimeUnit;
 
@@ -34,7 +35,19 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+
         scheduler();
+
+        // Syncing remote DB to local DB
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            Log.e("ProfileActivity", "No user found!");
+        }
+        String uid = currentUser.getUid();
+        DBHandler dbHandler = new DBHandler(ProfileActivity.this, uid);
+        dbHandler.sync();
+
 
         settingsButton = findViewById(R.id.SettingsButtonProfile);
         addDailyIntakeBtn = findViewById(R.id.AddDailyIntakeBtn);
