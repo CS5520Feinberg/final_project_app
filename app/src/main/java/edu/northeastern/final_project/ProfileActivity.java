@@ -34,7 +34,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        scheduler();
+
 
         settingsButton = findViewById(R.id.SettingsButtonProfile);
         addDailyIntakeBtn = findViewById(R.id.AddDailyIntakeBtn);
@@ -78,6 +78,8 @@ public class ProfileActivity extends AppCompatActivity {
                     }
                 });
         tabLayoutMediator.attach();
+
+        scheduler();
     }
 
     private void scheduler() {
