@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -19,6 +20,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -29,6 +31,8 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -51,11 +55,11 @@ public class DailyIntakeActivity extends AppCompatActivity {
     public ArrayList<Intake> intakeData;
     public float originalPortion, originalCalories, originalProtein, originalCarbs, originalFats;
 
-
     // Testing
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final long DELAY = 300;
     private boolean itemSelected = false;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +85,14 @@ public class DailyIntakeActivity extends AppCompatActivity {
 
         addDailyIntakeBtn = findViewById(R.id.AddDailyBtn);
 
-        dbHandler = new DBHandler(DailyIntakeActivity.this);
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser == null) {
+            Log.e("DailyIntakeActivity", "No user found!");
+        }
+
+        String uid = currentUser.getUid();
+        dbHandler = new DBHandler(DailyIntakeActivity.this, uid);
 
 
         Executor executor = Executors.newSingleThreadExecutor();
@@ -194,12 +205,12 @@ public class DailyIntakeActivity extends AppCompatActivity {
 
 
                 //add toast and set empty strings
-                Toast.makeText(DailyIntakeActivity.this, "Daily intake has been added", Toast.LENGTH_LONG).show();
+/*                Toast.makeText(DailyIntakeActivity.this, "Daily intake has been added", Toast.LENGTH_LONG).show();
                 mealNameEt.setText("");
                 caloriesEt.setText("");
                 proteinEt.setText("");
                 carbsEt.setText("");
-                fatsEt.setText("");
+                fatsEt.setText("");*/
 
                 //read intake from DB and push the data into the firebase
                 intakeData = dbHandler.readIntake();
@@ -208,7 +219,13 @@ public class DailyIntakeActivity extends AppCompatActivity {
 //                if (isOnLine() && intakeData.size()>0) {
 //                    dbHandler.pushFirebase(intakeData);
 //                }
-                dbHandler.pushFirebase(intakeData);
+                //dbHandler.pushFirebase(intakeData);
+
+                Intent intent = new Intent(DailyIntakeActivity.this, ProfileActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+                Toast.makeText(DailyIntakeActivity.this, "Daily intake has been added", Toast.LENGTH_LONG).show();
             }
 
             //check whether the device is online

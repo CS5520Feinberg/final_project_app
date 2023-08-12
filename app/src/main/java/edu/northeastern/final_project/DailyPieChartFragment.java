@@ -3,6 +3,7 @@ package edu.northeastern.final_project;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +14,14 @@ import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +30,10 @@ import java.util.Map;
 public class DailyPieChartFragment extends Fragment {
 
     private PieChart pieChart;
+    private DBHandler dbHandler;
+    private ArrayList<Intake> dailyIntake;
+    private HashMap<String, Float> dailyMacros;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     public DailyPieChartFragment() {
         // Required empty public constructor
@@ -40,9 +50,61 @@ public class DailyPieChartFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         pieChart = view.findViewById(R.id.pieChart_daily);
 
-        /*** TODO: NEED A METHOD TO READ SQLITE DATA AND FEED IT TO THE CHART***/
+        pieChart.setDrawCenterText(true);
+        pieChart.setCenterTextSize(10f);
+        pieChart.setCenterTextColor(Color.BLACK);
+
+        pieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                if (e instanceof PieEntry) {
+                    String label = ((PieEntry) e).getLabel();
+                    Float value = dailyMacros.get(label.toLowerCase());
+                    if (value != null) {
+                        if (label.equals("Calories")) {
+                            pieChart.setCenterText(label + ": " + value + " kcal");
+                        } else {
+                            pieChart.setCenterText(label + ": " + value + " g");
+                        }
+                        pieChart.invalidate();
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected() {
+                pieChart.setCenterText("");
+                pieChart.invalidate();
+            }
+        });
+
         initPieChart();
-        showPieChart();
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser == null) {
+            Log.e("StepCounterActivity", "No user found!");
+        }
+
+        String uid = currentUser.getUid();
+        dbHandler = new DBHandler(getContext(), uid);
+
+        refreshPieChart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        refreshPieChart();
+    }
+
+    private void refreshPieChart() {
+        initPieChart();
+
+        dailyIntake = dbHandler.readDailyIntake();
+        dailyMacros = dbHandler.getDailyMacros(dailyIntake);
+        showPieChart(dailyMacros);
     }
 
 
@@ -72,29 +134,35 @@ public class DailyPieChartFragment extends Fragment {
         pieChart.setHoleColor(Color.parseColor("#FFFFFF"));
     }
 
-    private void showPieChart() {
+    private void showPieChart(HashMap<String, Float> macrosMap) {
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
         String label = "type";
 
         //initializing data
-        Map<String, Integer> typeAmountMap = new HashMap<>();
+        Map<String, Float> typeAmountMap = new HashMap<>();
 
         /*** TODO: change the data into firebase type data ***/
-        typeAmountMap.put("Carbs", 1000);
-        typeAmountMap.put("Protein", 500);
-        typeAmountMap.put("Fat", 250);
-        typeAmountMap.put("Fiber", 125);
+        typeAmountMap.put("Carbs", macrosMap.get("carbs"));
+        typeAmountMap.put("Protein", macrosMap.get("protein"));
+        typeAmountMap.put("Fats", macrosMap.get("fats"));
+        typeAmountMap.put("Calories", macrosMap.get("calories"));
+
+        //Log.d("DailyPieChartFragment", "carbs: " + typeAmountMap.get("Carbs"));
+        //Log.d("DailyPieChartFragment", "protein: " + typeAmountMap.get("Protein"));
+        //Log.d("DailyPieChartFragment", "fats: " + typeAmountMap.get("Fat"));
+        //Log.d("DailyPieChartFragment", "calories: " + typeAmountMap.get("Calories"));
 
         //initialing color
         ArrayList<Integer> colors = new ArrayList<>();
-        colors.add(Color.parseColor("#d63c31")); // carbs
-        colors.add(Color.parseColor("#285ded")); // protein
-        colors.add(Color.parseColor("#9128ed")); // macros
-        colors.add(Color.parseColor("#79db37")); // fibers
+        colors.add(Color.parseColor("#fd0085")); // carbs
+        colors.add(Color.parseColor("#ffbf7b")); // fats
+        colors.add(Color.parseColor("#9128ed")); // protein
+        colors.add(Color.parseColor("#F44336")); // cals
 
         //input data and fit data int to pie chart entry
         for (String type: typeAmountMap.keySet()) {
-            pieEntries.add(new PieEntry(typeAmountMap.get(type).floatValue(), type));
+            pieEntries.add(new PieEntry(typeAmountMap.get(type), type));
+            //Log.d("DailyPieChartFragment", String.valueOf(typeAmountMap.get(type).floatValue()));
         }
 
         //collecting the entries with label name
@@ -109,6 +177,7 @@ public class DailyPieChartFragment extends Fragment {
         pieData.setDrawValues(true);
 
         pieChart.setData(pieData);
+        pieChart.notifyDataSetChanged();
         pieChart.invalidate();
     }
 }
