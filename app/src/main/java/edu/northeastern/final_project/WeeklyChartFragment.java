@@ -24,6 +24,8 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -35,6 +37,7 @@ public class WeeklyChartFragment extends Fragment {
 
     private Random rand = new Random();
     private DBHandler dbHandler;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     public WeeklyChartFragment() {
         // Required empty public constructor
@@ -51,7 +54,14 @@ public class WeeklyChartFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         chart = view.findViewById(R.id.weeklyCombinedChart);
-        dbHandler = new DBHandler(getContext());
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser == null) {
+            Log.e("SettingsActivity", "No user found!");
+        }
+
+        String uid = currentUser.getUid();
+        dbHandler = new DBHandler(getContext(), uid);
 
         setupChart();
     }

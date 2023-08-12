@@ -31,6 +31,8 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -57,6 +59,7 @@ public class DailyIntakeActivity extends AppCompatActivity {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final long DELAY = 300;
     private boolean itemSelected = false;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +85,14 @@ public class DailyIntakeActivity extends AppCompatActivity {
 
         addDailyIntakeBtn = findViewById(R.id.AddDailyBtn);
 
-        dbHandler = new DBHandler(DailyIntakeActivity.this);
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser == null) {
+            Log.e("DailyIntakeActivity", "No user found!");
+        }
+
+        String uid = currentUser.getUid();
+        dbHandler = new DBHandler(DailyIntakeActivity.this, uid);
 
 
         Executor executor = Executors.newSingleThreadExecutor();

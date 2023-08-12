@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -25,6 +26,7 @@ public class SettingsActivity extends AppCompatActivity {
     private Button logoutBtn, doneBtn, deleteAccBtn, changePasswordBtn;
     private Switch notificationSwitch, darkModeSwitch;
     private TextInputEditText weeklyDailyGoal;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +41,14 @@ public class SettingsActivity extends AppCompatActivity {
         darkModeSwitch = findViewById(R.id.darkModeSwitch);
         weeklyDailyGoal = findViewById(R.id.weeklyDailyGoalTIET);
 
-        DBHandler dbHandler = new DBHandler(SettingsActivity.this);
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser == null) {
+            Log.e("SettingsActivity", "No user found!");
+        }
+
+        String uid = currentUser.getUid();
+        DBHandler dbHandler = new DBHandler(SettingsActivity.this, uid);
         Integer goal = dbHandler.readWeeklyDailyGoal();
         weeklyDailyGoal.setText(String.valueOf(goal));
 
