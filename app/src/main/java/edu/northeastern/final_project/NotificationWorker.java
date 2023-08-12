@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -14,6 +15,11 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import java.util.HashMap;
 
 public class NotificationWorker extends Worker {
 
@@ -26,8 +32,18 @@ public class NotificationWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        createNotificationChannel(getApplicationContext());
-        showBasicNotification(getApplicationContext());
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        DBHandler dbHandler = new DBHandler(getApplicationContext(), firebaseUser.getUid());
+        HashMap<String, Integer> hmap = dbHandler.getDailySteps();
+        String todaysDate = DateUtils.getTodaysDate();
+        Log.d("HEREEEE", hmap.get(todaysDate) + "dsvneono");
+        Log.d("HEREEEE", dbHandler.readWeeklyDailyGoal() + "dsvneono");
+
+        if (dbHandler.readWeeklyDailyGoal() > 0 && hmap.get(todaysDate) >= dbHandler.readWeeklyDailyGoal()) {
+            createNotificationChannel(getApplicationContext());
+            showBasicNotification(getApplicationContext());
+        }
 
         return Result.success();
     }
