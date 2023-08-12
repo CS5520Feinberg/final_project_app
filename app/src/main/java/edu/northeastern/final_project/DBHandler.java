@@ -21,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class DBHandler extends SQLiteOpenHelper{
 
@@ -81,7 +82,8 @@ public class DBHandler extends SQLiteOpenHelper{
         String query_steps = "CREATE TABLE " + STEP_TABLE_NAME + " ("
                 + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + STEPS + " TEXT, "
-                + MODIFIED_TIME + " TEXT)";
+                + MODIFIED_TIME + " TEXT, "
+                + FLAG + " TEXT)";
         Log.d("Table create SQL",  "CREATE_STEP_TABLE");
         db.execSQL(query_steps);
 
@@ -152,7 +154,7 @@ public class DBHandler extends SQLiteOpenHelper{
         values.put(CARBS, addIntake.carbs);
         values.put(FATS, addIntake.fats);
         values.put(MODIFIED_TIME, addIntake.timestamp);
-        values.put(FLAG, addIntake.isCouldSynced);
+        values.put(FLAG, addIntake.isCloudSynced);
 
         db.insert(TABLE_NAME, null, values);
         db.close();
@@ -273,60 +275,69 @@ public class DBHandler extends SQLiteOpenHelper{
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedTime = gmt.format(formatter);
         Log.d("dbHandler", "Writing " + numSteps + " steps to DB at " + formattedTime);
+        Log.d("dbHandler", "Total steps: " + getDailySteps());
 
-        writeCustomSteps(formattedTime, numSteps);
+        StepHolder steps = new StepHolder(numSteps, formattedTime, "0");
+
+        writeCustomSteps(steps);
         uploadStepsFirebase();
     }
 
-    private void writeCustomSteps(String formattedTime, int numSteps) {
+    private void writeCustomSteps(StepHolder steps) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put(STEPS, numSteps);
-        values.put(MODIFIED_TIME, formattedTime);
+        values.put(STEPS, steps.steps);
+        values.put(MODIFIED_TIME, steps.timestamp);
+        values.put(FLAG, steps.isCloudSynced);
 
         db.insert(STEP_TABLE_NAME, null, values);
         db.close();
     }
 
-    public HashMap<String, Integer> readSteps() {
+    public ArrayList<StepHolder> readSteps() {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursorIntake = db.rawQuery("SELECT * FROM "+ STEP_TABLE_NAME, null);
-        HashMap<String, Integer> steps = new HashMap<>();
+        Cursor cursorSteps = db.rawQuery("SELECT * FROM "+ STEP_TABLE_NAME, null);
+        ArrayList<StepHolder> steps = new ArrayList<>();
 
-        if (cursorIntake.moveToFirst()) {
+        if (cursorSteps.moveToFirst()) {
             do {
-                int curSteps = cursorIntake.getInt(1);
-                String timestampString = cursorIntake.getString(2);
+                int curSteps = cursorSteps.getInt(1);
+                String timestampString = cursorSteps.getString(2);
+                String isCloudSynced = cursorSteps.getString(3);
+                StepHolder iterSteps = new StepHolder(curSteps, timestampString, isCloudSynced);
 
-                steps.put(timestampString, curSteps);
-            } while (cursorIntake.moveToNext());
+                steps.add(iterSteps);
+            } while (cursorSteps.moveToNext());
         }
+
+        cursorSteps.close();
         return steps;
     }
 
     public HashMap<String, Integer> getDailySteps() {
         HashMap<String, Integer> dailySteps = new HashMap<>();
-        HashMap<String, Integer> allSteps = readSteps();
+        ArrayList<StepHolder> allSteps = readSteps();
 
-        for (Map.Entry<String, Integer> allStepsEntry : allSteps.entrySet()) {
-            String date = allStepsEntry.getKey();
-            int curSteps = allStepsEntry.getValue();
+        for (int i = 0; i < allSteps.size(); i++) {
+            StepHolder iterStep = allSteps.get(i);
+            String date = iterStep.timestamp;
+            int curSteps = iterStep.steps;
+
             // Log.d("getDailySteps", "DB Steps: (" + date + ": " + curSteps + ")");
             String datePart = date.split(" ")[0];
 
             if (dailySteps.containsKey(datePart)) {
                 int daySteps = dailySteps.get(datePart);
-                Log.d("getDailySteps", datePart + " Loaded: " + daySteps);
+                // Log.d("getDailySteps", datePart + " Loaded: " + daySteps);
                 daySteps += curSteps;
-                Log.d("getDailySteps", datePart + " Updated: " + daySteps);
+                // Log.d("getDailySteps", datePart + " Updated: " + daySteps);
                 dailySteps.put(datePart, daySteps);
             } else {
                 dailySteps.put(datePart, curSteps);
             }
 
         }
-
         return dailySteps;
     }
 
@@ -353,13 +364,6 @@ public class DBHandler extends SQLiteOpenHelper{
             mDatabase.child("users").child(targetUserId).child("DailyIntake").child("DETAILS").addListenerForSingleValueEvent(stepListener);
         }
     }
-    public void uploadIntakeFirebase() {
-        ArrayList<Intake> intakeDataList = readIntake();
-
-        for (Intake intakeData : intakeDataList) {
-            mDatabase.child("users").child(targetUserId).child("DailyIntake").child("DETAILS").child(intakeData.timestamp).setValue(intakeData);
-        }
-    }
 
     class syncStepsFirebase implements Runnable {
         @Override
@@ -370,11 +374,9 @@ public class DBHandler extends SQLiteOpenHelper{
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Log.d("syncStepsFirebase", "Received Data");
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        String time = snapshot.getKey();
-                        long rawSteps = (long) snapshot.getValue();
-                        int steps = Math.toIntExact(rawSteps);
+                        StepHolder iterSteps = snapshot.getValue(StepHolder.class);
                         // Log.d("syncStepsFirebase", "Time: " + time + " Steps: " + steps);
-                        writeCustomSteps(time, steps);
+                        writeCustomSteps(iterSteps);
                     }
                 }
 
@@ -388,15 +390,80 @@ public class DBHandler extends SQLiteOpenHelper{
     }
 
     public void uploadStepsFirebase() {
-        HashMap<String, Integer> allSteps = readSteps();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursorSteps = db.rawQuery("SELECT * FROM "+ STEP_TABLE_NAME, null);
+        ArrayList<StepHolder> steps = new ArrayList<>();
 
-        for (Map.Entry<String, Integer> allStepsEntry : allSteps.entrySet()) {
-            String date = allStepsEntry.getKey();
-            int curSteps = allStepsEntry.getValue();
-            mDatabase.child("users").child(targetUserId).child("Steps").child(date).setValue(curSteps);
+        if (cursorSteps.moveToFirst()) {
+            do {
+                int id = cursorSteps.getInt(0);
+                StepHolder iterStep = new StepHolder(cursorSteps.getInt(1),
+                        cursorSteps.getString(2),
+                        cursorSteps.getString(3));
+
+                if (Objects.equals(iterStep.isCloudSynced, "0")) {
+                    iterStep.setCloudSynced();
+                    mDatabase.child("users").child(targetUserId).child("Steps").push().setValue(iterStep);
+
+                    ContentValues values = new ContentValues();
+                    values.put(STEPS, iterStep.steps);
+                    values.put(MODIFIED_TIME, iterStep.timestamp);
+                    values.put(FLAG, iterStep.isCloudSynced);
+
+                    db.update(STEP_TABLE_NAME, values, ID_COL + " = ?", new String[]{String.valueOf(id)});
+                }
+            } while (cursorSteps.moveToNext());
         }
+
+        cursorSteps.close();
     }
 
+    public void uploadIntakeFirebase() {
+        ArrayList<Intake> intakeDataList = readIntake();
+
+        for (Intake intakeData : intakeDataList) {
+            if (intakeData.isCloudSynced == "0") {
+                intakeData.setCloudSynced();
+                mDatabase.child("users").child(targetUserId).child("DailyIntake").child("DETAILS").push().setValue(intakeData);
+            }
+        }
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursorIntake = db.rawQuery("SELECT * FROM "+ TABLE_NAME, null);
+
+        if (cursorIntake.moveToFirst()) {
+            do {
+                int id = cursorIntake.getInt(0);
+                Intake iterIntake = new Intake(cursorIntake.getString(1),
+                        cursorIntake.getString(2),
+                        cursorIntake.getString(3),
+                        cursorIntake.getString(4),
+                        cursorIntake.getString(5),
+                        cursorIntake.getString(6),
+                        cursorIntake.getString(7),
+                        cursorIntake.getString(8));
+
+                if (Objects.equals(iterIntake.isCloudSynced, "0")) {
+                    iterIntake.setCloudSynced();
+                    mDatabase.child("users").child(targetUserId).child("DailyIntake").child("DETAILS").push().setValue(iterIntake);
+
+                    ContentValues values = new ContentValues();
+                    values.put(MEAL_TYPE, iterIntake.mealType);
+                    values.put(MEAL_NAME, iterIntake.mealName);
+                    values.put(CALORIES, iterIntake.calories);
+                    values.put(PROTEIN, iterIntake.protein);
+                    values.put(CARBS, iterIntake.carbs);
+                    values.put(FATS, iterIntake.fats);
+                    values.put(MODIFIED_TIME, iterIntake.timestamp);
+                    values.put(FLAG, iterIntake.isCloudSynced);
+
+                    db.update(TABLE_NAME, values, ID_COL + " = ?", new String[]{String.valueOf(id)});
+                }
+            } while (cursorIntake.moveToNext());
+        }
+
+        cursorIntake.close();
+    }
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion ){
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
