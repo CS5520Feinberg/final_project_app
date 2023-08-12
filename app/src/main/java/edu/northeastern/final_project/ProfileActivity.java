@@ -36,8 +36,6 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
 
 
-        scheduler();
-
         // Syncing remote DB to local DB
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -91,6 +89,8 @@ public class ProfileActivity extends AppCompatActivity {
                     }
                 });
         tabLayoutMediator.attach();
+
+        scheduler();
     }
 
     private void scheduler() {
