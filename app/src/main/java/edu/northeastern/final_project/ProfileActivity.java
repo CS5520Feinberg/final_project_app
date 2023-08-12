@@ -6,6 +6,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -28,6 +30,16 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
+        // Syncing remote DB to local DB
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            Log.e("ProfileActivity", "No user found!");
+        }
+        String uid = currentUser.getUid();
+        DBHandler dbHandler = new DBHandler(ProfileActivity.this, uid);
+        dbHandler.sync();
 
         settingsButton = findViewById(R.id.SettingsButtonProfile);
         addDailyIntakeBtn = findViewById(R.id.AddDailyIntakeBtn);
