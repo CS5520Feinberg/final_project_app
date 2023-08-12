@@ -7,6 +7,8 @@
     <uses-feature
         android:name="android.hardware.sensor.accelerometer"
         android:required="true" /> <!-- add SQLlite DB for the app -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- access internet for data storage -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" /> <!-- Permission to access contacts -->
