@@ -6,6 +6,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -13,6 +14,8 @@ import android.widget.Toast;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
+
+import edu.northeastern.final_project.activity.SocialMediaActivity;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -71,5 +74,9 @@ public class ProfileActivity extends AppCompatActivity {
                     }
                 });
         tabLayoutMediator.attach();
+    }
+    public void launch_social_media(View view){
+        Intent intent = new Intent(ProfileActivity.this, SocialMediaActivity.class);
+        startActivity(intent);
     }
 }
