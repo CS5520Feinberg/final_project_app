@@ -32,7 +32,7 @@ public class DBHandler extends SQLiteOpenHelper{
     private static final String MEAL_TYPE = "meal_type";
     private static final String MEAL_NAME = "meal_name";
     private static final String CALORIES = "calories";
-    private static final String PROTEIN = "protein";
+    private static final String PROTEIN = "proteins";
     private static final String CARBS = "carbs";
     private static final String FATS = "fats";
     private static final String MODIFIED_TIME = "modified_time";
