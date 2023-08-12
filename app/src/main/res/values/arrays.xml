@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string-array name="meal_types">
+    <item>Select a meal type...</item>
+    <item>Breakfast</item>
+    <item>Lunch</item>
+    <item>Dinner</item>
+    <item>Snack</item>
+    <item>Dessert</item>
+</string-array>
+
+<string-array name="dietary_preferences">
+    <item>None</item>
+    <item>Vegan</item>
+    <item>Vegetarian</item>
+    <item>Ketogenic</item>
+    <item>Paleo</item>
+    <item>Primal</item>
+    <item>Whole30</item>
+</string-array>
+
+<string-array name="nutrition_needs">
+    <item>None</item>
+    <item>Balanced</item>
+    <item>High-Protein</item>
+    <item>Low-Fat</item>
+    <item>Low-Carb</item>
+</string-array>
+
+<string-array name="cuisine_types">
+    <item>None</item>
+    <item>Italian</item>
+    <item>Chinese</item>
+    <item>Indian</item>
+    <item>Continental</item>
+</string-array>
+
+<string-array name="skill_levels">
+    <item>Beginner</item>
+    <item>Intermediate</item>
+    <item>Advanced</item>
+</string-array>
+</resources>

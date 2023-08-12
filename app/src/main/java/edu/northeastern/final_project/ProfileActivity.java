@@ -19,6 +19,7 @@ public class ProfileActivity extends AppCompatActivity {
     private Button settingsButton;
     private Button addDailyIntakeBtn;
     private ImageButton stepCounterShortcutBtn;
+    private ImageButton recipeGeneratorShortcutBtn;
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
     private ViewPagerProfileAdapter adapter;
@@ -31,6 +32,7 @@ public class ProfileActivity extends AppCompatActivity {
         settingsButton = findViewById(R.id.SettingsButtonProfile);
         addDailyIntakeBtn = findViewById(R.id.AddDailyIntakeBtn);
         stepCounterShortcutBtn = findViewById(R.id.stepCounterShortcut);
+        recipeGeneratorShortcutBtn = findViewById(R.id.recipeGeneratorShortcut);
         tabLayout = findViewById(R.id.TabLayoutProfile);
         viewPager = findViewById(R.id.ViewPagerProfile);
 
@@ -49,6 +51,11 @@ public class ProfileActivity extends AppCompatActivity {
 
         stepCounterShortcutBtn.setOnClickListener(v -> {
             Intent intent = new Intent(this, StepCounterActivity.class);
+            startActivity(intent);
+        });
+
+        recipeGeneratorShortcutBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, RecipeGeneratorActivity.class);
             startActivity(intent);
         });
 
