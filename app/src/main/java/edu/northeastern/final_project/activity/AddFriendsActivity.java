@@ -26,7 +26,8 @@ import java.util.regex.Pattern;
 import edu.northeastern.final_project.R;
 import edu.northeastern.final_project.adapter.ContactsAdapter;
 import edu.northeastern.final_project.backgroundThreadClass.GetContactsThread;
-import edu.northeastern.final_project.backgroundThreadClass.SearchPhoneNumberThread;
+
+import edu.northeastern.final_project.fragments.SearchBoxFragment;
 import edu.northeastern.final_project.validation.GenericStringValidation;
 
 public class AddFriendsActivity extends AppCompatActivity {
@@ -38,6 +39,11 @@ public class AddFriendsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstancesState) {
         super.onCreate(savedInstancesState);
         setContentView(R.layout.activity_add_friends);
+        if (savedInstancesState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container_view, new SearchBoxFragment())
+                    .commit();
+        }
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) {
             // Request permission if not granted
@@ -51,23 +57,7 @@ public class AddFriendsActivity extends AppCompatActivity {
 
 
     }
-    public void launch_search(View view){
-        //startSearchThread
-        TextInputLayout textInputLayout = findViewById(R.id.search_box_input_layout);
 
-        EditText editText = textInputLayout.getEditText();
-        Log.d("Search_Input",""+editText.getText());
-        String pattern_regex = "^[1-9]{1}[0-9]{9}";
-        Pattern pattern = Pattern.compile(pattern_regex) ;
-
-        if(new GenericStringValidation<Pattern>(pattern).validateString(editText.getText().toString())){
-            new SearchPhoneNumberThread(this,editText.getText().toString()).execute();
-
-        }else{
-            Toast.makeText(this,"only ten digit phone number is allowed",Toast.LENGTH_SHORT).show();
-        }
-
-    }
     private void setView() {
         add_friends_RV = findViewById(R.id.recycler_view_add_friends);
         contactsRV = findViewById(R.id.recycler_view_invite_friends);
@@ -95,6 +85,13 @@ public class AddFriendsActivity extends AppCompatActivity {
                 // Permission denied, show a message to the user
                 Toast.makeText(this, "Permission denied. Cannot retrieve contacts.", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (contactsAdapter != null) {
+            contactsAdapter.notifyDataSetChanged(); // Or use specific notify methods like notifyItemInserted, notifyItemChanged, etc.
         }
     }
 }

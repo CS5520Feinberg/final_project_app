@@ -27,12 +27,11 @@
         android:hint="Enter 10 digit phone number" />
 </com.google.android.material.textfield.TextInputLayout>
     <Button
-        android:id="@+id/button_action_on_contact"
+        android:id="@+id/button_search"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:text="Search"
         android:textColor="@color/white"
-        android:onClick="launch_search"
         app:layout_constraintStart_toEndOf="@id/guideline_0.7"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/search_box_input_layout"

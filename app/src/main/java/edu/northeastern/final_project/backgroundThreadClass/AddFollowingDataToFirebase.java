@@ -48,10 +48,14 @@ public class AddFollowingDataToFirebase extends GenericAsyncClassThreads<Void,Vo
         if(following_list_user==null){
             following_list_user = new ArrayList<>();
             following_list_user.add(followed_contact_number);
+        }else{
+            following_list_user.add(followed_contact_number);
         }
         if(followed_friend_follower_list==null){
             followed_friend_follower_list = new ArrayList<>();
             followed_friend_follower_list.add(current_user.getPhone_number());
+        }else{
+            following_list_user.add(current_user.getPhone_number());
         }
         DatabaseReference followedUserDbRef = new RealTimeDbConnectionService().getConnection().getReference("socialmedia").child(followed_contact_number);
         followedUserDbRef.child("follower").setValue(followed_friend_follower_list).addOnSuccessListener(new OnSuccessListener<Void>() {
