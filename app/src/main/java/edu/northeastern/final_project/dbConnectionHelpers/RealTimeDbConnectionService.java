@@ -10,12 +10,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import edu.northeastern.final_project.Constants;
 import edu.northeastern.final_project.entity.Contact;
+import edu.northeastern.final_project.interfaces.PhoneNumberFetchedCallback;
 import edu.northeastern.final_project.interfaces.RealTimeFireBaseDBInterface;
+import edu.northeastern.final_project.interfaces.UserDataFetchedCallback;
 
 public class RealTimeDbConnectionService implements RealTimeFireBaseDBInterface {
 
@@ -27,34 +30,39 @@ public class RealTimeDbConnectionService implements RealTimeFireBaseDBInterface 
     }
 
 
-    public void getRegisteredContacts(CountDownLatch latch, Set<String> registered_user) {
+    public void getRegisteredContacts(CountDownLatch latch,Set<String> registered_user) {
         FirebaseDatabase dbConnection = getConnection();
         DatabaseReference userRef = dbConnection.getReference("socialmedia");
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()){
-                    for(DataSnapshot userSnapshot : snapshot.getChildren() ){
+                if (snapshot.exists()) {
+                    for (DataSnapshot userSnapshot : snapshot.getChildren()) {
                         String userPhoneNumber = userSnapshot.getKey();
                         registered_user.add(userPhoneNumber);
-                        Log.d("ContactAdded",""+userPhoneNumber);
+                        Log.d("ContactAdded", "" + userPhoneNumber);
                     }
+                    latch.countDown();
 
-
-                }else{
-                    Log.d("No data","No Data Fetched");
+                } else {
+                    Log.d("No data", "No Data Fetched");
+                    latch.countDown();
                 }
-                // Signal the CountDownLatch to count down
-                latch.countDown();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 System.err.println("Error fetching users: " + error.getMessage());
-                // Signal the CountDownLatch to count down
                 latch.countDown();
+
             }
         });
+        try{
+            latch.await();
+
+        }catch (InterruptedException ex){
+            Log.d("Error",ex.getMessage());
+        }
     }
 
     public Contact fetchContactDetails(String search_input) {
@@ -121,76 +129,77 @@ public class RealTimeDbConnectionService implements RealTimeFireBaseDBInterface 
     }
 
 
-    public Contact getUserProfileData() {
+    public void getUserProfileData(UserDataFetchedCallback userDataFetchedCallback) {
         String currentUid = new Constants().getUid();
-        String phoneNumber = getPhoneNumberFromDatabase(currentUid);
-        if(phoneNumber==null || phoneNumber.isEmpty()){
-            return null;
-        }else{
-            final Contact[] profileData = {null};
-            Log.d("Phone_number", ""+phoneNumber);
-            DatabaseReference socialusersRef = getConnection().getReference("socialmedia")
-                    .child(phoneNumber);
-            CountDownLatch latch = new CountDownLatch(1);
+        getPhoneNumberFromDatabase(currentUid, new PhoneNumberFetchedCallback() {
+            @Override
+            public void onPhoneNumberFetched(String phone_number) {
+                Log.d("Phone_number", ""+phone_number);
+                DatabaseReference socialusersRef = getConnection().getReference("socialmedia")
+                        .child(phone_number);
 
-            socialusersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if(snapshot.exists()){
-                        Log.d("Data","User data exists");
-                        Contact data = snapshot.getValue(Contact.class);
-                        profileData[0] = data;
-                        latch.countDown();
-                    }else{
-                        latch.countDown();
+
+                socialusersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if(snapshot.exists()){
+                            Log.d("Data","User data exists");
+                            Contact data = snapshot.getValue(Contact.class);
+                            Log.d("Data",""+data.getName());
+                            Log.d("Data",""+data.getFollower());
+                            Log.d("Data",""+data.getFollowing());
+                            userDataFetchedCallback.onSuccess(data);
+                        }
+
                     }
 
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    latch.countDown();
-                }
-            });
-            try{
-                latch.await();
-            }catch (InterruptedException ex){
-                Log.d("ERRO",ex.getMessage());
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        userDataFetchedCallback.onError(error.getMessage());
+                    }
+                });
             }
-            return profileData[0];
-        }
+
+            @Override
+            public void onError(Exception ex) {
+                Log.d("Error",ex.getMessage());
+                userDataFetchedCallback.onError(ex.getMessage());
+            }
+        });
+
 
     }
 
-    public String getPhoneNumberFromDatabase(String uid) {
+    public void getPhoneNumberFromDatabase(String uid, PhoneNumberFetchedCallback callback) {
         Log.d("Metadata Call","Calling metadata for user profile");
         DatabaseReference metadataRef = getConnection().getReference("metaData").child(uid);
-        final CountDownLatch latch = new CountDownLatch(1);
-        final String[] phone_number = {null};
+
 
         metadataRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    Log.d("Phone number ",""+snapshot.getValue(String.class));
-                    phone_number[0] = snapshot.getValue(String.class);
+                    callback.onPhoneNumberFetched(snapshot.getValue(String.class));
                 }
-                latch.countDown(); // Signal that the operation is complete
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                latch.countDown(); // Signal that the operation is complete, even if it failed
+
             }
         });
 
-        try {
-            latch.await(); // Wait for the operation to complete
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    }
+
+
+    public List<String> getFollowersList(String following_contact_number) {
+        Contact contact = fetchContactDetails(following_contact_number);
+        if(contact!=null){
+            return contact.getFollower();
+        }else{
+            return null;
         }
 
-        return phone_number[0];
     }
 
 

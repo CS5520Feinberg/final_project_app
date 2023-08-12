@@ -9,6 +9,7 @@ import edu.northeastern.final_project.R;
 import edu.northeastern.final_project.activity.SocialMediaActivity;
 import edu.northeastern.final_project.dbConnectionHelpers.RealTimeDbConnectionService;
 import edu.northeastern.final_project.entity.Contact;
+import edu.northeastern.final_project.interfaces.UserDataFetchedCallback;
 
 public class GetUserSocialDataThread extends GenericAsyncClassThreads<Void,Void,Contact>{
     Context context;
@@ -29,15 +30,21 @@ public class GetUserSocialDataThread extends GenericAsyncClassThreads<Void,Void,
 
     @Override
     protected Contact doInBackground(Void... voids) {
-        try {
-            Contact profileData = new RealTimeDbConnectionService().getUserProfileData();
-            return profileData;
-        }catch (Exception ex){
-            Log.d("Error",ex.getMessage());
-            return null;
-        }
+
+             new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
+                 @Override
+                 public void onSuccess(Contact contact) {
+                     onPostExecute(contact);
+                 }
+
+                 @Override
+                 public void onError(String message) {
+                    onPostExecute(null);
+                 }
+             });
 
 
+        return null;
 
     }
     @Override
@@ -51,13 +58,13 @@ public class GetUserSocialDataThread extends GenericAsyncClassThreads<Void,Void,
                 followers_number.setText("0");
 
             }else{
-                followers_number.setText(contact.getFollower().size());
+                followers_number.setText(String.valueOf(contact.getFollower().size()));
             }
             if(contact.getFollowing()==null){
                 following_number.setText("0");
 
             }else{
-                following_number.setText(contact.getFollowing().size());
+                following_number.setText(String.valueOf(contact.getFollowing().size()));
             }
 
             profileName.setText(profile_name_string);

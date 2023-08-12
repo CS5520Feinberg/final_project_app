@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import edu.northeastern.final_project.R;
+import edu.northeastern.final_project.backgroundThreadClass.AddFollowingDataToFirebase;
 import edu.northeastern.final_project.backgroundThreadClass.DownloadImageThread;
 import edu.northeastern.final_project.entity.Contact;
 import edu.northeastern.final_project.viewHolder.ContactsViewHolder;
@@ -69,10 +70,14 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsViewHolder> {
         Contact contact = contacts.get(position);
         // TODO: 8/8/23
 
+        if(action.equals("Follow")){
+            String following_contact_number = contact.getPhone_number();
+            new AddFollowingDataToFirebase(following_contact_number).execute();
+            contacts.remove(position);
+            notifyDataSetChanged();
+            Toast.makeText(context,"Started Following",Toast.LENGTH_SHORT).show();
+        }
 
-        contacts.remove(position);
-        notifyDataSetChanged();
-        Toast.makeText(context,"Started Following",Toast.LENGTH_SHORT).show();
     }
 
 }

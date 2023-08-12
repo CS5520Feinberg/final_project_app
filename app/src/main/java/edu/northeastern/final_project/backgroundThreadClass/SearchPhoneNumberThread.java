@@ -28,17 +28,18 @@ public class SearchPhoneNumberThread extends GenericAsyncClassThreads<Void,Void,
     protected Contact doInBackground(Void... voids) {
 
 
-        final CountDownLatch latch = new CountDownLatch(1);
-        dbService.getRegisteredContacts(latch, registered_user);
+        CountDownLatch latch = new CountDownLatch(1);
+        dbService.getRegisteredContacts(latch,registered_user);
         Contact contact = null;
-        try {
+        try{
             latch.await();
             if (registered_user.contains(search_input)) {
                 contact = dbService.fetchContactDetails(search_input);
             }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        }catch (InterruptedException ex){
+
         }
+
 
         return contact;
     }

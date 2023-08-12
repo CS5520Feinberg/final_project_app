@@ -40,10 +40,11 @@ public class ContactsViewHolder extends RecyclerView.ViewHolder implements View.
     public void onClick(View v) {
         int position = getAdapterPosition();
         if(position != RecyclerView.NO_POSITION){
-            if(action_on_contact.getText().equals("Add")){
+            if(action_on_contact.getText().equals("Follow")){
                 // add the number to follower and following list
-                adapter.deletePosition(position);
+
                 action_on_contact.setText("FOLLOWED");
+                adapter.deletePosition(position);
             }
         }
     }
