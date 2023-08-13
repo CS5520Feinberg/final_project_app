@@ -3,6 +3,7 @@ import android.app.Dialog;
 import android.content.Context;
 
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -20,6 +21,7 @@ import edu.northeastern.final_project.R;
 import edu.northeastern.final_project.adapter.ContactsAdapter;
 import edu.northeastern.final_project.dbConnectionHelpers.RealTimeDbConnectionService;
 import edu.northeastern.final_project.entity.Contact;
+import edu.northeastern.final_project.interfaces.ContactFetchedCallBack;
 import edu.northeastern.final_project.interfaces.UserDataFetchedCallback;
 
 public class SearchPhoneNumberThread extends GenericAsyncClassThreads<Void,Void,Contact>{
@@ -47,11 +49,35 @@ public class SearchPhoneNumberThread extends GenericAsyncClassThreads<Void,Void,
         try{
             latch.await();
             if (registered_user.contains(search_input)) {
-                contact = dbService.fetchContactDetails(search_input);
+                CountDownLatch latch2 = new CountDownLatch(1);
+                dbService.fetchContactDetails(latch2,search_input, new ContactFetchedCallBack() {
+                    @Override
+                    public void contactFetched(Contact contact) {
+                        Log.d("Successfully got details","" );
+                        onPostExecute(contact);
+                    }
+
+                    @Override
+                    public void errorFetched(String errorMessage) {
+                        Log.d("Error",errorMessage);
+                        onPostExecute(null);
+                    }
+
+                    @Override
+                    public void noDataFound() {
+                        Log.d("NODATA","no data found");
+                        onPostExecute(null);
+                    }
+                });
+                try{
+                    latch2.await();
+                }catch (InterruptedException ex){
+                    Log.d("Exception",ex.getMessage());
+                }
 
             }
         }catch (InterruptedException ex){
-
+            Log.d("Exception",ex.getMessage());
         }
 
 
@@ -63,7 +89,7 @@ public class SearchPhoneNumberThread extends GenericAsyncClassThreads<Void,Void,
     protected void onPostExecute(Contact contact) {
         super.onPostExecute(contact);
         if(contact==null){
-            Toast.makeText(context,"No such contact exist",Toast.LENGTH_SHORT).show();
+           // Toast.makeText(context,"No such contact exist",Toast.LENGTH_SHORT).show();
         }else{
             Thread thread = new Thread(new Runnable() {
                 @Override

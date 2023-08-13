@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,15 +21,20 @@ import edu.northeastern.final_project.R;
 import edu.northeastern.final_project.backgroundThreadClass.GetUserSocialDataThread;
 import edu.northeastern.final_project.backgroundThreadClass.UploadImageToFirebase;
 import edu.northeastern.final_project.entity.Contact;
+import edu.northeastern.final_project.fragments.FollowersFragment;
+import edu.northeastern.final_project.fragments.SearchBoxFragment;
 
 public class SocialMediaActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSION_CODE = 1;
     ActivityResultLauncher<Intent> imagePickerLauncher;
 
+    FollowersFragment followersFragment;
+
     @Override
     protected void onCreate(Bundle SavedInstancesState) {
         super.onCreate(SavedInstancesState);
         setContentView(R.layout.social_media_activity);
+        followersFragment = new FollowersFragment();
         setupActivityData();
         ImageView imageView = findViewById(R.id.imageView);
         imagePickerLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -61,6 +67,19 @@ public class SocialMediaActivity extends AppCompatActivity {
         TextView followers_number = socialFragment.findViewById(R.id.text_view_followers_number);
         TextView following_number = socialFragment.findViewById(R.id.text_view_following_number);
         ImageView imageView = socialFragment.findViewById(R.id.imageView);
+        socialFragment.findViewById(R.id.tex_view_followers_text).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (getSupportFragmentManager().findFragmentByTag(FollowersFragment.class.getName()) == null) {
+                    getSupportFragmentManager().beginTransaction()
+                            .add(R.id.fragment_container_view_rv, followersFragment, FollowersFragment.class.getName())
+                            .commit();
+                }
+                return false;
+            }
+
+
+        });
         getUserProfileData(profileName,following_number,followers_number,imageView);
 
     }

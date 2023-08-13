@@ -80,7 +80,7 @@ public class AddFriendsActivity extends AppCompatActivity {
         add_friends_RV.setAdapter(add_friends_adapter);
         new GetContactsThread(this,contactsRV, add_friends_RV,contactsAdapter,add_friends_adapter).execute();
         // Add the fragment to the container
-        // Add the fragment to the container
+
         if (getSupportFragmentManager().findFragmentByTag(SearchBoxFragment.class.getName()) == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container_view, searchBoxFragment, SearchBoxFragment.class.getName())

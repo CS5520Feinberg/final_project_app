@@ -16,6 +16,7 @@ import java.util.concurrent.CountDownLatch;
 
 import edu.northeastern.final_project.Constants;
 import edu.northeastern.final_project.entity.Contact;
+import edu.northeastern.final_project.interfaces.ContactFetchedCallBack;
 import edu.northeastern.final_project.interfaces.PhoneNumberFetchedCallback;
 import edu.northeastern.final_project.interfaces.RealTimeFireBaseDBInterface;
 import edu.northeastern.final_project.interfaces.UserDataFetchedCallback;
@@ -59,42 +60,53 @@ public class RealTimeDbConnectionService implements RealTimeFireBaseDBInterface 
         });
         try{
             latch.await();
+            return;
 
         }catch (InterruptedException ex){
             Log.d("Error",ex.getMessage());
         }
     }
 
-    public Contact fetchContactDetails(String search_input) {
-        Contact[] contacts = {null};
+    public void fetchContactDetails(CountDownLatch latch,String search_input, ContactFetchedCallBack contactFetchedCallback) {
+
         FirebaseDatabase dbConnection = getConnection();
         DatabaseReference userRef = dbConnection.getReference("socialmedia").child(search_input);
-        CountDownLatch latch = new CountDownLatch(1);
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+        Log.d("Calling firebase for ",search_input);
+
+       userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()){
                     Log.d("Snapshot-key",snapshot.getKey());
-                     contacts[0] = snapshot.getValue(Contact.class);
-                     latch.countDown();
-                }else{
-                    latch.countDown();
-                }
-            }
+                     Contact contact= snapshot.getValue(Contact.class);
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.d("Error",error.getMessage());
+                     contactFetchedCallback.contactFetched(contact);
+
+                }else{
+                    Log.d("Data Not Fetched","no data for given use "+ search_input);
+
+                    contactFetchedCallback.noDataFound();
+                }
                 latch.countDown();
             }
-        });
-        try{
-            latch.await();
-            Log.d("Complete Call","");
-        }catch (InterruptedException ex){
-            Log.d("Error","");
+
+             @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d("Error",error.getMessage());
+
+                contactFetchedCallback.errorFetched(error.getMessage());
+                 latch.countDown();
+            }
+
+
         }
-        return contacts[0];
+
+        );
+
+
+
     }
 
     public void saveUserDataToSocialMediaDatabase(String uid,String name, String phoneNumber,String email) {
@@ -192,13 +204,25 @@ public class RealTimeDbConnectionService implements RealTimeFireBaseDBInterface 
     }
 
 
-    public List<String> getFollowersList(String following_contact_number) {
-        Contact contact = fetchContactDetails(following_contact_number);
-        if(contact!=null){
-            return contact.getFollower();
-        }else{
-            return null;
-        }
+    public List<String> getFollowersList(String contact_number) {
+        final List<String>[] followerList = new List[]{null};
+        fetchContactDetails(new CountDownLatch(1),contact_number, new ContactFetchedCallBack() {
+            @Override
+            public void contactFetched(Contact contact) {
+                 followerList[0] = contact.getFollower();
+            }
+
+            @Override
+            public void errorFetched(String errorMessage) {
+                Log.d("Error",errorMessage);
+            }
+
+            @Override
+            public void noDataFound() {
+                Log.d("404","no data found");
+            }
+        });
+    return followerList[0];
 
     }
 
