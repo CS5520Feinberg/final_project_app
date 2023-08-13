@@ -51,11 +51,11 @@ public class UniquePhoneNumberThread extends GenericAsyncClassThreads<Void,Void,
 
         //check social media
             CountDownLatch latch_for_child_thread = new CountDownLatch(1);
-            Boolean bool= new SocialMediaCollectionCheckThread(database,latch_for_child_thread,false).doInBackground();
-            try {
-                latch_for_child_thread.await();
-                flags_list.add(bool);
-                if(bool){
+          //  Boolean bool= new SocialMediaCollectionCheckThread(database,latch_for_child_thread,false).doInBackground();
+//            try {
+//                latch_for_child_thread.await();
+//                flags_list.add(bool);
+//                if(bool){
                     DatabaseReference socialMediaRef = database.getReference("socialmedia").child(phoneNumber);
                     CountDownLatch latch = new CountDownLatch(1);
                     flags_list.add(true); // phonenumber already exists
@@ -65,7 +65,7 @@ public class UniquePhoneNumberThread extends GenericAsyncClassThreads<Void,Void,
                             if(snapshot.exists()){
                                 latch.countDown();
                             }else{
-                                flags_list.set(1,false);
+                                flags_list.set(0,false);
                                 latch.countDown();
                             }
                         }
@@ -85,24 +85,15 @@ public class UniquePhoneNumberThread extends GenericAsyncClassThreads<Void,Void,
                         throw new RuntimeException(e);
                     }
                     //access the social media collection or else could not create one
+                    return  flags_list;
                 }
-            }catch (InterruptedException ex){
-
-                Log.d("Error",ex.getMessage());
-            }
-            return  flags_list;
-
-    }
-
 
     @Override
     protected void onPostExecute(List<Boolean> booleans) {
         super.onPostExecute(booleans);
         if(booleans.isEmpty()){
             Toast.makeText(context,"Sorry can not access db right now",Toast.LENGTH_SHORT).show();
-        }else if(booleans.size()==1 && booleans.get(0)==false){
-            Toast.makeText(context,"Sorry can not access social media feature right now",Toast.LENGTH_SHORT).show();
-        }else if(booleans.size()==2 && booleans.get(1) == true){
+        }else if(booleans.size()==1 && booleans.get(0) == true){
             Toast.makeText(context,"Sorry phone number already exist",Toast.LENGTH_SHORT).show();
         }else{
             Log.d("Registering user",""+email);

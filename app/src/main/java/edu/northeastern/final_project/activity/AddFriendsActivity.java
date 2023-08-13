@@ -34,16 +34,25 @@ public class AddFriendsActivity extends AppCompatActivity {
     RecyclerView contactsRV;
     RecyclerView add_friends_RV;
     private ContactsAdapter contactsAdapter;
+    ContactsAdapter add_friends_adapter;
+    SearchBoxFragment searchBoxFragment;
     private static final int PERMISSION_REQUEST_READ_CONTACTS = 100;
     @Override
     protected void onCreate(Bundle savedInstancesState) {
         super.onCreate(savedInstancesState);
         setContentView(R.layout.activity_add_friends);
-        if (savedInstancesState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container_view, new SearchBoxFragment())
-                    .commit();
-        }
+        // Create an instance of SearchBoxFragment
+        searchBoxFragment = new SearchBoxFragment();
+
+//        // Add the fragment to the container
+//        if (savedInstancesState == null) {
+//            getSupportFragmentManager().beginTransaction()
+//                    .add(R.id.fragment_container_view, searchBoxFragment)
+//                    .commit();
+//        }
+//
+//        // Set the adapter for the fragment
+//        searchBoxFragment.setAdapter(add_friends_adapter);
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) {
             // Request permission if not granted
@@ -66,10 +75,20 @@ public class AddFriendsActivity extends AppCompatActivity {
         contactsRV.setLayoutManager(new LinearLayoutManager(this));
 
         contactsAdapter = new ContactsAdapter(new ArrayList<>(), this,"Invite");
-        ContactsAdapter add_friends_adapter = new ContactsAdapter(new ArrayList<>(),this,"Follow");
+        add_friends_adapter = new ContactsAdapter(new ArrayList<>(),this,"Follow");
         contactsRV.setAdapter(contactsAdapter);
         add_friends_RV.setAdapter(add_friends_adapter);
         new GetContactsThread(this,contactsRV, add_friends_RV,contactsAdapter,add_friends_adapter).execute();
+        // Add the fragment to the container
+        // Add the fragment to the container
+        if (getSupportFragmentManager().findFragmentByTag(SearchBoxFragment.class.getName()) == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container_view, searchBoxFragment, SearchBoxFragment.class.getName())
+                    .commit();
+        }
+
+        // Set the adapter for the fragment
+        searchBoxFragment.setAdapter(add_friends_adapter);
 //
     }
 

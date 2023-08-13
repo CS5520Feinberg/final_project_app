@@ -17,10 +17,20 @@ import java.util.regex.Pattern;
 
 import edu.northeastern.final_project.R;
 
+import edu.northeastern.final_project.adapter.ContactsAdapter;
 import edu.northeastern.final_project.backgroundThreadClass.SearchPhoneNumberThread;
 import edu.northeastern.final_project.validation.GenericStringValidation;
 
 public class SearchBoxFragment extends Fragment {
+    private ContactsAdapter adapter;
+
+    public SearchBoxFragment() {
+        // Required empty public constructor
+    }
+
+    public void setAdapter(ContactsAdapter adapter) {
+        this.adapter = adapter;
+    }
 
     @Nullable
     @Override
@@ -47,7 +57,7 @@ public class SearchBoxFragment extends Fragment {
         Pattern pattern = Pattern.compile(pattern_regex) ;
 
         if(new GenericStringValidation<Pattern>(pattern).validateString(editText.getText().toString())){
-            new SearchPhoneNumberThread(this.getContext(),editText.getText().toString()).execute();
+            new SearchPhoneNumberThread(this.getContext(),editText.getText().toString(),adapter).execute();
 
         }else{
             Toast.makeText(this.getContext(),"only ten digit phone number is allowed",Toast.LENGTH_SHORT).show();

@@ -44,7 +44,9 @@ public class AddFollowingDataToFirebase extends GenericAsyncClassThreads<Void,Vo
         return null;
     }
     public void doWork(Contact current_user, List<String> followed_friend_follower_list){
+        Log.d("DoWork","do work is being called");
         List<String> following_list_user = current_user.getFollowing();
+        Log.d("Following",""+following_list_user);
         if(following_list_user==null){
             following_list_user = new ArrayList<>();
             following_list_user.add(followed_contact_number);
@@ -55,7 +57,7 @@ public class AddFollowingDataToFirebase extends GenericAsyncClassThreads<Void,Vo
             followed_friend_follower_list = new ArrayList<>();
             followed_friend_follower_list.add(current_user.getPhone_number());
         }else{
-            following_list_user.add(current_user.getPhone_number());
+            followed_friend_follower_list.add(current_user.getPhone_number());
         }
         DatabaseReference followedUserDbRef = new RealTimeDbConnectionService().getConnection().getReference("socialmedia").child(followed_contact_number);
         followedUserDbRef.child("follower").setValue(followed_friend_follower_list).addOnSuccessListener(new OnSuccessListener<Void>() {
