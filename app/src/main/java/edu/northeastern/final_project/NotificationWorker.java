@@ -102,11 +102,12 @@ public class NotificationWorker extends Worker {
     private void showBasicNotification(Context context) {
         Intent intent = new Intent(context, NotificationDetailsActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle("My Notification")
-                .setContentText("Hello World!")
+                .setContentTitle("Goal Accomplished")
+                .setContentText("Congratulations!" + firebaseUser.getDisplayName() + " You have completed your goal")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
