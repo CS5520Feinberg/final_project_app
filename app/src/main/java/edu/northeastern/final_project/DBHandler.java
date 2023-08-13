@@ -32,7 +32,7 @@ public class DBHandler extends SQLiteOpenHelper{
     private static final String MEAL_TYPE = "meal_type";
     private static final String MEAL_NAME = "meal_name";
     private static final String CALORIES = "calories";
-    private static final String PROTEIN = "protein";
+    private static final String PROTEIN = "proteins";
     private static final String CARBS = "carbs";
     private static final String FATS = "fats";
     private static final String MODIFIED_TIME = "modified_time";
@@ -48,18 +48,19 @@ public class DBHandler extends SQLiteOpenHelper{
     public DBHandler(Context context, String userId) {
         super (context, DB_NAME + "_" + userId, null, DB_VERSION);
         targetUserId = userId;
+    }
 
+    public void sync() {
         // Syncing steps in thread
-/*        syncStepsFirebase stepSync = new syncStepsFirebase();
+        syncStepsFirebase stepSync = new syncStepsFirebase();
         Thread stepThread = new Thread(stepSync);
         stepThread.start();
 
         // Syncing intake in thread
         syncIntakeFirebase intakeSync = new syncIntakeFirebase();
         Thread intakeThread = new Thread(intakeSync);
-        intakeThread.start();*/
+        intakeThread.start();
     }
-
     // create a database by running a sqlite query
     @Override
     public void onCreate(SQLiteDatabase db) {

@@ -86,11 +86,9 @@ public class DailyIntakeActivity extends AppCompatActivity {
         addDailyIntakeBtn = findViewById(R.id.AddDailyBtn);
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
-
         if (currentUser == null) {
             Log.e("DailyIntakeActivity", "No user found!");
         }
-
         String uid = currentUser.getUid();
         dbHandler = new DBHandler(DailyIntakeActivity.this, uid);
 
