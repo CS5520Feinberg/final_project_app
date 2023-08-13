@@ -54,7 +54,15 @@ public class MainActivity extends AppCompatActivity {
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(MainActivity.this, task -> {
                         if (task.isSuccessful()) {
+
+                            // added isGoalReached and default Value is False
                             FirebaseUser user = mAuth.getCurrentUser();
+                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                            DatabaseReference databaseReference = database.getReference("users");
+
+                            DatabaseReference userRef = databaseReference.child(user.getUid());
+                            userRef.child("isGoalReached").setValue(false);
+
                             Toast.makeText(MainActivity.this, "Sign Up Successfully!", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(this, ProfileActivity.class);
                             startActivity(intent);
