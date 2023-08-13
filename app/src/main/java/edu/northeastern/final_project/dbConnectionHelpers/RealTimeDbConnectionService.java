@@ -74,6 +74,7 @@ public class RealTimeDbConnectionService implements RealTimeFireBaseDBInterface 
 
         Log.d("Calling firebase for ",search_input);
 
+
        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
