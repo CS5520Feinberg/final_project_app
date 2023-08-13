@@ -18,7 +18,13 @@ import androidx.work.WorkerParameters;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class NotificationWorker extends Worker {
@@ -29,24 +35,56 @@ public class NotificationWorker extends Worker {
 
     private static final String CHANNEL_ID = "my_channel_id";
 
+
+
     @NonNull
     @Override
     public Result doWork() {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
         DBHandler dbHandler = new DBHandler(getApplicationContext(), firebaseUser.getUid());
-        HashMap<String, Integer> hmap = dbHandler.getDailySteps();
-        String todaysDate = DateUtils.getTodaysDate();
-        Log.d("HEREEEE", hmap.get(todaysDate) + "dsvneono");
-        Log.d("HEREEEE", dbHandler.readWeeklyDailyGoal() + "dsvneono");
+//        HashMap<String, Integer> hmap = dbHandler.getDailySteps();
+        ArrayList<Float> arrayList = dbHandler.getWeeklyCalories();
+        if (arrayList.size() > 0) {
+//            String todaysDate = DateUtils.getTodaysDate();
+//            Log.d("HEREEEE", hmap.get(todaysDate) + "dsvneono");
+//            Log.d("HEREEEE", dbHandler.readWeeklyDailyGoal() + "dsvneono");
 
-        if (dbHandler.readWeeklyDailyGoal() > 0 && hmap.get(todaysDate) >= dbHandler.readWeeklyDailyGoal()) {
-            createNotificationChannel(getApplicationContext());
-            showBasicNotification(getApplicationContext());
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference databaseReference = database.getReference("users");
+            DatabaseReference userRef = databaseReference.child(firebaseUser.getUid());
+
+            float currDailyCalories = arrayList.get(arrayList.size() - 1);
+
+            userRef.child("isGoalReached").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Boolean isGoalReached = dataSnapshot.getValue(Boolean.class);
+
+                    if (currDailyCalories < dbHandler.readWeeklyDailyGoal()) {
+                        // set isGoalReached to false
+                        userRef.child("isGoalReached").setValue(false);
+                    }
+
+                    if (dbHandler.readWeeklyDailyGoal() > 0 && currDailyCalories >= dbHandler.readWeeklyDailyGoal() && isGoalReached != null && !isGoalReached) {
+                        // update isGoalReached to true in the cloud
+                        userRef.child("isGoalReached").setValue(true);
+                        createNotificationChannel(getApplicationContext());
+                        showBasicNotification(getApplicationContext());
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    // Handle any errors
+                }
+            });
         }
+
 
         return Result.success();
     }
+
 
     private void createNotificationChannel(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
