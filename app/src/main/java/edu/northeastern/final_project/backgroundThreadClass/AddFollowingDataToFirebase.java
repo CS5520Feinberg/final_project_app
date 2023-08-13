@@ -1,22 +1,16 @@
 package edu.northeastern.final_project.backgroundThreadClass;
-
 import android.util.Log;
-
 import androidx.annotation.NonNull;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import edu.northeastern.final_project.dbConnectionHelpers.RealTimeDbConnectionService;
 import edu.northeastern.final_project.entity.Contact;
 import edu.northeastern.final_project.interfaces.UserDataFetchedCallback;
-
 public class AddFollowingDataToFirebase extends GenericAsyncClassThreads<Void,Void,Void>{
     String followed_contact_number;
     List<String> followed_friend_follower_list = null;

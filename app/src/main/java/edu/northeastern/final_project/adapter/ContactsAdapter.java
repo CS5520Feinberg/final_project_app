@@ -53,7 +53,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsViewHolder> {
                 holder.imageView.setImageResource(R.drawable.default_face_image_contacts);
                 //set default image avatar
             }
-        }else if(action.equals("followers")){
+        }else if(action.equals("Followers")){
             if(contacts.get(position).getImage_uri()!=null){
                 new DownloadImageThread(contacts.get(position).getImage_uri(),holder.imageView).execute();
             }else{

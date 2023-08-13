@@ -28,13 +28,12 @@ public class SocialMediaActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSION_CODE = 1;
     ActivityResultLauncher<Intent> imagePickerLauncher;
 
-    FollowersFragment followersFragment;
+
 
     @Override
     protected void onCreate(Bundle SavedInstancesState) {
         super.onCreate(SavedInstancesState);
         setContentView(R.layout.social_media_activity);
-        followersFragment = new FollowersFragment();
         setupActivityData();
         ImageView imageView = findViewById(R.id.imageView);
         imagePickerLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -70,16 +69,77 @@ public class SocialMediaActivity extends AppCompatActivity {
         socialFragment.findViewById(R.id.tex_view_followers_text).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (getSupportFragmentManager().findFragmentByTag(FollowersFragment.class.getName()) == null) {
-                    getSupportFragmentManager().beginTransaction()
-                            .add(R.id.fragment_container_view_rv, followersFragment, FollowersFragment.class.getName())
-                            .commit();
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (getSupportFragmentManager().findFragmentByTag(FollowersFragment.class.getName()) == null) {
+                        FollowersFragment followersFragment = new FollowersFragment();
+                        Bundle args = new Bundle();
+                        args.putString("type", "follower"); // Put any data you want to pass
+                        followersFragment.setArguments(args);
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container_view_rv, followersFragment, FollowersFragment.class.getName())
+                                .commit();
+                    }
+                    return true; // Consume the touch event
                 }
-                return false;
+                return false; // Don't consume the touch event
             }
-
-
         });
+
+        socialFragment.findViewById(R.id.tex_view_following_text).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (getSupportFragmentManager().findFragmentByTag(FollowersFragment.class.getName()) == null) {
+                        FollowersFragment followingFragment = new FollowersFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("type", "following");
+                        followingFragment.setArguments(bundle);
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container_view_rv, followingFragment, FollowersFragment.class.getName())
+                                .commit();
+                    }
+                    return true; // Consume the touch event
+                }
+                return false; // Don't consume the touch event
+            }
+        });
+
+//        socialFragment.findViewById(R.id.tex_view_followers_text).setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//
+//                if (getSupportFragmentManager().findFragmentByTag(FollowersFragment.class.getName()) == null) {
+//                    FollowersFragment followersFragment = new FollowersFragment();
+//
+//                    Bundle args = new Bundle();
+//                    args.putString("type", "follower"); // Put any data you want to pass
+//                    followersFragment.setArguments(args);
+//                    getSupportFragmentManager().beginTransaction()
+//                            .add(R.id.fragment_container_view_rv, followersFragment, FollowersFragment.class.getName())
+//                            .commit();
+//                }
+//                return true;
+//            }
+//
+//
+//        });
+//        socialFragment.findViewById(R.id.tex_view_following_text).setOnTouchListener(new View.OnTouchListener() {
+//
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//
+//                if (getSupportFragmentManager().findFragmentByTag(FollowersFragment.class.getName()) == null) {
+//                    FollowersFragment followingFragment = new FollowersFragment();
+//                    Bundle bundle = new Bundle();
+//                    bundle.putString("type","following");
+//                    followingFragment.setArguments(bundle);
+//                    getSupportFragmentManager().beginTransaction()
+//                            .add(R.id.fragment_container_view_rv, followingFragment, FollowersFragment.class.getName())
+//                            .commit();
+//                }
+//                return true;
+//            }
+//        });
         getUserProfileData(profileName,following_number,followers_number,imageView);
 
     }
