@@ -1,21 +1,33 @@
 package edu.northeastern.final_project;
 
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+
+
+
+import android.view.View;
+
+
 import android.widget.Button;
 import android.widget.Toast;
 import android.Manifest.permission;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.regex.Pattern;
+import edu.northeastern.final_project.activity.SocialMediaActivity;
+import edu.northeastern.final_project.backgroundThreadClass.UniquePhoneNumberThread;
+import edu.northeastern.final_project.validation.GenericStringValidation;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -28,14 +40,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseApp.initializeApp(this);
         setContentView(R.layout.activity_main);
-
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         userRef = database.getReference("users");
 
         TextInputLayout nameInputLayout = findViewById(R.id.nameInput);
         TextInputEditText nameInput = (TextInputEditText) nameInputLayout.getEditText();
+        TextInputLayout phoneNumberInputLayout = findViewById(R.id.phoneNumberInput);
+        TextInputEditText phoneNumberInput = (TextInputEditText) phoneNumberInputLayout.getEditText();
         TextInputLayout emailInputLayout = findViewById(R.id.emailInput);
         TextInputEditText emailInput = (TextInputEditText) emailInputLayout.getEditText();
         TextInputLayout passwordInputLayout = findViewById(R.id.passwordInput);
@@ -46,41 +60,43 @@ public class MainActivity extends AppCompatActivity {
         signUpButton.setOnClickListener(v -> {
             String email = emailInput.getText().toString();
             String password = passwordInput.getText().toString();
-            if (email.isEmpty()|| password.isEmpty()) {
+            String phoneNumber = phoneNumberInput.getText().toString();
+            String name = nameInput.getText().toString();
+            if (email.isEmpty() || password.isEmpty() || phoneNumber.isEmpty() ) {
                 Toast.makeText(MainActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 return;
             }
+            //check on phone number
+            String pattern_regex = "^[1-9]{1}[0-9]{9}";
+            Pattern pattern = Pattern.compile(pattern_regex) ;
 
-            mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(MainActivity.this, task -> {
-                        if (task.isSuccessful()) {
+            if(!new GenericStringValidation<Pattern>(pattern).validateString(phoneNumber)){
+                Toast.makeText(this,"only ten digit phone number is allowed",Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-                            // added isGoalReached and default Value is False
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            FirebaseDatabase database = FirebaseDatabase.getInstance();
-                            DatabaseReference databaseReference = database.getReference("users");
+            new UniquePhoneNumberThread(database,this,phoneNumber,mAuth,email,password,name).execute();
 
-                            DatabaseReference userRef = databaseReference.child(user.getUid());
-                            userRef.child("isGoalReached").setValue(false);
 
-                            Toast.makeText(MainActivity.this, "Sign Up Successfully!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(this, ProfileActivity.class);
-                            startActivity(intent);
-                        } else {
-                            Toast.makeText(MainActivity.this, "Account already exists", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        });
+
+
+
+
 
         loginButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         });
 
-        if(ContextCompat.checkSelfPermission(this, permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(this, permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
             //ask for permission
             requestPermissions(new String[]{permission.ACTIVITY_RECOGNITION}, 0);
         }
+    }
+
+    public void launch_add_friends(View view){
+        Intent intent = new Intent(MainActivity.this, SocialMediaActivity.class);
+        startActivity(intent);
     }
 
 }

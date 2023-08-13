@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#323346"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_0.7"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.7"
+        />
+<com.google.android.material.textfield.TextInputLayout
+    android:id="@+id/search_box_input_layout"
+    android:layout_width="0dp"
+    android:layout_height="60dp"
+    android:background="@color/white"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="@id/guideline_0.7"
+    >
+    <com.google.android.material.textfield.TextInputEditText
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="Enter 10 digit phone number" />
+</com.google.android.material.textfield.TextInputLayout>
+    <Button
+        android:id="@+id/button_search"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:text="Search"
+        android:textColor="@color/white"
+        app:layout_constraintStart_toEndOf="@id/guideline_0.7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/search_box_input_layout"
+        app:layout_constraintBottom_toBottomOf="@id/search_box_input_layout"
+
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>
