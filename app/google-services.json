@@ -1,34 +1,34 @@
 {
   "project_info": {
-    "project_number": "271132563463",
-    "firebase_url": "https://db-testing-page-default-rtdb.firebaseio.com",
-    "project_id": "db-testing-page",
-    "storage_bucket": "db-testing-page.appspot.com"
+    "project_number": "316472463702",
+    "firebase_url": "https://finalproject-25b2b-default-rtdb.firebaseio.com",
+    "project_id": "finalproject-25b2b",
+    "storage_bucket": "finalproject-25b2b.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:271132563463:android:faf9bbea667f537859f2a2",
+        "mobilesdk_app_id": "1:316472463702:android:a719561294988a6187c6f7",
         "android_client_info": {
           "package_name": "edu.northeastern.final_project"
         }
       },
       "oauth_client": [
         {
-          "client_id": "271132563463-7u88a2hc275kni4hj41q43amu75ojdk0.apps.googleusercontent.com",
+          "client_id": "316472463702-6nac7ba2trgbtdh68k6cerd3gg3m89nm.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDq217L7iz-X3yo7XkG_vxJe-gTXa7ZG4Y"
+          "current_key": "AIzaSyC3lKA47GYGxu3Sk4MFkSa883zKbjFQ7H4"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "271132563463-7u88a2hc275kni4hj41q43amu75ojdk0.apps.googleusercontent.com",
+              "client_id": "316472463702-6nac7ba2trgbtdh68k6cerd3gg3m89nm.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

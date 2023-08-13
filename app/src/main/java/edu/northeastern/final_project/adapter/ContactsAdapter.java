@@ -22,6 +22,10 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsViewHolder> {
     Context context;
     String action;
 
+    public List<Contact> getContacts() {
+        return contacts;
+    }
+
     public ContactsAdapter(List<Contact> contacts, Context context, String action) {
         this.contacts = contacts;
         this.context = context;
@@ -49,6 +53,14 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsViewHolder> {
                 holder.imageView.setImageResource(R.drawable.default_face_image_contacts);
                 //set default image avatar
             }
+        }else if(action.equals("followers")){
+            if(contacts.get(position).getImage_uri()!=null){
+                new DownloadImageThread(contacts.get(position).getImage_uri(),holder.imageView).execute();
+            }else{
+                holder.imageView.setImageResource(R.drawable.default_face_image_contacts);
+                //set default image avatar
+            }
+            holder.action_on_contact.setVisibility(View.INVISIBLE);
         }else{
             holder.imageView.setImageResource(R.drawable.blank_face_invite_contacts);
             //invite set default
@@ -68,14 +80,13 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsViewHolder> {
 
     public void deletePosition(int position){
         Contact contact = contacts.get(position);
-        // TODO: 8/8/23
 
         if(action.equals("Follow")){
             String following_contact_number = contact.getPhone_number();
-//            contacts.remove(position);
-//            notifyDataSetChanged();
-//            Toast.makeText(context,"Started Following",Toast.LENGTH_SHORT).show();
-            new AddFollowingDataToFirebase(following_contact_number,this,contacts,position,context).execute();
+            contacts.remove(position);
+            notifyDataSetChanged();
+            Toast.makeText(context,"Started Following",Toast.LENGTH_SHORT).show();
+            new AddFollowingDataToFirebase(following_contact_number).execute();
         }
 
     }

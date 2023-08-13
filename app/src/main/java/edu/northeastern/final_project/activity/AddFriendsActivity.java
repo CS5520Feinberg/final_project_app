@@ -26,18 +26,33 @@ import java.util.regex.Pattern;
 import edu.northeastern.final_project.R;
 import edu.northeastern.final_project.adapter.ContactsAdapter;
 import edu.northeastern.final_project.backgroundThreadClass.GetContactsThread;
-import edu.northeastern.final_project.backgroundThreadClass.SearchPhoneNumberThread;
+
+import edu.northeastern.final_project.fragments.SearchBoxFragment;
 import edu.northeastern.final_project.validation.GenericStringValidation;
 
 public class AddFriendsActivity extends AppCompatActivity {
     RecyclerView contactsRV;
     RecyclerView add_friends_RV;
     private ContactsAdapter contactsAdapter;
+    ContactsAdapter add_friends_adapter;
+    SearchBoxFragment searchBoxFragment;
     private static final int PERMISSION_REQUEST_READ_CONTACTS = 100;
     @Override
     protected void onCreate(Bundle savedInstancesState) {
         super.onCreate(savedInstancesState);
         setContentView(R.layout.activity_add_friends);
+        // Create an instance of SearchBoxFragment
+        searchBoxFragment = new SearchBoxFragment();
+
+//        // Add the fragment to the container
+//        if (savedInstancesState == null) {
+//            getSupportFragmentManager().beginTransaction()
+//                    .add(R.id.fragment_container_view, searchBoxFragment)
+//                    .commit();
+//        }
+//
+//        // Set the adapter for the fragment
+//        searchBoxFragment.setAdapter(add_friends_adapter);
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) {
             // Request permission if not granted
@@ -51,23 +66,7 @@ public class AddFriendsActivity extends AppCompatActivity {
 
 
     }
-    public void launch_search(View view){
-        //startSearchThread
-        TextInputLayout textInputLayout = findViewById(R.id.search_box_input_layout);
 
-        EditText editText = textInputLayout.getEditText();
-        Log.d("Search_Input",""+editText.getText());
-        String pattern_regex = "^[1-9]{1}[0-9]{9}";
-        Pattern pattern = Pattern.compile(pattern_regex) ;
-
-        if(new GenericStringValidation<Pattern>(pattern).validateString(editText.getText().toString())){
-            new SearchPhoneNumberThread(this,editText.getText().toString()).execute();
-
-        }else{
-            Toast.makeText(this,"only ten digit phone number is allowed",Toast.LENGTH_SHORT).show();
-        }
-
-    }
     private void setView() {
         add_friends_RV = findViewById(R.id.recycler_view_add_friends);
         contactsRV = findViewById(R.id.recycler_view_invite_friends);
@@ -76,10 +75,20 @@ public class AddFriendsActivity extends AppCompatActivity {
         contactsRV.setLayoutManager(new LinearLayoutManager(this));
 
         contactsAdapter = new ContactsAdapter(new ArrayList<>(), this,"Invite");
-        ContactsAdapter add_friends_adapter = new ContactsAdapter(new ArrayList<>(),this,"Follow");
+        add_friends_adapter = new ContactsAdapter(new ArrayList<>(),this,"Follow");
         contactsRV.setAdapter(contactsAdapter);
         add_friends_RV.setAdapter(add_friends_adapter);
         new GetContactsThread(this,contactsRV, add_friends_RV,contactsAdapter,add_friends_adapter).execute();
+        // Add the fragment to the container
+
+        if (getSupportFragmentManager().findFragmentByTag(SearchBoxFragment.class.getName()) == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container_view, searchBoxFragment, SearchBoxFragment.class.getName())
+                    .commit();
+        }
+
+        // Set the adapter for the fragment
+        searchBoxFragment.setAdapter(add_friends_adapter);
 //
     }
 
@@ -95,6 +104,13 @@ public class AddFriendsActivity extends AppCompatActivity {
                 // Permission denied, show a message to the user
                 Toast.makeText(this, "Permission denied. Cannot retrieve contacts.", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (contactsAdapter != null) {
+            contactsAdapter.notifyDataSetChanged(); // Or use specific notify methods like notifyItemInserted, notifyItemChanged, etc.
         }
     }
 }

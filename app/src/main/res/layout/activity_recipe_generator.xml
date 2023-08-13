@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent">-->
+
+<!--</androidx.constraintlayout.widget.ConstraintLayout>-->
+
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <EditText
+            android:id="@+id/editTextPreferredIngredients"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="Enter a prompt for the recipe generator*"
+            android:inputType="text"
+            android:contentDescription="Preferred Ingredients"
+            android:importantForAccessibility="yes" />
+
+        <EditText
+            android:id="@+id/editTextCalorieLimit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Calorie Limit (in cals)"
+            android:inputType="number"
+            android:importantForAccessibility="yes" />
+
+        <EditText
+            android:id="@+id/editTextAllergicIngredients"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Enter any allergic ingredients"
+            android:inputType="text"
+            android:importantForAccessibility="yes" />
+
+        <Spinner
+            android:id="@+id/spinnerMealType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Meal Type"
+            android:entries="@array/meal_types"
+            android:importantForAccessibility="yes" />
+
+        <EditText
+            android:id="@+id/editTextCookingTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Cooking Time (in minutes)"
+            android:inputType="number"
+            android:importantForAccessibility="yes" />
+
+        <EditText
+            android:id="@+id/editTextServingSize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Serving Size"
+            android:inputType="number"
+            android:importantForAccessibility="yes" />
+
+        <Spinner
+            android:id="@+id/spinnerDietaryPreference"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Dietary Preference"
+            android:entries="@array/dietary_preferences"
+            android:importantForAccessibility="yes" />
+
+        <Spinner
+            android:id="@+id/spinnerNutritionNeeds"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Nutrition Needs"
+            android:entries="@array/nutrition_needs"
+            android:importantForAccessibility="yes" />
+
+        <Spinner
+            android:id="@+id/spinnerCuisineType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Cuisine Type"
+            android:entries="@array/cuisine_types"
+            android:importantForAccessibility="yes" />
+
+        <Spinner
+            android:id="@+id/spinnerSkillLevel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Skill Level"
+            android:entries="@array/skill_levels"
+            android:importantForAccessibility="yes" />
+
+        <Button
+            android:id="@+id/buttonGenerateRecipe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Generate Recipe" />
+
+    </LinearLayout>
+</ScrollView>
