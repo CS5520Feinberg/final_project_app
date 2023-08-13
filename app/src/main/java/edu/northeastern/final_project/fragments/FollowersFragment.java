@@ -59,13 +59,11 @@ public class FollowersFragment extends Fragment {
                 Fragment fragmentToRemove = fragmentManager.findFragmentByTag(fragmentTag);
 
                 if (fragmentToRemove != null) {
-                    // Start a new fragment transaction
+
                     FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-                    // Remove the fragment
-                    transaction.remove(fragmentToRemove);
+                    transaction.remove(fragmentToRemove).commit();
 
-                    // Commit the transaction
                     transaction.commit();
                 }
 

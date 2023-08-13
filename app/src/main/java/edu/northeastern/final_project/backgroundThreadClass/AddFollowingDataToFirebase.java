@@ -22,21 +22,31 @@ public class AddFollowingDataToFirebase extends GenericAsyncClassThreads<Void,Vo
 
     @Override
     protected Void doInBackground(Void... voids) {
-           followed_friend_follower_list = new RealTimeDbConnectionService().getFollowersList(followed_contact_number);// get user data to update following list
-            //get user data
-            new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
-                @Override
-                public void onSuccess(Contact contact) {
-                     following_list_user = contact.getFollowing();
 
-                doWork(contact,following_list_user);
-                }
+           new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
+               @Override
+               public void onSuccess(Contact contact) {
+                   followed_friend_follower_list = contact.getFollower();
+                   new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
+                       @Override
+                       public void onSuccess(Contact contact) {
+                           following_list_user = contact.getFollowing();
 
-                @Override
-                public void onError(String message) {
-                    Log.d("Error",message);
-                }
-            });
+                           doWork(contact,following_list_user);
+                       }
+
+                       @Override
+                       public void onError(String message) {
+                           Log.d("Error",message);
+                       }
+                   });
+               }
+
+               @Override
+               public void onError(String message) {
+
+               }
+           });
 
 
         return null;

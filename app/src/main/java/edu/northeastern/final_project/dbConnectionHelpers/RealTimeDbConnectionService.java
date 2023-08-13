@@ -205,27 +205,6 @@ public class RealTimeDbConnectionService implements RealTimeFireBaseDBInterface 
     }
 
 
-    public List<String> getFollowersList(String contact_number) {
-        final List<String>[] followerList = new List[]{null};
-        fetchContactDetails(new CountDownLatch(1),contact_number, new ContactFetchedCallBack() {
-            @Override
-            public void contactFetched(Contact contact) {
-                 followerList[0] = contact.getFollower();
-            }
-
-            @Override
-            public void errorFetched(String errorMessage) {
-                Log.d("Error",errorMessage);
-            }
-
-            @Override
-            public void noDataFound() {
-                Log.d("404","no data found");
-            }
-        });
-    return followerList[0];
-
-    }
 
 
 }

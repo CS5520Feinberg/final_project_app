@@ -1,5 +1,6 @@
 package edu.northeastern.final_project.backgroundThreadClass;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 
@@ -21,6 +22,7 @@ import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -132,20 +134,34 @@ public class SearchPhoneNumberThread extends GenericAsyncClassThreads<Void, Void
                                         }
                                         Button follow = dialog.findViewById(R.id.button_follow);
                                         follow.setOnClickListener(new View.OnClickListener() {
+                                            @SuppressLint("NotifyDataSetChanged")
                                             @Override
                                             public void onClick(View v) {
                                                 boolean flag = false;
 
                                                 dialog.dismiss();
                                                 // Update your local data source here
+//                                                for (Contact contact : adapter.getContacts()) {
+//                                                    if (contact.getPhone_number().equals(search_input)) {
+//                                                        flag = true;
+//                                                        int position = adapter.getContacts().indexOf(contact);
+//                                                        adapter.deletePosition(position);
+//                                                        adapter.notifyDataSetChanged();
+//                                                    }
+//                                                }
+                                                List<Integer> positionsToDelete = new ArrayList<>();
                                                 for (Contact contact : adapter.getContacts()) {
                                                     if (contact.getPhone_number().equals(search_input)) {
-                                                        flag = true;
-                                                        int position = adapter.getContacts().indexOf(contact);
-                                                        adapter.deletePosition(position);
-                                                        adapter.notifyDataSetChanged();
+                                                        positionsToDelete.add(adapter.getContacts().indexOf(contact));
                                                     }
                                                 }
+
+                                                for (Integer position : positionsToDelete) {
+                                                    adapter.deletePosition(position);
+                                                }
+
+                                                adapter.notifyDataSetChanged();
+
                                                 if (!flag) {
                                                     new AddFollowingDataToFirebase(search_input).execute();
                                                 }
