@@ -9,7 +9,7 @@ public class StepHolder {
         // Default constructor
     }
 
-    public StepHolder(Integer steps, String timestamp, String isCloudSynced)  {
+    public StepHolder(Integer steps, String timestamp, String isCloudSynced) {
         this.steps = steps;
         this.timestamp = timestamp;
         this.isCloudSynced = isCloudSynced;

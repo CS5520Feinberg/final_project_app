@@ -17,7 +17,7 @@ import edu.northeastern.final_project.dbConnectionHelpers.RealTimeDbConnectionSe
 import edu.northeastern.final_project.entity.Contact;
 import edu.northeastern.final_project.interfaces.UserDataFetchedCallback;
 
-public class AddFollowingDataToFirebase extends GenericAsyncClassThreads<Void,Void,Void>{
+public class AddFollowingDataToFirebase extends GenericAsyncClassThreads<Void, Void, Void> {
     String followed_contact_number;
     List<String> followed_friend_follower_list = null;
     List<String> following_list_user = null;
@@ -28,42 +28,53 @@ public class AddFollowingDataToFirebase extends GenericAsyncClassThreads<Void,Vo
 
     @Override
     protected Void doInBackground(Void... voids) {
-           followed_friend_follower_list = new RealTimeDbConnectionService().getFollowersList(followed_contact_number);// get user data to update following list
-            //get user data
-            new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
-                @Override
-                public void onSuccess(Contact contact) {
-                     following_list_user = contact.getFollowing();
 
-                doWork(contact,following_list_user);
-                }
+        new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
+            @Override
+            public void onSuccess(Contact contact) {
+                followed_friend_follower_list = contact.getFollower();
+                new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
+                    @Override
+                    public void onSuccess(Contact contact) {
+                        following_list_user = contact.getFollowing();
 
-                @Override
-                public void onError(String message) {
-                    Log.d("Error",message);
-                }
-            });
+                        doWork(contact, following_list_user);
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        Log.d("Error", message);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String message) {
+
+            }
+        });
 
 
         return null;
     }
-    public void doWork(Contact current_user, List<String> following_list_user){
 
-        Log.d("DoWork","do work is being called");
+    public void doWork(Contact current_user, List<String> following_list_user) {
 
-        Log.d("Following",""+following_list_user);
-        if(following_list_user==null){
-            Log.d("Following_list_user",""+following_list_user);
+        Log.d("DoWork", "do work is being called");
+
+        Log.d("Following", "" + following_list_user);
+        if (following_list_user == null) {
+            Log.d("Following_list_user", "" + following_list_user);
             following_list_user = new ArrayList<>();
             following_list_user.add(followed_contact_number);
-            Log.d("Following_list_user",""+following_list_user);
-        }else{
+            Log.d("Following_list_user", "" + following_list_user);
+        } else {
             following_list_user.add(followed_contact_number);
         }
-        if(followed_friend_follower_list==null){
+        if (followed_friend_follower_list == null) {
             followed_friend_follower_list = new ArrayList<>();
             followed_friend_follower_list.add(current_user.getPhone_number());
-        }else{
+        } else {
             followed_friend_follower_list.add(current_user.getPhone_number());
         }
 

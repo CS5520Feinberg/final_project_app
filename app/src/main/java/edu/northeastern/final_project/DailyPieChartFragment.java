@@ -18,10 +18,10 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -160,7 +160,7 @@ public class DailyPieChartFragment extends Fragment {
         colors.add(Color.parseColor("#F44336")); // cals
 
         //input data and fit data int to pie chart entry
-        for (String type: typeAmountMap.keySet()) {
+        for (String type : typeAmountMap.keySet()) {
             pieEntries.add(new PieEntry(typeAmountMap.get(type), type));
             //Log.d("DailyPieChartFragment", String.valueOf(typeAmountMap.get(type).floatValue()));
         }
