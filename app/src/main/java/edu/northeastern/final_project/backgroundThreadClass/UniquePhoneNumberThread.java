@@ -59,8 +59,12 @@ public class UniquePhoneNumberThread extends GenericAsyncClassThreads<Void, Void
                     mAuth.createUserWithEmailAndPassword(email, password)
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
-                                    // User created successfully
+                                    DatabaseReference databaseReference = database.getReference("users");
                                     FirebaseUser user = mAuth.getCurrentUser();
+                                    DatabaseReference userRef = databaseReference.child(user.getUid());
+                                    userRef.child("isGoalReached").setValue(false);
+                                    // User created successfully
+
 
                                     // TODO: 8/10/23 @everyone look into it
                                     new RealTimeDbConnectionService().saveUserDataToSocialMediaDatabase(new Constants().getUid(), name, phoneNumber, email);
@@ -93,7 +97,7 @@ public class UniquePhoneNumberThread extends GenericAsyncClassThreads<Void, Void
         });
 
         //access the social media collection or else could not create one
-        return flags_list;
+        return null;
     }
 
 
