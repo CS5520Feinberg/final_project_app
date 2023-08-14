@@ -1,0 +1,22 @@
+# Final Project Submission Text File
+
+Github: https://github.com/CS5520Feinberg/final_project_app
+
+Group:
+  Jialin Huang
+  Kevin Lin
+  Akshat Gandhi
+  Vaibhav Garg
+  Shashank Manjunath
+    - Email: manjunath.sh@northeastern.edu
+    - Github: shashankmanjunath14@gmail.com
+    - Contributions: Developed step counting algorithm and associated code,
+      implemented queries for FDA API, implemented synchronization of local
+      database and Firebase database.
+
+Video Tour Links:
+  1. Jialin/Kevin/Shashank - https://drive.google.com/file/d/1fv67ecVU1hjA6DYyzNSaZRg_QjeuEhbm/view?usp=drive_link
+  2. Akshat -
+  3. Vaibhav
+
+Test Information:
