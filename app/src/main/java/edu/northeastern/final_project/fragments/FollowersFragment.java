@@ -3,12 +3,16 @@ package edu.northeastern.final_project.fragments;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,14 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-
 import edu.northeastern.final_project.R;
 import edu.northeastern.final_project.adapter.ContactsAdapter;
-
 import edu.northeastern.final_project.dbConnectionHelpers.RealTimeDbConnectionService;
 import edu.northeastern.final_project.entity.Contact;
 import edu.northeastern.final_project.interfaces.ContactFetchListener;
-
 import edu.northeastern.final_project.interfaces.UserDataFetchedCallback;
 
 
@@ -40,92 +41,113 @@ public class FollowersFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d("FollowersFragment", "onCreateView: Fragment created and displayed.");
+        Bundle bundle = getArguments();
+        String type = (String) bundle.get("type");
+
         View view = inflater.inflate(R.layout.fragment_followers_rv, container, false);
+        view.findViewById(R.id.imageButton_cross).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                // Get the FragmentManager
+                FragmentManager fragmentManager = getParentFragmentManager();
+
+                String fragmentTag = FollowersFragment.class.getName();
+                Fragment fragmentToRemove = fragmentManager.findFragmentByTag(fragmentTag);
+
+                if (fragmentToRemove != null) {
+
+                    FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+                    transaction.remove(fragmentToRemove).commit();
+
+                }
+
+                return false;
+            }
+        });
         followers_Rv = view.findViewById(R.id.recycler_view_fragment_followers);
         followers_Rv.setLayoutManager(new LinearLayoutManager(getContext()));
         List<Contact> test = new ArrayList<>();
 
-        followersAdapter = new ContactsAdapter(test,getContext(),"Followers");
+        followersAdapter = new ContactsAdapter(test, getContext(), "Followers");
         followers_Rv.setAdapter(followersAdapter);
 
+
         Log.d("FollowersFragment", "Starting thread to fetch follower data...");
-        fetchFollowerData();
+        fetchFollowerData(type);
 
 
         return view;
     }
 
-    private void fetchFollowerData() {
-        Log.d("Fetch_follower_data","Starting");
-        new Thread(new Runnable() {
+    private void fetchFollowerData(String type) {
+        Log.d("Fetch_follower_data", "Starting");
+        new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
             @Override
-            public void run() {
-                new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
-                    @Override
-                    public void onSuccess(Contact contact) {
-                        List<String> followers = contact.getFollower();
-                        if (followers != null && !followers.isEmpty()) {
-                            Log.d("Fetching contact details"," "+followers.size());
-                            fetchContactsForFollowers(followers);
-                        } else {
-                            // Handle case when no followers
-                        }
-                    }
+            public void onSuccess(Contact contact) {
+                List<String> followers = null;
+                if (type.equals("follower")) {
+                    TextView textView = getActivity().findViewById(R.id.text_view_rv_bar);
+                    textView.setText("Followers");
+                    followers = contact.getFollower();
+                } else {
+                    TextView textView = getActivity().findViewById(R.id.text_view_rv_bar);
+                    textView.setText("Following");
+                    followers = contact.getFollowing();
+                }
 
-                    @Override
-                    public void onError(String message) {
-                        // Handle error
-                    }
-                });
+                if (followers != null && !followers.isEmpty()) {
+                    Log.d("Fetching contact details", " " + followers.size());
+                    fetchContactsForFollowers(followers);
+                } else {
+                    // Handle case when no followers
+                }
             }
-        }).start();
+
+            @Override
+            public void onError(String message) {
+                // Handle error
+            }
+        });
     }
+
+
     private void fetchContactsForFollowers(List<String> followers) {
 
         List<Contact> followers_contact_data = new CopyOnWriteArrayList<>();
 
-            for (String contact_number : followers) {
+        for (String contact_number : followers) {
 
-                        fetchContactDetails(contact_number, new ContactFetchListener() {
+            fetchContactDetails(contact_number, new ContactFetchListener() {
+                @Override
+                public void onContactFetched(Contact contact) {
+                    Log.d("Got data", contact.toString());
+                    synchronized (followers_contact_data) {
+                        followers_contact_data.add(contact);
+                        getActivity().runOnUiThread(new Runnable() {
                             @Override
-                            public void onContactFetched(Contact contact) {
-                                Log.d("Got data",contact.toString());
-                                synchronized (followers_contact_data) {
-                                    followers_contact_data.add(contact);
-                                    getActivity().runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Log.d("Setting Adapter", "" + followers_contact_data);
-                                            followersAdapter.setContacts(followers_contact_data);
-                                            followersAdapter.notifyDataSetChanged();
-                                        }
-                                    });
-
-                                }
-
+                            public void run() {
+                                Log.d("Setting Adapter", "" + followers_contact_data);
+                                followersAdapter.setContacts(followers_contact_data);
+                                followersAdapter.notifyDataSetChanged();
                             }
+                        });
 
-                            @Override
-                            public void onError(String errorMessage) {
+                    }
 
-                            }
-                            });
+                }
+
+                @Override
+                public void onError(String errorMessage) {
+
+                }
+            });
 
 
         }
-            Log.d("Data"," "+followers_contact_data.size());
-//            synchronized (followersAdapter) {
-//                getActivity().runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        Log.d("Setting Adapter", "" + followers_contact_data);
-//                        followersAdapter.setContacts(followers_contact_data);
-//                        followersAdapter.notifyDataSetChanged();
-//                    }
-//                });
-//            }
-
-
+        Log.d("Data", " " + followers_contact_data.size());
 
     }
 

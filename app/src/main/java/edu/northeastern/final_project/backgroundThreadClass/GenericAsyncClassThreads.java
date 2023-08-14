@@ -11,9 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.northeastern.final_project.entity.Contact;
+import edu.northeastern.final_project.validation.GenericStringValidation;
 
-public abstract class GenericAsyncClassThreads<Input,Progress,Result> extends AsyncTask<Input,Progress,Result> {
-    protected List<Contact> getAddressBookContacts(Context context){
+public abstract class GenericAsyncClassThreads<Input, Progress, Result> extends AsyncTask<Input, Progress, Result> {
+    protected List<Contact> getAddressBookContacts(Context context) {
         ArrayList<Contact> contactList = new ArrayList<>();
         // projecting which column is needed from address book. Taken help from documentation
         String[] projection = {
@@ -23,7 +24,7 @@ public abstract class GenericAsyncClassThreads<Input,Progress,Result> extends As
         String sortOrder = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC";
         String selection = ContactsContract.CommonDataKinds.Phone.HAS_PHONE_NUMBER + " > 0";
         ContentResolver contentResolver = context.getContentResolver();
-        Cursor cursor = contentResolver.query( ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+        Cursor cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                 projection,
                 selection,
                 null,
@@ -38,12 +39,17 @@ public abstract class GenericAsyncClassThreads<Input,Progress,Result> extends As
                 if (nameIndex != -1 && phoneNumberIndex != -1) {
                     String contactName = cursor.getString(nameIndex);
                     String phoneNumber = cursor.getString(phoneNumberIndex);
-                    Log.d("Contact",""+contactName+" "+phoneNumber);
-                    String parsed_phoneNumber = parsePhoneNumber(phoneNumber);
-                    Log.d("Phone_Number_Parsed",parsed_phoneNumber);
-                    // Create a new Contact instance and add it to the list
-                    Contact contact = new Contact(contactName, parsed_phoneNumber);
-                    contactList.add(contact);
+
+                    if (new GenericStringValidation<>("^[1-9]{1}[0-9]{9}").validateString(phoneNumber)) {
+
+                        Log.d("Contact", "" + contactName + " " + phoneNumber);
+
+                        Contact contact = new Contact(contactName, phoneNumber);
+                        contactList.add(contact);
+
+                    }
+
+
                 }
             }
 
@@ -51,19 +57,6 @@ public abstract class GenericAsyncClassThreads<Input,Progress,Result> extends As
         }
         return contactList;
     }
-    private String parsePhoneNumber(String phoneNumber) {
-        String parsed_number ="";
-        for(char c : phoneNumber.toCharArray()){
-
-            if(c>='0' && c<='9'){
-                parsed_number+=c;
-            }
-        }
-        return parsed_number;
-    }
-
-
-
 
 
 }

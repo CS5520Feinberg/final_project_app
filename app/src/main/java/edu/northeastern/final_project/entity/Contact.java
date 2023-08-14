@@ -32,7 +32,8 @@ public class Contact {
         this.name = name;
         this.phone_number = phone_number;
     }
-    public Contact(String name, String phone_number,String email) {
+
+    public Contact(String name, String phone_number, String email) {
         this.name = name;
         this.phone_number = phone_number;
         this.email = email;

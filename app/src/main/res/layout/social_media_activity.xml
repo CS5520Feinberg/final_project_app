@@ -3,12 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
     <FrameLayout
         android:id="@+id/user_social_data_layout"
         android:layout_width="match_parent"
         android:layout_height="100dp"
+        android:background="@color/white"
         app:layout_constraintTop_toTopOf="parent">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/user_social_data_constraint_layout"
@@ -20,7 +22,7 @@
                 android:id="@+id/text_view_profile_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Profile Name"
+
                 android:gravity="center"
                 app:layout_constraintStart_toStartOf="@id/text_view_followers_number"
                 app:layout_constraintEnd_toEndOf="@id/text_view_following_number"
@@ -40,7 +42,7 @@
                 android:id="@+id/top_view_bar"
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
-                android:background="#089"
+                android:background="@color/pink_border"
                 app:layout_constraintTop_toTopOf="parent"
             />
 
@@ -48,7 +50,7 @@
                 android:id="@+id/text_view_followers_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="30"
+                android:textColor="@color/pink_border"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/imageView"
@@ -57,7 +59,8 @@
                 android:id="@+id/tex_view_followers_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="followers"
+                android:textColor="@color/pink_border"
+                android:text="Followers"
                 app:layout_constraintTop_toBottomOf="@id/text_view_followers_number"
                 app:layout_constraintStart_toStartOf="@id/text_view_followers_number"
                 app:layout_constraintEnd_toEndOf="@id/text_view_followers_number"
@@ -66,7 +69,8 @@
                 android:id="@+id/text_view_following_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="110"
+
+                android:textColor="@color/pink_border"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/text_view_followers_number"
@@ -75,6 +79,7 @@
                 android:id="@+id/tex_view_following_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/pink_border"
                 android:text="Following"
                 app:layout_constraintTop_toBottomOf="@id/text_view_following_number"
                 app:layout_constraintStart_toStartOf="@id/text_view_following_number"
@@ -85,7 +90,7 @@
                 android:id="@+id/bottom_view_bar"
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
-                android:background="#089"
+                android:background="@color/pink_border"
                 app:layout_constraintBottom_toBottomOf="parent"
                 />
 
@@ -98,22 +103,27 @@
     </FrameLayout>
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container_view_rv"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/user_social_data_layout"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/view_side_red"
+        app:layout_constraintEnd_toStartOf="@id/view_side_red2"
+        tools:layout = "@layout/fragment_followers_rv"
 
         />
     <View
+        android:id="@+id/view_side_red"
         android:layout_width="10dp"
         android:layout_height="match_parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:background="#089"/>
+        android:background="@color/pink_border"/>
     <View
+        android:id="@+id/view_side_red2"
         android:layout_width="10dp"
         android:layout_height="match_parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:background="#089"/>
+        android:background="@color/pink_border"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton"
