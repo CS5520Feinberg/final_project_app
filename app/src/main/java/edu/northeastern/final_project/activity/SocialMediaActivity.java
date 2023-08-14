@@ -20,13 +20,17 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import edu.northeastern.final_project.R;
 import edu.northeastern.final_project.backgroundThreadClass.GetUserSocialDataThread;
 import edu.northeastern.final_project.backgroundThreadClass.UploadImageToFirebase;
+import edu.northeastern.final_project.dbConnectionHelpers.RealTimeDbConnectionService;
 import edu.northeastern.final_project.entity.Contact;
 import edu.northeastern.final_project.fragments.FollowersFragment;
 import edu.northeastern.final_project.fragments.SearchBoxFragment;
+import edu.northeastern.final_project.interfaces.UserDataFetchedCallback;
 
 public class SocialMediaActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSION_CODE = 1;
     ActivityResultLauncher<Intent> imagePickerLauncher;
+
+    String user_phoneNumber;
 
 
 
@@ -34,6 +38,7 @@ public class SocialMediaActivity extends AppCompatActivity {
     protected void onCreate(Bundle SavedInstancesState) {
         super.onCreate(SavedInstancesState);
         setContentView(R.layout.social_media_activity);
+
         setupActivityData();
         ImageView imageView = findViewById(R.id.imageView);
         imagePickerLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -104,47 +109,13 @@ public class SocialMediaActivity extends AppCompatActivity {
             }
         });
 
-//        socialFragment.findViewById(R.id.tex_view_followers_text).setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//
-//                if (getSupportFragmentManager().findFragmentByTag(FollowersFragment.class.getName()) == null) {
-//                    FollowersFragment followersFragment = new FollowersFragment();
-//
-//                    Bundle args = new Bundle();
-//                    args.putString("type", "follower"); // Put any data you want to pass
-//                    followersFragment.setArguments(args);
-//                    getSupportFragmentManager().beginTransaction()
-//                            .add(R.id.fragment_container_view_rv, followersFragment, FollowersFragment.class.getName())
-//                            .commit();
-//                }
-//                return true;
-//            }
-//
-//
-//        });
-//        socialFragment.findViewById(R.id.tex_view_following_text).setOnTouchListener(new View.OnTouchListener() {
-//
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//
-//                if (getSupportFragmentManager().findFragmentByTag(FollowersFragment.class.getName()) == null) {
-//                    FollowersFragment followingFragment = new FollowersFragment();
-//                    Bundle bundle = new Bundle();
-//                    bundle.putString("type","following");
-//                    followingFragment.setArguments(bundle);
-//                    getSupportFragmentManager().beginTransaction()
-//                            .add(R.id.fragment_container_view_rv, followingFragment, FollowersFragment.class.getName())
-//                            .commit();
-//                }
-//                return true;
-//            }
-//        });
+
         getUserProfileData(profileName,following_number,followers_number,imageView);
 
     }
 
     private void getUserProfileData(TextView profileName, TextView following_number, TextView followers_number, ImageView imageView) {
+
         new GetUserSocialDataThread(this,profileName,following_number,followers_number,imageView).execute();
     }
     public void upload_image(View view){
@@ -176,6 +147,38 @@ public class SocialMediaActivity extends AppCompatActivity {
                 Toast.makeText(this, "Permission denied. Cannot pick an image.", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ConstraintLayout socialFragment = findViewById(R.id.user_social_data_layout)
+                .findViewById(R.id.user_social_data_constraint_layout);
+
+        TextView followers_number = socialFragment.findViewById(R.id.text_view_followers_number);
+        TextView following_number = socialFragment.findViewById(R.id.text_view_following_number);
+        new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
+            @Override
+            public void onSuccess(Contact contact) {
+                if(contact.getFollower()==null){
+                    followers_number.setText("0");
+                }else{
+                    followers_number.setText(String.valueOf(contact.getFollower().size()));
+                }
+                if(contact.getFollowing()==null){
+                    following_number.setText("0");
+                }else{
+                    following_number.setText(String.valueOf(contact.getFollowing().size()));
+                }
+
+            }
+
+            @Override
+            public void onError(String message) {
+
+            }
+        });
     }
 
 }

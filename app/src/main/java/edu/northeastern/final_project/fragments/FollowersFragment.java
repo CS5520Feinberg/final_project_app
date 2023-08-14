@@ -64,7 +64,6 @@ public class FollowersFragment extends Fragment {
 
                     transaction.remove(fragmentToRemove).commit();
 
-                    transaction.commit();
                 }
 
                 return false;
