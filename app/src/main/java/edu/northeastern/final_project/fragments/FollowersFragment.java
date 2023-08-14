@@ -1,5 +1,6 @@
 package edu.northeastern.final_project.fragments;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,9 +29,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import edu.northeastern.final_project.R;
 import edu.northeastern.final_project.adapter.ContactsAdapter;
+import edu.northeastern.final_project.backgroundThreadClass.GenericAsyncClassThreads;
 import edu.northeastern.final_project.dbConnectionHelpers.RealTimeDbConnectionService;
 import edu.northeastern.final_project.entity.Contact;
 import edu.northeastern.final_project.interfaces.ContactFetchListener;
+import edu.northeastern.final_project.interfaces.ContactFetchedCallBack;
 import edu.northeastern.final_project.interfaces.UserDataFetchedCallback;
 
 
@@ -100,7 +103,29 @@ public class FollowersFragment extends Fragment {
 
                 if (followers != null && !followers.isEmpty()) {
                     Log.d("Fetching contact details", " " + followers.size());
-                    fetchContactsForFollowers(followers);
+                    new RealTimeDbConnectionService().fetchMultipleUserData(followers, new ContactFetchedCallBack() {
+                        @Override
+                        public void contactFetched(Contact contact) {
+                        }
+                        @Override
+                        public void errorFetched(String errorMessage) {
+                        }
+                        @Override
+                        public void noDataFound() {
+                        }
+                        @Override
+                        public void onMultipleContactFetched(List<Contact> contacts) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Log.d("Setting Adapter", "" + contacts);
+                                    followersAdapter.setContacts(contacts);
+                                    followersAdapter.notifyDataSetChanged();
+                                }
+                            });
+                        }
+                    });
+
                 } else {
                     // Handle case when no followers
                 }
@@ -113,64 +138,5 @@ public class FollowersFragment extends Fragment {
         });
     }
 
-
-    private void fetchContactsForFollowers(List<String> followers) {
-
-        List<Contact> followers_contact_data = new CopyOnWriteArrayList<>();
-
-        for (String contact_number : followers) {
-
-            fetchContactDetails(contact_number, new ContactFetchListener() {
-                @Override
-                public void onContactFetched(Contact contact) {
-                    Log.d("Got data", contact.toString());
-                    synchronized (followers_contact_data) {
-                        followers_contact_data.add(contact);
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Log.d("Setting Adapter", "" + followers_contact_data);
-                                followersAdapter.setContacts(followers_contact_data);
-                                followersAdapter.notifyDataSetChanged();
-                            }
-                        });
-
-                    }
-
-                }
-
-                @Override
-                public void onError(String errorMessage) {
-
-                }
-            });
-
-
-        }
-        Log.d("Data", " " + followers_contact_data.size());
-
-    }
-
-    protected void fetchContactDetails(String searchInput, ContactFetchListener listener) {
-        FirebaseDatabase dbConnection = new RealTimeDbConnectionService().getConnection();
-        DatabaseReference userRef = dbConnection.getReference("socialmedia").child(searchInput);
-
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    Contact contact = snapshot.getValue(Contact.class);
-                    listener.onContactFetched(contact);
-                } else {
-                    listener.onError("Contact not found");
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                listener.onError(error.getMessage());
-            }
-        });
-    }
-
 }
+

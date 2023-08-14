@@ -1,5 +1,6 @@
 package edu.northeastern.final_project.dbConnectionHelpers;
 
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -10,11 +11,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import edu.northeastern.final_project.Constants;
 import edu.northeastern.final_project.entity.Contact;
+import edu.northeastern.final_project.interfaces.ContactFetchListener;
 import edu.northeastern.final_project.interfaces.ContactFetchedCallBack;
 import edu.northeastern.final_project.interfaces.PhoneNumberFetchedCallback;
 import edu.northeastern.final_project.interfaces.RealTimeFireBaseDBInterface;
@@ -30,7 +34,7 @@ public class RealTimeDbConnectionService implements RealTimeFireBaseDBInterface 
         return database;
     }
 
-
+    //apply callback
     public void getRegisteredContacts(CountDownLatch latch, Set<String> registered_user) {
         FirebaseDatabase dbConnection = getConnection();
         DatabaseReference userRef = dbConnection.getReference("socialmedia");
@@ -67,47 +71,29 @@ public class RealTimeDbConnectionService implements RealTimeFireBaseDBInterface 
         }
     }
 
-    public void fetchContactDetails(CountDownLatch latch, String search_input, ContactFetchedCallBack contactFetchedCallback) {
-
-        FirebaseDatabase dbConnection = getConnection();
-        DatabaseReference userRef = dbConnection.getReference("socialmedia").child(search_input);
-
-        Log.d("Calling firebase for ", search_input);
-
+    public void fetchContactDetails(String searchInput, ContactFetchListener listener) {
+        FirebaseDatabase dbConnection = new RealTimeDbConnectionService().getConnection();
+        DatabaseReference userRef = dbConnection.getReference("socialmedia").child(searchInput);
 
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Contact contact = snapshot.getValue(Contact.class);
+                    listener.onContactFetched(contact);
+                } else {
+                    listener.onError("Contact not found");
+                }
+            }
 
-                                                   @Override
-                                                   public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                       if (snapshot.exists()) {
-                                                           Log.d("Snapshot-key", snapshot.getKey());
-                                                           Contact contact = snapshot.getValue(Contact.class);
-
-                                                           contactFetchedCallback.contactFetched(contact);
-
-                                                       } else {
-                                                           Log.d("Data Not Fetched", "no data for given use " + search_input);
-
-                                                           contactFetchedCallback.noDataFound();
-                                                       }
-                                                       latch.countDown();
-                                                   }
-
-                                                   @Override
-                                                   public void onCancelled(@NonNull DatabaseError error) {
-                                                       Log.d("Error", error.getMessage());
-
-                                                       contactFetchedCallback.errorFetched(error.getMessage());
-                                                       latch.countDown();
-                                                   }
-
-
-                                               }
-
-        );
-
-
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                listener.onError(error.getMessage());
+            }
+        });
     }
+
+
 
     public void saveUserDataToSocialMediaDatabase(String uid, String name, String phoneNumber, String email) {
         saveMetaDataUidAndPhoneNumberLink(uid, name, phoneNumber, email);
@@ -202,6 +188,42 @@ public class RealTimeDbConnectionService implements RealTimeFireBaseDBInterface 
         });
 
     }
+    public void fetchMultipleUserData(List<String> phone_number_list, ContactFetchedCallBack contactFetchedCallBack){
+        List<Contact> data_of_phone_numbers = new ArrayList<>();
+        fetchRecursive(data_of_phone_numbers,0,phone_number_list,contactFetchedCallBack);
+    }
 
+    private void fetchRecursive(List<Contact> data_of_phone_numbers, int index, List<String> phone_number_list, ContactFetchedCallBack contactFetchedCallBack) {
+        if(index >= phone_number_list.size()){
+            contactFetchedCallBack.onMultipleContactFetched(data_of_phone_numbers);
+            return;
+        }
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            Log.d("Main Thread",getClass().getName());
+            // Code is running on the main thread
+            // You can safely update UI components here
+        } else {
+            Log.d("Background Thread",getClass().getName());
+            // Code is running on a background thread
+            // You should not update UI components directly from here
+        }
+        DatabaseReference dbReference =  getConnection().getReference("socialmedia").child(phone_number_list.get(index));
+        dbReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+               if(snapshot.exists()){
+                   Contact contact = snapshot.getValue(Contact.class);
+                   data_of_phone_numbers.add(contact);
+               }
+               fetchRecursive(data_of_phone_numbers,index+1,phone_number_list,contactFetchedCallBack);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                contactFetchedCallBack.errorFetched(error.getMessage());
+            }
+        });
+
+    }
 
 }
