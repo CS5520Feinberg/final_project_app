@@ -32,7 +32,8 @@ public class Contact {
         this.name = name;
         this.phone_number = phone_number;
     }
-    public Contact(String name, String phone_number,String email) {
+
+    public Contact(String name, String phone_number, String email) {
         this.name = name;
         this.phone_number = phone_number;
         this.email = email;
@@ -73,5 +74,17 @@ public class Contact {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "Contact{" +
+                "name='" + name + '\'' +
+                ", phone_number='" + phone_number + '\'' +
+                ", following=" + following +
+                ", follower=" + follower +
+                ", image_uri='" + image_uri + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

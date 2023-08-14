@@ -1,11 +1,8 @@
 package edu.northeastern.final_project;
 
 
-
-
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -116,7 +113,6 @@ public class RecipeGeneratorActivity extends AppCompatActivity {
             }
         });
     }
-
 
 
     private void showRecipePopup(String recipeName, String recipeIngredients, String recipeInstructions) {

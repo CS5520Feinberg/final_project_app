@@ -5,16 +5,14 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.widget.ImageView;
 
-
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
-public class DownloadImageThread extends GenericAsyncClassThreads<Void,Void, Bitmap> {
+public class DownloadImageThread extends GenericAsyncClassThreads<Void, Void, Bitmap> {
     String imageUri;
     ImageView imageView;
 
@@ -49,16 +47,14 @@ public class DownloadImageThread extends GenericAsyncClassThreads<Void,Void, Bit
     }
 
 
-
-
     @Override
     protected void onPostExecute(Bitmap bitmap) {
         super.onPostExecute(bitmap);
         if (bitmap != null && imageView != null) {
             // Set the downloaded image to the ImageView
             imageView.setImageBitmap(bitmap);
-        }else{
-            Log.d("Error",""+"ImageNotObtained");
+        } else {
+            Log.d("Error", "" + "ImageNotObtained");
         }
     }
 }

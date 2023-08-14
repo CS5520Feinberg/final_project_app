@@ -2,8 +2,6 @@ package edu.northeastern.final_project;
 
 import com.google.gson.annotations.SerializedName;
 
-import com.google.gson.annotations.SerializedName;
-
 public class RecipeRequest {
     @SerializedName("preferred_ingredients")
     private String preferredIngredients;
