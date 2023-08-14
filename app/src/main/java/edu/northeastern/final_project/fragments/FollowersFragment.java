@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,7 +46,7 @@ public class FollowersFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d("FollowersFragment", "onCreateView: Fragment created and displayed.");
         Bundle bundle = getArguments();
-        String type = (String)bundle.get("type");
+        String type = (String) bundle.get("type");
 
         View view = inflater.inflate(R.layout.fragment_followers_rv, container, false);
         view.findViewById(R.id.imageButton_cross).setOnTouchListener(new View.OnTouchListener() {
@@ -73,7 +74,7 @@ public class FollowersFragment extends Fragment {
         followers_Rv.setLayoutManager(new LinearLayoutManager(getContext()));
         List<Contact> test = new ArrayList<>();
 
-        followersAdapter = new ContactsAdapter(test,getContext(),"Followers");
+        followersAdapter = new ContactsAdapter(test, getContext(), "Followers");
         followers_Rv.setAdapter(followersAdapter);
 
 
@@ -85,36 +86,37 @@ public class FollowersFragment extends Fragment {
     }
 
     private void fetchFollowerData(String type) {
-        Log.d("Fetch_follower_data","Starting");
-        new Thread(new Runnable() {
+        Log.d("Fetch_follower_data", "Starting");
+        new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
             @Override
-            public void run() {
-                new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
-                    @Override
-                    public void onSuccess(Contact contact) {
-                        List<String> followers = null;
-                        if(type.equals("follower")){
-                            followers = contact.getFollower();
-                        }else{
-                            followers = contact.getFollowing();
-                        }
+            public void onSuccess(Contact contact) {
+                List<String> followers = null;
+                if (type.equals("follower")) {
+                    TextView textView = getActivity().findViewById(R.id.text_view_rv_bar);
+                    textView.setText("Followers");
+                    followers = contact.getFollower();
+                } else {
+                   TextView textView = getActivity().findViewById(R.id.text_view_rv_bar);
+                   textView.setText("Following");
+                    followers = contact.getFollowing();
+                }
 
-                        if (followers != null && !followers.isEmpty()) {
-                            Log.d("Fetching contact details"," "+followers.size());
-                            fetchContactsForFollowers(followers);
-                        } else {
-                            // Handle case when no followers
-                        }
-                    }
-
-                    @Override
-                    public void onError(String message) {
-                        // Handle error
-                    }
-                });
+                if (followers != null && !followers.isEmpty()) {
+                    Log.d("Fetching contact details", " " + followers.size());
+                    fetchContactsForFollowers(followers);
+                } else {
+                    // Handle case when no followers
+                }
             }
-        }).start();
+
+            @Override
+            public void onError(String message) {
+                // Handle error
+            }
+        });
     }
+
+
     private void fetchContactsForFollowers(List<String> followers) {
 
         List<Contact> followers_contact_data = new CopyOnWriteArrayList<>();
