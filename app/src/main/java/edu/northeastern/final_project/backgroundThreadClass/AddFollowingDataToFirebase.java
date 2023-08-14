@@ -1,17 +1,23 @@
 package edu.northeastern.final_project.backgroundThreadClass;
+
 import android.util.Log;
+
 import androidx.annotation.NonNull;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import edu.northeastern.final_project.dbConnectionHelpers.RealTimeDbConnectionService;
 import edu.northeastern.final_project.entity.Contact;
 import edu.northeastern.final_project.interfaces.UserDataFetchedCallback;
-public class AddFollowingDataToFirebase extends GenericAsyncClassThreads<Void,Void,Void>{
+
+public class AddFollowingDataToFirebase extends GenericAsyncClassThreads<Void, Void, Void> {
     String followed_contact_number;
     List<String> followed_friend_follower_list = null;
     List<String> following_list_user = null;
@@ -23,51 +29,52 @@ public class AddFollowingDataToFirebase extends GenericAsyncClassThreads<Void,Vo
     @Override
     protected Void doInBackground(Void... voids) {
 
-           new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
-               @Override
-               public void onSuccess(Contact contact) {
-                   followed_friend_follower_list = contact.getFollower();
-                   new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
-                       @Override
-                       public void onSuccess(Contact contact) {
-                           following_list_user = contact.getFollowing();
+        new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
+            @Override
+            public void onSuccess(Contact contact) {
+                followed_friend_follower_list = contact.getFollower();
+                new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
+                    @Override
+                    public void onSuccess(Contact contact) {
+                        following_list_user = contact.getFollowing();
 
-                           doWork(contact,following_list_user);
-                       }
+                        doWork(contact, following_list_user);
+                    }
 
-                       @Override
-                       public void onError(String message) {
-                           Log.d("Error",message);
-                       }
-                   });
-               }
+                    @Override
+                    public void onError(String message) {
+                        Log.d("Error", message);
+                    }
+                });
+            }
 
-               @Override
-               public void onError(String message) {
+            @Override
+            public void onError(String message) {
 
-               }
-           });
+            }
+        });
 
 
         return null;
     }
-    public void doWork(Contact current_user, List<String> following_list_user){
 
-        Log.d("DoWork","do work is being called");
+    public void doWork(Contact current_user, List<String> following_list_user) {
 
-        Log.d("Following",""+following_list_user);
-        if(following_list_user==null){
-            Log.d("Following_list_user",""+following_list_user);
+        Log.d("DoWork", "do work is being called");
+
+        Log.d("Following", "" + following_list_user);
+        if (following_list_user == null) {
+            Log.d("Following_list_user", "" + following_list_user);
             following_list_user = new ArrayList<>();
             following_list_user.add(followed_contact_number);
-            Log.d("Following_list_user",""+following_list_user);
-        }else{
+            Log.d("Following_list_user", "" + following_list_user);
+        } else {
             following_list_user.add(followed_contact_number);
         }
-        if(followed_friend_follower_list==null){
+        if (followed_friend_follower_list == null) {
             followed_friend_follower_list = new ArrayList<>();
             followed_friend_follower_list.add(current_user.getPhone_number());
-        }else{
+        } else {
             followed_friend_follower_list.add(current_user.getPhone_number());
         }
 

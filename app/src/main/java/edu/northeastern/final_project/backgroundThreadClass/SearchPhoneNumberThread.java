@@ -3,15 +3,12 @@ package edu.northeastern.final_project.backgroundThreadClass;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-
-
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import androidx.annotation.NonNull;
 
@@ -21,12 +18,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 
 import edu.northeastern.final_project.Constants;
 import edu.northeastern.final_project.R;
@@ -107,7 +102,7 @@ public class SearchPhoneNumberThread extends GenericAsyncClassThreads<Void, Void
                                             } else {
                                                 showDialog();
                                             }
-                                        }else {
+                                        } else {
                                             showDialog();
                                         }
 

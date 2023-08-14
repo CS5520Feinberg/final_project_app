@@ -26,14 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-
 import edu.northeastern.final_project.R;
 import edu.northeastern.final_project.adapter.ContactsAdapter;
-
 import edu.northeastern.final_project.dbConnectionHelpers.RealTimeDbConnectionService;
 import edu.northeastern.final_project.entity.Contact;
 import edu.northeastern.final_project.interfaces.ContactFetchListener;
-
 import edu.northeastern.final_project.interfaces.UserDataFetchedCallback;
 
 
@@ -96,8 +93,8 @@ public class FollowersFragment extends Fragment {
                     textView.setText("Followers");
                     followers = contact.getFollower();
                 } else {
-                   TextView textView = getActivity().findViewById(R.id.text_view_rv_bar);
-                   textView.setText("Following");
+                    TextView textView = getActivity().findViewById(R.id.text_view_rv_bar);
+                    textView.setText("Following");
                     followers = contact.getFollowing();
                 }
 
@@ -121,36 +118,36 @@ public class FollowersFragment extends Fragment {
 
         List<Contact> followers_contact_data = new CopyOnWriteArrayList<>();
 
-            for (String contact_number : followers) {
+        for (String contact_number : followers) {
 
-                        fetchContactDetails(contact_number, new ContactFetchListener() {
+            fetchContactDetails(contact_number, new ContactFetchListener() {
+                @Override
+                public void onContactFetched(Contact contact) {
+                    Log.d("Got data", contact.toString());
+                    synchronized (followers_contact_data) {
+                        followers_contact_data.add(contact);
+                        getActivity().runOnUiThread(new Runnable() {
                             @Override
-                            public void onContactFetched(Contact contact) {
-                                Log.d("Got data",contact.toString());
-                                synchronized (followers_contact_data) {
-                                    followers_contact_data.add(contact);
-                                    getActivity().runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Log.d("Setting Adapter", "" + followers_contact_data);
-                                            followersAdapter.setContacts(followers_contact_data);
-                                            followersAdapter.notifyDataSetChanged();
-                                        }
-                                    });
-
-                                }
-
+                            public void run() {
+                                Log.d("Setting Adapter", "" + followers_contact_data);
+                                followersAdapter.setContacts(followers_contact_data);
+                                followersAdapter.notifyDataSetChanged();
                             }
+                        });
 
-                            @Override
-                            public void onError(String errorMessage) {
+                    }
 
-                            }
-                            });
+                }
+
+                @Override
+                public void onError(String errorMessage) {
+
+                }
+            });
 
 
         }
-            Log.d("Data"," "+followers_contact_data.size());
+        Log.d("Data", " " + followers_contact_data.size());
 
     }
 

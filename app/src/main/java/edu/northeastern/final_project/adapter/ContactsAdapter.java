@@ -35,33 +35,33 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsViewHolder> {
     @NonNull
     @Override
     public ContactsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.contact_view_holder,parent,false);
+        View view = LayoutInflater.from(context).inflate(R.layout.contact_view_holder, parent, false);
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         view.setLayoutParams(layoutParams);
 
-        return new ContactsViewHolder(view,this);
+        return new ContactsViewHolder(view, this);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ContactsViewHolder holder, int position) {
         holder.contact_name.setText(contacts.get(position).getName());
         holder.action_on_contact.setText(action);
-        if(action.equals("Follow")){
-            if(contacts.get(position).getImage_uri()!=null){
-                new DownloadImageThread(contacts.get(position).getImage_uri(),holder.imageView).execute();
-            }else{
+        if (action.equals("Follow")) {
+            if (contacts.get(position).getImage_uri() != null) {
+                new DownloadImageThread(contacts.get(position).getImage_uri(), holder.imageView).execute();
+            } else {
                 holder.imageView.setImageResource(R.drawable.default_face_image_contacts);
                 //set default image avatar
             }
-        }else if(action.equals("Followers")){
-            if(contacts.get(position).getImage_uri()!=null){
-                new DownloadImageThread(contacts.get(position).getImage_uri(),holder.imageView).execute();
-            }else{
+        } else if (action.equals("Followers")) {
+            if (contacts.get(position).getImage_uri() != null) {
+                new DownloadImageThread(contacts.get(position).getImage_uri(), holder.imageView).execute();
+            } else {
                 holder.imageView.setImageResource(R.drawable.default_face_image_contacts);
                 //set default image avatar
             }
             holder.action_on_contact.setVisibility(View.INVISIBLE);
-        }else{
+        } else {
             holder.imageView.setImageResource(R.drawable.blank_face_invite_contacts);
             //invite set default
         }
@@ -78,14 +78,14 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsViewHolder> {
         this.contacts = contacts;
     }
 
-    public void deletePosition(int position){
+    public void deletePosition(int position) {
         Contact contact = contacts.get(position);
 
-        if(action.equals("Follow")){
+        if (action.equals("Follow")) {
             String following_contact_number = contact.getPhone_number();
             contacts.remove(position);
             notifyDataSetChanged();
-            Toast.makeText(context,"Started Following",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Started Following", Toast.LENGTH_SHORT).show();
             new AddFollowingDataToFirebase(following_contact_number).execute();
         }
 

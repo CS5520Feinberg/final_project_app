@@ -1,20 +1,16 @@
 package edu.northeastern.final_project;
 
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-
+import android.Manifest.permission;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-
-
-
 import android.view.View;
-
 import android.widget.Button;
 import android.widget.Toast;
-import android.Manifest.permission;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -22,7 +18,9 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.regex.Pattern;
+
 import edu.northeastern.final_project.activity.SocialMediaActivity;
 import edu.northeastern.final_project.backgroundThreadClass.UniquePhoneNumberThread;
 import edu.northeastern.final_project.validation.GenericStringValidation;
@@ -59,23 +57,20 @@ public class MainActivity extends AppCompatActivity {
             String password = passwordInput.getText().toString();
             String phoneNumber = phoneNumberInput.getText().toString();
             String name = nameInput.getText().toString();
-            if (email.isEmpty() || password.isEmpty() || phoneNumber.isEmpty() ) {
+            if (email.isEmpty() || password.isEmpty() || phoneNumber.isEmpty()) {
                 Toast.makeText(MainActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 return;
             }
             //check on phone number
             String pattern_regex = "^[1-9]{1}[0-9]{9}";
-            Pattern pattern = Pattern.compile(pattern_regex) ;
+            Pattern pattern = Pattern.compile(pattern_regex);
 
-            if(!new GenericStringValidation<Pattern>(pattern).validateString(phoneNumber)){
-                Toast.makeText(this,"only ten digit phone number is allowed",Toast.LENGTH_SHORT).show();
+            if (!new GenericStringValidation<Pattern>(pattern).validateString(phoneNumber)) {
+                Toast.makeText(this, "only ten digit phone number is allowed", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            new UniquePhoneNumberThread(database,this,phoneNumber,mAuth,email,password,name).execute();
-
-
-
+            new UniquePhoneNumberThread(database, this, phoneNumber, mAuth, email, password, name).execute();
 
 
         });
@@ -93,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         kwQuery.search();
     }
 
-    public void launch_add_friends(View view){
+    public void launch_add_friends(View view) {
         Intent intent = new Intent(MainActivity.this, SocialMediaActivity.class);
         startActivity(intent);
     }

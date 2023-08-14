@@ -41,13 +41,9 @@ public class StepCounterService extends Service implements SensorEventListener {
     private static final double thresh = 10;
 
 
-
-
     // Test
     private static final int NOTIFICATION_ID = 1;
     static final String ACTION_STEP_COUNT_UPDATED = "edu.northeastern.final_project.ACTION_STEP_COUNT_UPDATED";
-
-
 
 
     private final IBinder binder = new LocalBinder();
