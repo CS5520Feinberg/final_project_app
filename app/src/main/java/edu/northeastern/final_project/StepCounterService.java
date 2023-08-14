@@ -38,7 +38,7 @@ public class StepCounterService extends Service implements SensorEventListener {
     private int WINDOW_SIZE = (int) Math.ceil(0.5 * SAMPLING_RATE);
     private int WRITE_DURATION = 10;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private static final double thresh = 10;
+    private static final double thresh = 7.5;
 
 
     // Test
