@@ -25,6 +25,7 @@ import edu.northeastern.final_project.activity.SocialMediaActivity;
 import edu.northeastern.final_project.backgroundThreadClass.UniquePhoneNumberThread;
 import edu.northeastern.final_project.validation.GenericStringValidation;
 
+
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             new UniquePhoneNumberThread(database, this, phoneNumber, mAuth, email, password, name).execute();
 
 
-        });
+
 
         loginButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, LoginActivity.class);
@@ -84,8 +85,6 @@ public class MainActivity extends AppCompatActivity {
             //ask for permission
             requestPermissions(new String[]{permission.ACTIVITY_RECOGNITION}, 0);
         }
-        FDAKeywordQuery kwQuery = new FDAKeywordQuery("chicken breast");
-        kwQuery.search();
     }
 
     public void launch_add_friends(View view) {
