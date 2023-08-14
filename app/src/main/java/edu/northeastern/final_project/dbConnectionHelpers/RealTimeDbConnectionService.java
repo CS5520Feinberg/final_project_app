@@ -10,7 +10,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
@@ -23,15 +22,16 @@ import edu.northeastern.final_project.interfaces.UserDataFetchedCallback;
 
 public class RealTimeDbConnectionService implements RealTimeFireBaseDBInterface {
 
-    private  FirebaseDatabase database;
+    private FirebaseDatabase database;
+
     @Override
-    public  FirebaseDatabase getConnection() {
+    public FirebaseDatabase getConnection() {
         database = FirebaseDatabase.getInstance();
         return database;
     }
 
 
-    public void getRegisteredContacts(CountDownLatch latch,Set<String> registered_user) {
+    public void getRegisteredContacts(CountDownLatch latch, Set<String> registered_user) {
         FirebaseDatabase dbConnection = getConnection();
         DatabaseReference userRef = dbConnection.getReference("socialmedia");
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -58,65 +58,64 @@ public class RealTimeDbConnectionService implements RealTimeFireBaseDBInterface 
 
             }
         });
-        try{
+        try {
             latch.await();
             return;
 
-        }catch (InterruptedException ex){
-            Log.d("Error",ex.getMessage());
+        } catch (InterruptedException ex) {
+            Log.d("Error", ex.getMessage());
         }
     }
 
-    public void fetchContactDetails(CountDownLatch latch,String search_input, ContactFetchedCallBack contactFetchedCallback) {
+    public void fetchContactDetails(CountDownLatch latch, String search_input, ContactFetchedCallBack contactFetchedCallback) {
 
         FirebaseDatabase dbConnection = getConnection();
         DatabaseReference userRef = dbConnection.getReference("socialmedia").child(search_input);
 
-        Log.d("Calling firebase for ",search_input);
+        Log.d("Calling firebase for ", search_input);
 
 
-       userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
 
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()){
-                    Log.d("Snapshot-key",snapshot.getKey());
-                     Contact contact= snapshot.getValue(Contact.class);
+                                                   @Override
+                                                   public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                       if (snapshot.exists()) {
+                                                           Log.d("Snapshot-key", snapshot.getKey());
+                                                           Contact contact = snapshot.getValue(Contact.class);
 
-                     contactFetchedCallback.contactFetched(contact);
+                                                           contactFetchedCallback.contactFetched(contact);
 
-                }else{
-                    Log.d("Data Not Fetched","no data for given use "+ search_input);
+                                                       } else {
+                                                           Log.d("Data Not Fetched", "no data for given use " + search_input);
 
-                    contactFetchedCallback.noDataFound();
-                }
-                latch.countDown();
-            }
+                                                           contactFetchedCallback.noDataFound();
+                                                       }
+                                                       latch.countDown();
+                                                   }
 
-             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.d("Error",error.getMessage());
+                                                   @Override
+                                                   public void onCancelled(@NonNull DatabaseError error) {
+                                                       Log.d("Error", error.getMessage());
 
-                contactFetchedCallback.errorFetched(error.getMessage());
-                 latch.countDown();
-            }
+                                                       contactFetchedCallback.errorFetched(error.getMessage());
+                                                       latch.countDown();
+                                                   }
 
 
-        }
+                                               }
 
         );
 
 
-
     }
 
-    public void saveUserDataToSocialMediaDatabase(String uid,String name, String phoneNumber,String email) {
-        saveMetaDataUidAndPhoneNumberLink(uid,name,phoneNumber,email);
+    public void saveUserDataToSocialMediaDatabase(String uid, String name, String phoneNumber, String email) {
+        saveMetaDataUidAndPhoneNumberLink(uid, name, phoneNumber, email);
         DatabaseReference usersRef = getConnection().getReference("socialmedia");
         DatabaseReference userRef = usersRef.child(phoneNumber);
 
 
-        Contact contact = new Contact(name,phoneNumber,email);
+        Contact contact = new Contact(name, phoneNumber, email);
 
         // Save the user data to the database
         userRef.setValue(contact)
@@ -147,7 +146,7 @@ public class RealTimeDbConnectionService implements RealTimeFireBaseDBInterface 
         getPhoneNumberFromDatabase(currentUid, new PhoneNumberFetchedCallback() {
             @Override
             public void onPhoneNumberFetched(String phone_number) {
-                Log.d("Phone_number", ""+phone_number);
+                Log.d("Phone_number", "" + phone_number);
                 DatabaseReference socialusersRef = getConnection().getReference("socialmedia")
                         .child(phone_number);
 
@@ -155,12 +154,12 @@ public class RealTimeDbConnectionService implements RealTimeFireBaseDBInterface 
                 socialusersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if(snapshot.exists()){
-                            Log.d("Data","User data exists");
+                        if (snapshot.exists()) {
+                            Log.d("Data", "User data exists");
                             Contact data = snapshot.getValue(Contact.class);
-                            Log.d("Data",""+data.getName());
-                            Log.d("Data",""+data.getFollower());
-                            Log.d("Data",""+data.getFollowing());
+                            Log.d("Data", "" + data.getName());
+                            Log.d("Data", "" + data.getFollower());
+                            Log.d("Data", "" + data.getFollowing());
                             userDataFetchedCallback.onSuccess(data);
                         }
 
@@ -175,7 +174,7 @@ public class RealTimeDbConnectionService implements RealTimeFireBaseDBInterface 
 
             @Override
             public void onError(Exception ex) {
-                Log.d("Error",ex.getMessage());
+                Log.d("Error", ex.getMessage());
                 userDataFetchedCallback.onError(ex.getMessage());
             }
         });
@@ -184,7 +183,7 @@ public class RealTimeDbConnectionService implements RealTimeFireBaseDBInterface 
     }
 
     public void getPhoneNumberFromDatabase(String uid, PhoneNumberFetchedCallback callback) {
-        Log.d("Metadata Call","Calling metadata for user profile");
+        Log.d("Metadata Call", "Calling metadata for user profile");
         DatabaseReference metadataRef = getConnection().getReference("metaData").child(uid);
 
 
@@ -201,29 +200,6 @@ public class RealTimeDbConnectionService implements RealTimeFireBaseDBInterface 
 
             }
         });
-
-    }
-
-
-    public List<String> getFollowersList(String contact_number) {
-        final List<String>[] followerList = new List[]{null};
-        fetchContactDetails(new CountDownLatch(1),contact_number, new ContactFetchedCallBack() {
-            @Override
-            public void contactFetched(Contact contact) {
-                 followerList[0] = contact.getFollower();
-            }
-
-            @Override
-            public void errorFetched(String errorMessage) {
-                Log.d("Error",errorMessage);
-            }
-
-            @Override
-            public void noDataFound() {
-                Log.d("404","no data found");
-            }
-        });
-    return followerList[0];
 
     }
 

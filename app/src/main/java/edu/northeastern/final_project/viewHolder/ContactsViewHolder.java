@@ -26,21 +26,21 @@ public class ContactsViewHolder extends RecyclerView.ViewHolder implements View.
         return action_on_contact;
     }
 
-    public ContactsViewHolder(@NonNull View itemView,RecyclerView.Adapter<ContactsViewHolder> adapter ) {
+    public ContactsViewHolder(@NonNull View itemView, RecyclerView.Adapter<ContactsViewHolder> adapter) {
         super(itemView);
         this.contact_name = itemView.findViewById(R.id.textview_contact);
-       this.action_on_contact = itemView.findViewById(R.id.button_action_on_contact);
-       this.imageView = itemView.findViewById(R.id.image_view_contact);
-       action_on_contact.setOnClickListener(this);
-       this.adapter = (ContactsAdapter) adapter;
+        this.action_on_contact = itemView.findViewById(R.id.button_action_on_contact);
+        this.imageView = itemView.findViewById(R.id.image_view_contact);
+        action_on_contact.setOnClickListener(this);
+        this.adapter = (ContactsAdapter) adapter;
     }
 
 
     @Override
     public void onClick(View v) {
         int position = getAdapterPosition();
-        if(position != RecyclerView.NO_POSITION){
-            if(action_on_contact.getText().equals("Follow")){
+        if (position != RecyclerView.NO_POSITION) {
+            if (action_on_contact.getText().equals("Follow")) {
                 // add the number to follower and following list
 
                 action_on_contact.setText("FOLLOWED");

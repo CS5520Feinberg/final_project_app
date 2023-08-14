@@ -37,7 +37,7 @@
 
     android:textAlignment="center"
     android:gravity="center"
-    android:textColor="@color/black"
+    android:textColor="@color/pink_border"
     app:layout_constraintStart_toEndOf="@id/image_view_contact"
     app:layout_constraintEnd_toEndOf="@id/vertical_70_30"
     app:layout_constraintTop_toTopOf= "parent"
@@ -48,12 +48,20 @@
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:text="Action"
+        android:backgroundTint="@color/pink_border"
         android:textColor="@color/white"
         app:layout_constraintStart_toEndOf="@id/textview_contact"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
 
     />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/pink_border"
+        app:layout_constraintTop_toBottomOf="@id/textview_contact"
+
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

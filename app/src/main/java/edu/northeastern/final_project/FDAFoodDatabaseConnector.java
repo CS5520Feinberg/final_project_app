@@ -2,6 +2,10 @@ package edu.northeastern.final_project;
 
 import android.util.Log;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,14 +15,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 public class FDAFoodDatabaseConnector {
     private String API_KEY = BuildConfig.API_KEY;
-    private String BASE_URL_FOOD="https://api.nal.usda.gov/fdc/v1/food";
-    private String BASE_URL_FOODS="https://api.nal.usda.gov/fdc/v1/foods";
+    private String BASE_URL_FOOD = "https://api.nal.usda.gov/fdc/v1/food";
+    private String BASE_URL_FOODS = "https://api.nal.usda.gov/fdc/v1/foods";
     private String SEARCH_BASE_URL = BASE_URL_FOODS + "/search?api_key=" + API_KEY + "&query=";
 
     public FDAFoodDatabaseConnector() {
@@ -62,7 +62,7 @@ public class FDAFoodDatabaseConnector {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             String len;
 
-            while((len=bufferedReader.readLine()) != null) {
+            while ((len = bufferedReader.readLine()) != null) {
                 stringBuilder.append(len);
             }
             bufferedReader.close();
@@ -89,6 +89,7 @@ public class FDAFoodDatabaseConnector {
 class FDAKeywordQuery {
     private String kwQuery = null;
     private String queryResponse = null;
+
     public FDAKeywordQuery(String keyword) {
         Log.d("FDAKeywordQuery", "Starting FDA Keyword search");
         kwQuery = keyword;

@@ -65,9 +65,11 @@ public class FoodData {
     public String getName() {
         return food_name;
     }
+
     public int getFdcId() {
         return fdcId;
     }
+
     public float getProtein() {
         return protein_g;
     }

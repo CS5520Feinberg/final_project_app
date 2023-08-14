@@ -20,10 +20,9 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
-public class DBHandler extends SQLiteOpenHelper{
+public class DBHandler extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "appdb";
     private static final String TABLE_NAME = "daily_intake";
@@ -46,7 +45,7 @@ public class DBHandler extends SQLiteOpenHelper{
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     public DBHandler(Context context, String userId) {
-        super (context, DB_NAME + "_" + userId, null, DB_VERSION);
+        super(context, DB_NAME + "_" + userId, null, DB_VERSION);
         targetUserId = userId;
     }
 
@@ -65,7 +64,7 @@ public class DBHandler extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         //create a query for data
-        String query = "CREATE TABLE " + TABLE_NAME+ " ("
+        String query = "CREATE TABLE " + TABLE_NAME + " ("
                 + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + MEAL_TYPE + " TEXT, "
                 + MEAL_NAME + " TEXT, "
@@ -76,7 +75,7 @@ public class DBHandler extends SQLiteOpenHelper{
                 + MODIFIED_TIME + " TEXT, "
                 + FLAG + " TEXT)";
 
-        Log.d("Table create SQL",  "CREATE_DAILYINTAKE_TABLE");
+        Log.d("Table create SQL", "CREATE_DAILYINTAKE_TABLE");
 
         db.execSQL(query);
 
@@ -85,12 +84,12 @@ public class DBHandler extends SQLiteOpenHelper{
                 + STEPS + " TEXT, "
                 + MODIFIED_TIME + " TEXT, "
                 + FLAG + " TEXT)";
-        Log.d("Table create SQL",  "CREATE_STEP_TABLE");
+        Log.d("Table create SQL", "CREATE_STEP_TABLE");
         db.execSQL(query_steps);
 
         String queryGoal = "CREATE TABLE " + TABLE_NAME_GOAL + " ("
                 + GOAL + " INTEGER)";
-        Log.d("Table create SQL",  "CREATE_GOAL_TABLE");
+        Log.d("Table create SQL", "CREATE_GOAL_TABLE");
 
         db.execSQL(queryGoal);
 
@@ -128,7 +127,7 @@ public class DBHandler extends SQLiteOpenHelper{
     }
 
     //add new daily intake to sqlite db
-    public void addDailyIntake (String mealType, String mealName, String calories, String protein, String carbs, String fats) {
+    public void addDailyIntake(String mealType, String mealName, String calories, String protein, String carbs, String fats) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         //create a variable for content values
@@ -165,22 +164,22 @@ public class DBHandler extends SQLiteOpenHelper{
     public ArrayList<Intake> readIntake() {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursorIntake = db.rawQuery("SELECT * FROM "+ TABLE_NAME, null);
+        Cursor cursorIntake = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
 
         ArrayList<Intake> intakeArrayList = new ArrayList<>();
 
         if (cursorIntake.moveToFirst()) {
             do {
-                    intakeArrayList.add (new Intake(cursorIntake.getString(1),
-                            cursorIntake.getString(2),
-                            cursorIntake.getString(3),
-                            cursorIntake.getString(4),
-                            cursorIntake.getString(5),
-                            cursorIntake.getString(6),
-                            cursorIntake.getString(7),
-                            cursorIntake.getString(8))) ;
+                intakeArrayList.add(new Intake(cursorIntake.getString(1),
+                        cursorIntake.getString(2),
+                        cursorIntake.getString(3),
+                        cursorIntake.getString(4),
+                        cursorIntake.getString(5),
+                        cursorIntake.getString(6),
+                        cursorIntake.getString(7),
+                        cursorIntake.getString(8)));
 
-                } while (cursorIntake.moveToNext());
+            } while (cursorIntake.moveToNext());
         }
 
         cursorIntake.close();
@@ -191,7 +190,7 @@ public class DBHandler extends SQLiteOpenHelper{
     public ArrayList<Intake> readDailyIntake() {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursorIntake = db.rawQuery("SELECT * FROM "+ TABLE_NAME, null);
+        Cursor cursorIntake = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
 
         ArrayList<Intake> intakeArrayList = new ArrayList<>();
 
@@ -271,7 +270,7 @@ public class DBHandler extends SQLiteOpenHelper{
 
 
     // add steps to sqlite db
-    public void addSteps (int numSteps) {
+    public void addSteps(int numSteps) {
         ZonedDateTime gmt = ZonedDateTime.now(ZoneOffset.UTC);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedTime = gmt.format(formatter);
@@ -298,7 +297,7 @@ public class DBHandler extends SQLiteOpenHelper{
 
     public ArrayList<StepHolder> readSteps() {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursorSteps = db.rawQuery("SELECT * FROM "+ STEP_TABLE_NAME, null);
+        Cursor cursorSteps = db.rawQuery("SELECT * FROM " + STEP_TABLE_NAME, null);
         ArrayList<StepHolder> steps = new ArrayList<>();
 
         if (cursorSteps.moveToFirst()) {
@@ -392,7 +391,7 @@ public class DBHandler extends SQLiteOpenHelper{
 
     public void uploadStepsFirebase() {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursorSteps = db.rawQuery("SELECT * FROM "+ STEP_TABLE_NAME, null);
+        Cursor cursorSteps = db.rawQuery("SELECT * FROM " + STEP_TABLE_NAME, null);
         ArrayList<StepHolder> steps = new ArrayList<>();
 
         if (cursorSteps.moveToFirst()) {
@@ -430,7 +429,7 @@ public class DBHandler extends SQLiteOpenHelper{
         }
 
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursorIntake = db.rawQuery("SELECT * FROM "+ TABLE_NAME, null);
+        Cursor cursorIntake = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
 
         if (cursorIntake.moveToFirst()) {
             do {
@@ -465,7 +464,8 @@ public class DBHandler extends SQLiteOpenHelper{
 
         cursorIntake.close();
     }
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion ){
+
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
     }

@@ -76,7 +76,7 @@ public class WeeklyChartFragment extends Fragment {
     /*** reference: MPChartAndroid sample code ***/
     private void setupChart() {
 
-        chart.setDrawOrder(new CombinedChart.DrawOrder[] { CombinedChart.DrawOrder.BAR, CombinedChart.DrawOrder.LINE});
+        chart.setDrawOrder(new CombinedChart.DrawOrder[]{CombinedChart.DrawOrder.BAR, CombinedChart.DrawOrder.LINE});
 
         chart.getAxisLeft().setDrawGridLines(false);
         chart.getXAxis().setDrawGridLines(false);
@@ -144,7 +144,7 @@ public class WeeklyChartFragment extends Fragment {
                 if (entry.getX() == itemcount - 1) {
                     return String.valueOf(entry.getY());
                 } else {
-                    return  "";
+                    return "";
                 }
             }
         });

@@ -1,13 +1,8 @@
 package edu.northeastern.final_project.activity;
-import android.app.Dialog;
+
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-
-import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.Toast;
-
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,19 +11,12 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.textfield.TextInputLayout;
-
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 
 import edu.northeastern.final_project.R;
 import edu.northeastern.final_project.adapter.ContactsAdapter;
 import edu.northeastern.final_project.backgroundThreadClass.GetContactsThread;
-
 import edu.northeastern.final_project.fragments.SearchBoxFragment;
-import edu.northeastern.final_project.validation.GenericStringValidation;
 
 public class AddFriendsActivity extends AppCompatActivity {
     RecyclerView contactsRV;
@@ -37,6 +25,7 @@ public class AddFriendsActivity extends AppCompatActivity {
     ContactsAdapter add_friends_adapter;
     SearchBoxFragment searchBoxFragment;
     private static final int PERMISSION_REQUEST_READ_CONTACTS = 100;
+
     @Override
     protected void onCreate(Bundle savedInstancesState) {
         super.onCreate(savedInstancesState);
@@ -74,11 +63,11 @@ public class AddFriendsActivity extends AppCompatActivity {
 
         contactsRV.setLayoutManager(new LinearLayoutManager(this));
 
-        contactsAdapter = new ContactsAdapter(new ArrayList<>(), this,"Invite");
-        add_friends_adapter = new ContactsAdapter(new ArrayList<>(),this,"Follow");
+        contactsAdapter = new ContactsAdapter(new ArrayList<>(), this, "Invite");
+        add_friends_adapter = new ContactsAdapter(new ArrayList<>(), this, "Follow");
         contactsRV.setAdapter(contactsAdapter);
         add_friends_RV.setAdapter(add_friends_adapter);
-        new GetContactsThread(this,contactsRV, add_friends_RV,contactsAdapter,add_friends_adapter).execute();
+        new GetContactsThread(this, contactsRV, add_friends_RV, contactsAdapter, add_friends_adapter).execute();
         // Add the fragment to the container
 
         if (getSupportFragmentManager().findFragmentByTag(SearchBoxFragment.class.getName()) == null) {
@@ -106,6 +95,7 @@ public class AddFriendsActivity extends AppCompatActivity {
             }
         }
     }
+
     @Override
     protected void onResume() {
         super.onResume();

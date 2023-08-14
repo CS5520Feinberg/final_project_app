@@ -12,7 +12,8 @@ public class Constants {
     public FirebaseAuth getFirebaseAuth() {
         return firebaseAuth;
     }
-    public String getUid(){
-       return firebaseAuth.getUid();
+
+    public String getUid() {
+        return firebaseAuth.getUid();
     }
 }
