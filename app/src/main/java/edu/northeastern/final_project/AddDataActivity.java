@@ -1,12 +1,12 @@
 package edu.northeastern.final_project;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.res.AssetManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -39,7 +39,7 @@ public class AddDataActivity extends AppCompatActivity {
 
         String drop_query = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
-        String query = "CREATE TABLE " + TABLE_NAME+ " ("
+        String query = "CREATE TABLE " + TABLE_NAME + " ("
                 + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + MEAL_TYPE + " TEXT, "
                 + MEAL_NAME + " TEXT, "
@@ -65,7 +65,7 @@ public class AddDataActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Error: Load nutrition_data failed", Toast.LENGTH_SHORT).show();
         }
 
-        Log.d("Tag", "Load csv file") ;
+        Log.d("Tag", "Load csv file");
 
         BufferedReader buffer = new BufferedReader(new InputStreamReader(inputStream));
         String line = "";
@@ -101,6 +101,6 @@ public class AddDataActivity extends AppCompatActivity {
         db.setTransactionSuccessful();
         db.endTransaction();
 
-        Log.d("Tag", "Load csv file to sqlite") ;
+        Log.d("Tag", "Load csv file to sqlite");
     }
 }

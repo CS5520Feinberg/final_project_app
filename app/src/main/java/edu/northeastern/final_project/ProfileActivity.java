@@ -1,22 +1,34 @@
 package edu.northeastern.final_project;
 
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
+
 import android.content.Intent;
 import android.os.Bundle;
+
 import android.util.Log;
+
+import android.view.View;
+
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+
 import java.util.concurrent.TimeUnit;
+
+
+import edu.northeastern.final_project.activity.SocialMediaActivity;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -67,15 +79,15 @@ public class ProfileActivity extends AppCompatActivity {
 
         TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(
                 tabLayout, viewPager, true, (tab, position) -> {
-                    switch (position) {
-                        case 0:
-                            tab.setText("Calories");
-                            break;
-                        case 1:
-                            tab.setText("Nutrition");
-                            break;
-                    }
-                });
+            switch (position) {
+                case 0:
+                    tab.setText("Calories");
+                    break;
+                case 1:
+                    tab.setText("Nutrition");
+                    break;
+            }
+        });
         tabLayoutMediator.attach();
 
         scheduler();
@@ -85,5 +97,10 @@ public class ProfileActivity extends AppCompatActivity {
         PeriodicWorkRequest notificationWorkRequest = new PeriodicWorkRequest.Builder(NotificationWorker.class, 60, TimeUnit.SECONDS).build();
         WorkManager.getInstance(this).enqueue(notificationWorkRequest);
         Log.d("Schedule", "Worker scheduled");
+    }
+
+    public void launch_social_media(View view) {
+        Intent intent = new Intent(ProfileActivity.this, SocialMediaActivity.class);
+        startActivity(intent);
     }
 }
