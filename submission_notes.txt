@@ -36,3 +36,4 @@ Video Tour Links:
 
 Test Information:
 Email: testaccount@gmail.com, Password: 123456
+Email: test123@test.com, Password: password123
