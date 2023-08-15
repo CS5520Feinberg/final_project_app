@@ -4,6 +4,10 @@ Github: https://github.com/CS5520Feinberg/final_project_app
 
 Group:
   Jialin Huang
+    - Email: huang.jial@northeastern.edu
+    - Github: jlhuang12
+    - Contribution: Data visualization basecode, daily instake UI, database design and implementation of storing sqlite and generated nutrition data.
+
   Kevin Lin
     - Email: lin.kevin1@northeastern.edu
     - Github: kevinlin5115@gmail.com
