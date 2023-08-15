@@ -2,6 +2,7 @@ package edu.northeastern.final_project.activity;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -40,6 +41,10 @@ public class SocialMediaActivity extends AppCompatActivity {
     protected void onCreate(Bundle SavedInstancesState) {
         super.onCreate(SavedInstancesState);
         setContentView(R.layout.social_media_activity);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ContextCompat
+                    .getColor(this, R.color.pink_border)));
+        }
         setupActivityData();
         ImageView imageView = findViewById(R.id.imageView);
         imagePickerLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {

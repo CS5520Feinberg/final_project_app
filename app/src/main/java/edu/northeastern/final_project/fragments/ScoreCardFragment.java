@@ -140,7 +140,7 @@ public class ScoreCardFragment extends Fragment {
                                             Collections.sort(scoreCards, new Comparator<ScoreCard>() {
                                                 @Override
                                                 public int compare(ScoreCard o1, ScoreCard o2) {
-                                                    return Integer.compare(o1.getStepCount(), o2.getStepCount());
+                                                    return Integer.compare(o2.getStepCount(), o1.getStepCount());
                                                 }
                                             });
                                             getActivity().runOnUiThread(new Runnable() {

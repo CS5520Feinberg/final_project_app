@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -43,6 +44,16 @@ public class ScoreCardAdapter extends RecyclerView.Adapter<ScoreCardViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ScoreCardViewHolder holder, int position) {
+        if(position == 0){
+            holder.cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.gold));
+        }
+        if(position == 1){
+            holder.cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.silver));
+        }
+        if(position == 2){
+            holder.cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.bronze));
+        }
+
         holder.name.setText(scoreCards.get(position).getContact().getName());
         holder.stepCount.setText(""+scoreCards.get(position).getStepCount());
         if (scoreCards.get(position).getContact().getImage_uri() != null) {

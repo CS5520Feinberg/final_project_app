@@ -4,6 +4,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,6 +46,14 @@ public class ContactsViewHolder extends RecyclerView.ViewHolder implements View.
 
                 action_on_contact.setText("FOLLOWED");
                 adapter.deletePosition(position);
+            }
+        }
+        if (position != RecyclerView.NO_POSITION) {
+            if (action_on_contact.getText().equals("Invite")) {
+                // add the number to follower and following list
+//                Toast.makeText(v.getContext(),"Feature for future Scope",Toast.LENGTH_LONG);Toast.makeText(v.getContext(),"Feature for future Scope",Toast.LENGTH_LONG);
+//                action_on_contact.setText("FOLLOWED");
+//                adapter.deletePosition(position);
             }
         }
     }
