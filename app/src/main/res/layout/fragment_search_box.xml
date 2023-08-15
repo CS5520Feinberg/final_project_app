@@ -20,6 +20,7 @@
     android:id="@+id/search_box_input_layout"
     android:layout_width="0dp"
     android:layout_height="60dp"
+    android:layout_marginStart="5dp"
     android:background="@color/white"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintBottom_toBottomOf="parent"
@@ -40,7 +41,8 @@
         android:text="Search"
         android:textColor="@color/white"
         android:backgroundTint="@color/pink_border"
-
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
         app:layout_constraintStart_toEndOf="@id/guideline_0.7"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/search_box_input_layout"

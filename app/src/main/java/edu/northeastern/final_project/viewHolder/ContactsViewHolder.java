@@ -3,7 +3,8 @@ package edu.northeastern.final_project.viewHolder;
 import android.content.Context;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
+import de.hdodenhof.circleimageview.CircleImageView;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,7 +18,7 @@ public class ContactsViewHolder extends RecyclerView.ViewHolder implements View.
 
     public TextView contact_name;
     public Button action_on_contact;
-    public ImageView imageView;
+    public CircleImageView imageView;
     private ContactsAdapter adapter;
 
     Context context;
