@@ -77,14 +77,14 @@ public class SocialMediaActivity extends AppCompatActivity {
         TextView followers_number = socialFragment.findViewById(R.id.text_view_followers_number);
         TextView following_number = socialFragment.findViewById(R.id.text_view_following_number);
         ImageView imageView = socialFragment.findViewById(R.id.imageView);
-        new Thread(()->{
+//        new Thread(()->{
             if (getSupportFragmentManager().findFragmentByTag(ScoreCardFragment.class.getName()) == null) {
                 ScoreCardFragment scoreCardFragment = new ScoreCardFragment();
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container_view_rv, scoreCardFragment, ScoreCardFragment.class.getName())
                         .commit();
             }
-        }).start();
+//        }).start();
 
         socialFragment.findViewById(R.id.tex_view_followers_text).setOnTouchListener(new View.OnTouchListener() {
             @Override
