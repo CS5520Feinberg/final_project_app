@@ -10,6 +10,7 @@
 </string-array>
 
 <string-array name="dietary_preferences">
+    <item>Dietary Preference</item>
     <item>None</item>
     <item>Vegan</item>
     <item>Vegetarian</item>
@@ -20,6 +21,7 @@
 </string-array>
 
 <string-array name="nutrition_needs">
+    <item>Nutrition Needs</item>
     <item>None</item>
     <item>Balanced</item>
     <item>High-Protein</item>
@@ -28,7 +30,7 @@
 </string-array>
 
 <string-array name="cuisine_types">
-    <item>None</item>
+    <item>Cuisine Type</item>
     <item>Italian</item>
     <item>Chinese</item>
     <item>Indian</item>
@@ -36,6 +38,7 @@
 </string-array>
 
 <string-array name="skill_levels">
+    <item>Skill Level</item>
     <item>Beginner</item>
     <item>Intermediate</item>
     <item>Advanced</item>

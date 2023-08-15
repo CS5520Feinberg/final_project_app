@@ -94,7 +94,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void scheduler() {
-        PeriodicWorkRequest notificationWorkRequest = new PeriodicWorkRequest.Builder(NotificationWorker.class, 60, TimeUnit.SECONDS).build();
+        PeriodicWorkRequest notificationWorkRequest = new PeriodicWorkRequest.Builder(NotificationWorker.class, 80, TimeUnit.SECONDS).build();
         WorkManager.getInstance(this).enqueue(notificationWorkRequest);
         Log.d("Schedule", "Worker scheduled");
     }

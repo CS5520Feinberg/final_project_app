@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="Enter a prompt for the recipe generator*"
+            android:hint="Enter key ingredients for the recipe*"
             android:inputType="text"
             android:contentDescription="Preferred Ingredients"
             android:importantForAccessibility="yes" />
