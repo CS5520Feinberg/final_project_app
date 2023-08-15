@@ -1,0 +1,38 @@
+# Final Project Submission Text File
+
+Github: https://github.com/CS5520Feinberg/final_project_app
+
+Group:
+  Jialin Huang
+    - Email: huang.jial@northeastern.edu
+    - Github: jlhuang12
+    - Contribution: Data visualization basecode, daily instake UI, database design and implementation of storing sqlite and generated nutrition data.
+
+  Kevin Lin
+    - Email: lin.kevin1@northeastern.edu
+    - Github: kevinlin5115@gmail.com
+    - Contributions: Developed step counter service for running step counter in the background, the profile activity including charts representation, settings page, add daily intake feature. Also helped construct the local sqlite database structure.
+
+  Akshat Gandhi
+    - Email: gandhi.aks@northeastern.edu
+    - Github: AkshatGM6
+    - Contributions: Developed Recipe Generator API (in Django), 
+      integrated the API and developed recipe generation functionality in Android,
+      implemented Notifications for weekly goals.
+
+  Vaibhav Garg
+  Shashank Manjunath
+    - Email: manjunath.sh@northeastern.edu
+    - Github: shashankmanjunath14@gmail.com
+    - Contributions: Developed step counting algorithm and associated code,
+      implemented queries for FDA API, implemented synchronization of local
+      database and Firebase database.
+
+Video Tour Links:
+  1. Jialin/Kevin/Shashank - https://drive.google.com/file/d/1fv67ecVU1hjA6DYyzNSaZRg_QjeuEhbm/view?usp=drive_link
+  2. Akshat - 1) Recipe Generator - https://drive.google.com/file/d/18HL7L_hmJ9wf-siU3uzEUQMCRZ421SAt/view?usp=sharing
+              2) Weekly Goal - https://drive.google.com/file/d/12GSYzeIe36NF_FINL0q6Lvfrhv1BXIKN/view?usp=sharing
+  3. Vaibhav
+
+Test Information:
+Email: testaccount@gmail.com, Password: 123456

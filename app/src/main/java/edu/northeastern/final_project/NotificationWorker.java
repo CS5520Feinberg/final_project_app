@@ -110,7 +110,7 @@ public class NotificationWorker extends Worker {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle("Goal Accomplished")
-                .setContentText("Congratulations!" + firebaseUser.getDisplayName() + " You have completed your goal")
+                .setContentText("Congratulations!" + " You have completed your goal")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
