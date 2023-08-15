@@ -1,16 +1,21 @@
 package edu.northeastern.final_project;
 
 
-import android.Manifest.permission;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+
+
+
 import android.view.View;
+
+
 import android.widget.Button;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
+import android.Manifest.permission;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -21,9 +26,9 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.regex.Pattern;
 
-import edu.northeastern.final_project.activity.SocialMediaActivity;
 import edu.northeastern.final_project.backgroundThreadClass.UniquePhoneNumberThread;
 import edu.northeastern.final_project.validation.GenericStringValidation;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,44 +58,37 @@ public class MainActivity extends AppCompatActivity {
         signUpButton = findViewById(R.id.SignUpButton);
 
         signUpButton.setOnClickListener(v -> {
-            String email = emailInput.getText().toString();
-            String password = passwordInput.getText().toString();
-            String phoneNumber = phoneNumberInput.getText().toString();
-            String name = nameInput.getText().toString();
-            if (email.isEmpty() || password.isEmpty() || phoneNumber.isEmpty()) {
-                Toast.makeText(MainActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
-                return;
+                    String email = emailInput.getText().toString();
+                    String password = passwordInput.getText().toString();
+                    String phoneNumber = phoneNumberInput.getText().toString();
+                    String name = nameInput.getText().toString();
+                    if (email.isEmpty() || password.isEmpty() || phoneNumber.isEmpty()) {
+                        Toast.makeText(MainActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    //check on phone number
+                    String pattern_regex = "^[1-9]{1}[0-9]{9}";
+                    Pattern pattern = Pattern.compile(pattern_regex);
+
+                    if (!new GenericStringValidation<Pattern>(pattern).validateString(phoneNumber)) {
+                        Toast.makeText(this, "only ten digit phone number is allowed", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    new UniquePhoneNumberThread(database, this, phoneNumber, mAuth, email, password, name).execute();
+                });
+
+            loginButton.setOnClickListener(v -> {
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+            });
+            if (ContextCompat.checkSelfPermission(this, permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
+                //ask for permission
+                requestPermissions(new String[]{permission.ACTIVITY_RECOGNITION}, 0);
             }
-            //check on phone number
-            String pattern_regex = "^[1-9]{1}[0-9]{9}";
-            Pattern pattern = Pattern.compile(pattern_regex);
-
-            if (!new GenericStringValidation<Pattern>(pattern).validateString(phoneNumber)) {
-                Toast.makeText(this, "only ten digit phone number is allowed", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            new UniquePhoneNumberThread(database, this, phoneNumber, mAuth, email, password, name).execute();
-
-
-        });
-
-        loginButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-        });
-
-        if (ContextCompat.checkSelfPermission(this, permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
-            //ask for permission
-            requestPermissions(new String[]{permission.ACTIVITY_RECOGNITION}, 0);
         }
-        FDAKeywordQuery kwQuery = new FDAKeywordQuery("chicken breast");
-        kwQuery.search();
     }
 
-    public void launch_add_friends(View view) {
-        Intent intent = new Intent(MainActivity.this, SocialMediaActivity.class);
-        startActivity(intent);
-    }
 
-}
+
+

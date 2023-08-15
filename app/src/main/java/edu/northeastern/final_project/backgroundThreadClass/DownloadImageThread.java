@@ -2,6 +2,7 @@ package edu.northeastern.final_project.backgroundThreadClass;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -33,6 +34,16 @@ public class DownloadImageThread extends GenericAsyncClassThreads<Void, Void, Bi
             try {
                 byte[] bytes = Tasks.await(downloadTask); // Wait for the download task to complete
                 if (bytes != null && bytes.length > 0) {
+                    if (Looper.myLooper() == Looper.getMainLooper()) {
+                        Log.d("Main Thread",getClass().getName());
+                        // Code is running on the main thread
+                        // You can safely update UI components here
+                    } else {
+                        Log.d("Background Thread",getClass().getName());
+                        // Code is running on a background thread
+                        // You should not update UI components directly from here
+                    }
+
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                     return bitmap;
                 }

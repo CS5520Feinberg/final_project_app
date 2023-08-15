@@ -1,5 +1,7 @@
 package edu.northeastern.final_project.interfaces;
 
+import java.util.List;
+
 import edu.northeastern.final_project.entity.Contact;
 
 public interface ContactFetchedCallBack {
@@ -8,4 +10,6 @@ public interface ContactFetchedCallBack {
     void errorFetched(String errorMessage);
 
     void noDataFound();
+
+    void onMultipleContactFetched(List<Contact> contacts);
 }

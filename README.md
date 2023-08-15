@@ -3,7 +3,7 @@
 ## Introduction
 
 - This is the final project repo for 2023 summer mobile application class.
-- Team members: Kevin Lin, Shashank Manjunath, Akshat Alkash Gandhi, Vaibhav Garg, Jialin Huang
+- Team members: Kevin Lin, Shashank Manjunath, Akshat Gandhi, Vaibhav Garg, Jialin Huang
 
 ## Relevant materials
 

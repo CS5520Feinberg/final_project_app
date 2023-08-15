@@ -39,7 +39,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsViewHolder> {
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         view.setLayoutParams(layoutParams);
 
-        return new ContactsViewHolder(view, this);
+        return new ContactsViewHolder(view, this,context);
     }
 
     @Override

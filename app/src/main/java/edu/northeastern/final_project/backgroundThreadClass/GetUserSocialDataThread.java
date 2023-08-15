@@ -54,6 +54,7 @@ public class GetUserSocialDataThread extends GenericAsyncClassThreads<Void, Void
                         } else {
                             new DownloadImageThread(contact.getImage_uri(), imageView).execute();
                         }
+                    }});
                         DatabaseReference followingRef = new RealTimeDbConnectionService().getConnection()
                                 .getReference("socialmedia").child("" + contact.getPhone_number()).child("following");
                         followingRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -102,10 +103,6 @@ public class GetUserSocialDataThread extends GenericAsyncClassThreads<Void, Void
 
 
                     }
-                });
-
-
-            }
 
             @Override
             public void onError(String message) {

@@ -1,6 +1,7 @@
 package edu.northeastern.final_project.activity;
 
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -30,18 +31,13 @@ public class AddFriendsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstancesState) {
         super.onCreate(savedInstancesState);
         setContentView(R.layout.activity_add_friends);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ContextCompat
+                    .getColor(this, R.color.pink_border)));
+        }
         // Create an instance of SearchBoxFragment
         searchBoxFragment = new SearchBoxFragment();
 
-//        // Add the fragment to the container
-//        if (savedInstancesState == null) {
-//            getSupportFragmentManager().beginTransaction()
-//                    .add(R.id.fragment_container_view, searchBoxFragment)
-//                    .commit();
-//        }
-//
-//        // Set the adapter for the fragment
-//        searchBoxFragment.setAdapter(add_friends_adapter);
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) {
             // Request permission if not granted
@@ -75,6 +71,7 @@ public class AddFriendsActivity extends AppCompatActivity {
                     .add(R.id.fragment_container_view, searchBoxFragment, SearchBoxFragment.class.getName())
                     .commit();
         }
+
 
         // Set the adapter for the fragment
         searchBoxFragment.setAdapter(add_friends_adapter);

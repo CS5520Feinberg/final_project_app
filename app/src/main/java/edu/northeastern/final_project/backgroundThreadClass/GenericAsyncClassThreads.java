@@ -6,9 +6,11 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import edu.northeastern.final_project.entity.Contact;
 import edu.northeastern.final_project.validation.GenericStringValidation;
@@ -39,14 +41,19 @@ public abstract class GenericAsyncClassThreads<Input, Progress, Result> extends 
                 if (nameIndex != -1 && phoneNumberIndex != -1) {
                     String contactName = cursor.getString(nameIndex);
                     String phoneNumber = cursor.getString(phoneNumberIndex);
+                    Log.d("Contact",""+contactName+" "+phoneNumber);
+                    String parsed_phoneNumber = parsePhoneNumber(phoneNumber);
+                    Log.d("Phone_Number_Parsed",parsed_phoneNumber);
+                    // Create a new Contact instance and add it to the list
 
-                    if (new GenericStringValidation<>("^[1-9]{1}[0-9]{9}").validateString(phoneNumber)) {
+                    String pattern_regex = "^[1-9]{1}[0-9]{9}";
+                    Pattern pattern = Pattern.compile(pattern_regex);
 
-                        Log.d("Contact", "" + contactName + " " + phoneNumber);
+                    if (new GenericStringValidation<Pattern>(pattern).validateString(parsed_phoneNumber)) {
+                        Log.d("Contact", "" + contactName + " " + parsed_phoneNumber);
 
-                        Contact contact = new Contact(contactName, phoneNumber);
+                        Contact contact = new Contact(contactName, parsed_phoneNumber);
                         contactList.add(contact);
-
                     }
 
 
@@ -57,6 +64,19 @@ public abstract class GenericAsyncClassThreads<Input, Progress, Result> extends 
         }
         return contactList;
     }
+    private String parsePhoneNumber(String phoneNumber) {
+        String parsed_number ="";
+        for(char c : phoneNumber.toCharArray()){
+
+            if(c>='0' && c<='9'){
+                parsed_number+=c;
+            }
+        }
+        return parsed_number;
+    }
+
+
+
 
 
 }

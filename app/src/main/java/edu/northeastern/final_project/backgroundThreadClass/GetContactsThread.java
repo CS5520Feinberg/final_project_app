@@ -14,6 +14,7 @@ import java.util.concurrent.CountDownLatch;
 import edu.northeastern.final_project.adapter.ContactsAdapter;
 import edu.northeastern.final_project.dbConnectionHelpers.RealTimeDbConnectionService;
 import edu.northeastern.final_project.entity.Contact;
+
 import edu.northeastern.final_project.interfaces.ContactFetchedCallBack;
 import edu.northeastern.final_project.interfaces.UserDataFetchedCallback;
 
@@ -26,7 +27,7 @@ public class GetContactsThread extends GenericAsyncClassThreads<Void, Void, List
     ContactsAdapter add_friends_adapter;
     Set<String> registered_user;
     List<Contact> contacts_not_registered;
-    List<List<Contact>> filtered_lists;
+    List<List<Contact>> adapterDataLists;
 
 
     public GetContactsThread(Context context, RecyclerView contactsRv, RecyclerView add_friends_RV, ContactsAdapter contactsAdapter, ContactsAdapter add_friends_adapter) {
@@ -37,125 +38,141 @@ public class GetContactsThread extends GenericAsyncClassThreads<Void, Void, List
         this.add_friends_adapter = add_friends_adapter;
         this.registered_user = new HashSet<>();
         this.contacts_not_registered = new ArrayList<>();
-        this.filtered_lists = new ArrayList<>();
+        this.adapterDataLists = new ArrayList<>();
     }
 
     @Override
     protected List<List<Contact>> doInBackground(Void... voids) {
         List<Contact> contacts = getAddressBookContacts(context);
         Log.d("ListSize", "" + contacts.size());
+
+
         //call db to get contacts registered under FoodFit
-        final CountDownLatch latch = new CountDownLatch(1);
-        new RealTimeDbConnectionService().getRegisteredContacts(latch, registered_user);
+        CountDownLatch latch2 = new CountDownLatch(1);
+        new RealTimeDbConnectionService().getRegisteredContacts(latch2, registered_user);
         try {
-            latch.await();
+            latch2.await();
             Log.d("Registered_User", "" + registered_user);
             List<Contact> add_friends_list = filter_contacts(contacts, registered_user);
-            filtered_lists.add(contacts_not_registered);
-            filtered_lists.add(add_friends_list);
+            Log.d("Add friends list",""+add_friends_list);
+
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return filtered_lists;
+        return null;
 
     }
 
     private List<Contact> filter_contacts(List<Contact> contacts, Set<String> registered_user) {
         Log.d("FilterContactsMethod", "" + registered_user);
-        List<Contact> add_friends_list = new ArrayList<>();
+        final List<Contact>[] add_friends_list = new List[]{new ArrayList<>()};
 
 
-        // Use a separate latch for synchronization
-        CountDownLatch latch = new CountDownLatch(1);
+
 
         new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
-            @Override
-            public void onSuccess(Contact contact) {
-                List<String> following = contact.getFollowing();
-                Log.d("Got_User_DATA", "" + contact);
-                if (following != null) {
-                    synchronized (registered_user) {
-                        registered_user.removeAll(following);
-                        registered_user.remove(contact.getPhone_number());
-                    }
-                    synchronized (contacts) {
-                        contacts.removeAll(following);
-                        contacts.remove(contact.getPhone_number());
-                    }
-                } else {
-                    synchronized (registered_user) {
 
-                        registered_user.remove(contact.getPhone_number());
+            Object lock = new Object(); // Create a lock object for synchronization
+
+            @Override
+            public void onSuccess(Contact userData) {
+                List<String> following = userData.getFollowing();
+                Log.d("Got_User_DATA", "" + userData);
+                if (following != null) {
+                    Log.d("Remove followed user","Remove followed user");
+                        registered_user.removeAll(following);
+                        registered_user.remove(userData.getPhone_number());
+                        List<Contact> contacts_to_remove = new ArrayList<>();
+                        for(Contact contact : contacts){
+                            if(following.contains(contact.getPhone_number()) || contact.getPhone_number().equals(userData.getPhone_number())){
+                                contacts_to_remove.add(contact);
+                            }
+                        }
+                        contacts.removeAll(contacts_to_remove);
+                } else {
+                        registered_user.remove(userData.getPhone_number());
+                    Contact contactToRemove = null;
+                    for(Contact contact : contacts){
+                        if( contact.getPhone_number().equals(userData.getPhone_number())){
+                            contactToRemove = contact;
+                            break;
+                        }
                     }
-                    synchronized (contacts) {
-                        contacts.remove(contact.getPhone_number());
+                    contacts.remove(contactToRemove);
+                }
+                Log.d("Registered user Not followed",""+registered_user);
+                Log.d("Contacts not followed",""+contacts);
+
+//                contacts.removeAll(registered_user);
+//
+//                contacts_not_registered.addAll(contacts);
+                List<String> all_contacts_registered_not_followed_in_contact_book = new ArrayList<>();
+                for (Contact contact : contacts) {
+                    if (registered_user.contains(contact.getPhone_number())) {
+                        all_contacts_registered_not_followed_in_contact_book.add(contact.getPhone_number());
+                    } else {
+
+                        contacts_not_registered.add(contact);
                     }
                 }
+                Log.d("No of Contacts not registered",""+contacts_not_registered.size());
+                adapterDataLists.add(contacts_not_registered);
+                new RealTimeDbConnectionService().fetchMultipleUserData(all_contacts_registered_not_followed_in_contact_book, new ContactFetchedCallBack() {
+                    @Override
+                    public void contactFetched(Contact contact) {
 
-                latch.countDown();
+                    }
+
+                    @Override
+                    public void errorFetched(String errorMessage) {
+
+                    }
+
+                    @Override
+                    public void noDataFound() {
+
+                    }
+
+                    @Override
+                    public void onMultipleContactFetched(List<Contact> contacts) {
+                        Log.d("Sending Data",""+contacts);
+                        add_friends_list[0] = contacts;
+                        adapterDataLists.add(add_friends_list[0]);
+                        onPostExecute(adapterDataLists);
+                    }
+                });
+
+
+
             }
+
 
             @Override
             public void onError(String message) {
                 Log.d("Error", message);
-                latch.countDown();
+
             }
         });
-
-        try {
-            latch.await();
-            synchronized (add_friends_list) {
-                for (Contact contact : contacts) {
-                    if (registered_user.contains(contact.getPhone_number())) {
-                        Log.d("Inside", "inside-log");
-                        CountDownLatch latch1 = new CountDownLatch(1);
-                        new RealTimeDbConnectionService().fetchContactDetails(latch1, contact.getPhone_number(), new ContactFetchedCallBack() {
-                            @Override
-                            public void contactFetched(Contact contact) {
-                                Log.d("onFetched", "adding friend to list");
-                                add_friends_list.add(contact);
-                            }
-
-                            @Override
-                            public void errorFetched(String errorMessage) {
-                                Log.d("Error", errorMessage);
-                            }
-
-                            @Override
-                            public void noDataFound() {
-                                Log.d("No Data", "");
-                            }
-                        });
-                        try {
-                            latch1.await();
-                        } catch (InterruptedException ex) {
-                            ex.getMessage();
-                        }
-                    } else {
-                        contacts_not_registered.add(contact);
-                    }
-                }
-
-            }
-        } catch (InterruptedException ex) {
-            // Handle the exception appropriately
-        }
-
-        // Return a copy of the filtered list to prevent modification during iteration
-        synchronized (add_friends_list) {
-            return new ArrayList<>(add_friends_list);
+        synchronized (add_friends_list[0]) {
+            return new ArrayList<>(add_friends_list[0]);
         }
     }
 //
 
     protected void onPostExecute(List<List<Contact>> contacts) {
         super.onPostExecute(contacts);
+        if(contacts == null){
 
-        Log.d("Before Adapter Set", "" + "Before Adapter SEt in post execute");
+        }else{
+            Log.d("Before Adapter Set", "" + "Before Adapter SEt in post execute");
 
-        contactsAdapter.setContacts(contacts.get(0));
-        contactsAdapter.notifyDataSetChanged();
-        add_friends_adapter.setContacts(contacts.get(1));
-        add_friends_adapter.notifyDataSetChanged();
+            contactsAdapter.setContacts(contacts.get(0));
+            contactsAdapter.notifyDataSetChanged();
+            add_friends_adapter.setContacts(contacts.get(1));
+            add_friends_adapter.notifyDataSetChanged();
+        }
+
+
     }
 }
