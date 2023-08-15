@@ -2,6 +2,7 @@ package edu.northeastern.final_project;
 
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
@@ -9,7 +10,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 
-
+import android.util.Log;
 import android.view.View;
 
 
@@ -85,6 +86,14 @@ public class MainActivity extends AppCompatActivity {
             if (ContextCompat.checkSelfPermission(this, permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
                 //ask for permission
                 requestPermissions(new String[]{permission.ACTIVITY_RECOGNITION}, 0);
+            }
+
+            int permissionState = ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS);
+            Log.d("MainActivity", "Permission State: " + permissionState + " == " + PackageManager.PERMISSION_DENIED);
+
+            // If the permission is not granted, request it.
+            if (permissionState == PackageManager.PERMISSION_DENIED) {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1);
             }
         }
     }

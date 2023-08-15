@@ -16,7 +16,7 @@ Group:
   Akshat Gandhi
     - Email: gandhi.aks@northeastern.edu
     - Github: AkshatGM6
-    - Contributions: Developed Recipe Generator API (in Django), 
+    - Contributions: Developed Recipe Generator API (in Django),
       integrated the API and developed recipe generation functionality in Android,
       implemented Notifications for weekly goals.
 
@@ -43,5 +43,6 @@ Video Tour Links:
   3. Vaibhav - https://drive.google.com/drive/folders/1RieXXjApRZR3TU0trRJsUPY_X5gB9oeU
 
 Test Information:
-Email: testaccount@gmail.com, Password: 123456
-Email: gargvaibhav2016@gmail.com Pass: vaibhav1998
+Email: testaccount@gmail.com,     Password: 123456
+Email: gargvaibhav2016@gmail.com  Password: vaibhav1998
+Email: test123@test.com           Password: password123
