@@ -41,15 +41,21 @@ public abstract class GenericAsyncClassThreads<Input, Progress, Result> extends 
                 if (nameIndex != -1 && phoneNumberIndex != -1) {
                     String contactName = cursor.getString(nameIndex);
                     String phoneNumber = cursor.getString(phoneNumberIndex);
+                    Log.d("Contact",""+contactName+" "+phoneNumber);
+                    String parsed_phoneNumber = parsePhoneNumber(phoneNumber);
+                    Log.d("Phone_Number_Parsed",parsed_phoneNumber);
+                    // Create a new Contact instance and add it to the list
+
                     String pattern_regex = "^[1-9]{1}[0-9]{9}";
                     Pattern pattern = Pattern.compile(pattern_regex);
 
-                    if (new GenericStringValidation<Pattern>(pattern).validateString(phoneNumber)) {
-                        Log.d("Contact", "" + contactName + " " + phoneNumber);
+                    if (new GenericStringValidation<Pattern>(pattern).validateString(parsed_phoneNumber)) {
+                        Log.d("Contact", "" + contactName + " " + parsed_phoneNumber);
 
-                        Contact contact = new Contact(contactName, phoneNumber);
+                        Contact contact = new Contact(contactName, parsed_phoneNumber);
                         contactList.add(contact);
                     }
+
 
                 }
             }
@@ -58,6 +64,19 @@ public abstract class GenericAsyncClassThreads<Input, Progress, Result> extends 
         }
         return contactList;
     }
+    private String parsePhoneNumber(String phoneNumber) {
+        String parsed_number ="";
+        for(char c : phoneNumber.toCharArray()){
+
+            if(c>='0' && c<='9'){
+                parsed_number+=c;
+            }
+        }
+        return parsed_number;
+    }
+
+
+
 
 
 }

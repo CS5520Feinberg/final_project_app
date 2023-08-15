@@ -1,5 +1,6 @@
 package edu.northeastern.final_project.fragments;
 
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,13 +25,15 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+
 
 import edu.northeastern.final_project.R;
 import edu.northeastern.final_project.adapter.ContactsAdapter;
+
 import edu.northeastern.final_project.dbConnectionHelpers.RealTimeDbConnectionService;
 import edu.northeastern.final_project.entity.Contact;
-import edu.northeastern.final_project.interfaces.ContactFetchListener;
+
+import edu.northeastern.final_project.interfaces.ContactFetchedCallBack;
 import edu.northeastern.final_project.interfaces.UserDataFetchedCallback;
 
 
@@ -61,7 +64,15 @@ public class FollowersFragment extends Fragment {
                     FragmentTransaction transaction = fragmentManager.beginTransaction();
 
                     transaction.remove(fragmentToRemove).commit();
-
+                    // add the leaderboard fragment back
+                    new Thread(()->{
+                        if (getActivity().getSupportFragmentManager().findFragmentByTag(ScoreCardFragment.class.getName()) == null) {
+                            ScoreCardFragment scoreCardFragment = new ScoreCardFragment();
+                            getActivity().getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.fragment_container_view_rv, scoreCardFragment, ScoreCardFragment.class.getName())
+                                    .commit();
+                        }
+                    }).start();
                 }
 
                 return false;
@@ -82,95 +93,126 @@ public class FollowersFragment extends Fragment {
         return view;
     }
 
+
     private void fetchFollowerData(String type) {
-        Log.d("Fetch_follower_data", "Starting");
-        new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
+
+        new Thread(new Runnable() {
             @Override
-            public void onSuccess(Contact contact) {
-                List<String> followers = null;
-                if (type.equals("follower")) {
-                    TextView textView = getActivity().findViewById(R.id.text_view_rv_bar);
-                    textView.setText("Followers");
-                    followers = contact.getFollower();
-                } else {
-                    TextView textView = getActivity().findViewById(R.id.text_view_rv_bar);
-                    textView.setText("Following");
-                    followers = contact.getFollowing();
-                }
+            public void run() {
+                new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
+                    @Override
+                    public void onSuccess(Contact contact) {
+                        List<String> followers = null;
+                        if (type.equals("follower")) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    TextView textView = getActivity().findViewById(R.id.text_view_rv_bar);
+                                    textView.setText("Followers");
+                                }
+                            });
 
-                if (followers != null && !followers.isEmpty()) {
-                    Log.d("Fetching contact details", " " + followers.size());
-                    fetchContactsForFollowers(followers);
-                } else {
-                    // Handle case when no followers
-                }
-            }
+                            followers = contact.getFollower();
+                        } else {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    TextView textView = getActivity().findViewById(R.id.text_view_rv_bar);
+                                    textView.setText("Following");
+                                }
+                            });
 
-            @Override
-            public void onError(String message) {
-                // Handle error
-            }
-        });
-    }
+                            followers = contact.getFollowing();
+                        }
 
+                        if (followers != null && !followers.isEmpty()) {
+                            Log.d("Fetching contact details", " " + followers.size());
+                            new RealTimeDbConnectionService().fetchMultipleUserData(followers, new ContactFetchedCallBack() {
+                                @Override
+                                public void contactFetched(Contact contact) {
+                                }
+                                @Override
+                                public void errorFetched(String errorMessage) {
+                                }
+                                @Override
+                                public void noDataFound() {
+                                }
+                                @Override
+                                public void onMultipleContactFetched(List<Contact> contacts) {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Log.d("Setting Adapter", "" + contacts);
+                                            followersAdapter.setContacts(contacts);
+                                            followersAdapter.notifyDataSetChanged();
+                                        }
+                                    });
+                                }
+                            });
 
-    private void fetchContactsForFollowers(List<String> followers) {
-
-        List<Contact> followers_contact_data = new CopyOnWriteArrayList<>();
-
-        for (String contact_number : followers) {
-
-            fetchContactDetails(contact_number, new ContactFetchListener() {
-                @Override
-                public void onContactFetched(Contact contact) {
-                    Log.d("Got data", contact.toString());
-                    synchronized (followers_contact_data) {
-                        followers_contact_data.add(contact);
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Log.d("Setting Adapter", "" + followers_contact_data);
-                                followersAdapter.setContacts(followers_contact_data);
-                                followersAdapter.notifyDataSetChanged();
-                            }
-                        });
-
+                        } else {
+                            // Handle case when no followers
+                        }
                     }
 
-                }
-
-                @Override
-                public void onError(String errorMessage) {
-
-                }
-            });
-
-
-        }
-        Log.d("Data", " " + followers_contact_data.size());
-
-    }
-
-    protected void fetchContactDetails(String searchInput, ContactFetchListener listener) {
-        FirebaseDatabase dbConnection = new RealTimeDbConnectionService().getConnection();
-        DatabaseReference userRef = dbConnection.getReference("socialmedia").child(searchInput);
-
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    Contact contact = snapshot.getValue(Contact.class);
-                    listener.onContactFetched(contact);
-                } else {
-                    listener.onError("Contact not found");
-                }
+                    @Override
+                    public void onError(String message) {
+                        // Handle error
+                    }
+                });
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                listener.onError(error.getMessage());
-            }
-        });
+        }).start();
+        Log.d("Fetch_follower_data", "Starting");
+//        new RealTimeDbConnectionService().getUserProfileData(new UserDataFetchedCallback() {
+//            @Override
+//            public void onSuccess(Contact contact) {
+//                List<String> followers = null;
+//                if (type.equals("follower")) {
+//                    TextView textView = getActivity().findViewById(R.id.text_view_rv_bar);
+//                    textView.setText("Followers");
+//                    followers = contact.getFollower();
+//                } else {
+//                    TextView textView = getActivity().findViewById(R.id.text_view_rv_bar);
+//                    textView.setText("Following");
+//                    followers = contact.getFollowing();
+//                }
+//
+//                if (followers != null && !followers.isEmpty()) {
+//                    Log.d("Fetching contact details", " " + followers.size());
+//                    new RealTimeDbConnectionService().fetchMultipleUserData(followers, new ContactFetchedCallBack() {
+//                        @Override
+//                        public void contactFetched(Contact contact) {
+//                        }
+//                        @Override
+//                        public void errorFetched(String errorMessage) {
+//                        }
+//                        @Override
+//                        public void noDataFound() {
+//                        }
+//                        @Override
+//                        public void onMultipleContactFetched(List<Contact> contacts) {
+//                            getActivity().runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    Log.d("Setting Adapter", "" + contacts);
+//                                    followersAdapter.setContacts(contacts);
+//                                    followersAdapter.notifyDataSetChanged();
+//                                }
+//                            });
+//                        }
+//                    });
+//
+//                } else {
+//                    // Handle case when no followers
+//                }
+//            }
+//
+//            @Override
+//            public void onError(String message) {
+//                // Handle error
+//            }
+//        });
     }
 
 }
+
