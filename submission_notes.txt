@@ -5,6 +5,10 @@ Github: https://github.com/CS5520Feinberg/final_project_app
 Group:
   Jialin Huang
   Kevin Lin
+    - Email: lin.kevin1@northeastern.edu
+    - Github: kevinlin5115@gmail.com
+    - Contributions: Developed step counter service for step counter in the background, the profile activity including charts representation, settings page, add daily intake feature. Also helped construct the local sqlite database structure.
+
   Akshat Gandhi
     - Email: gandhi.aks@northeastern.edu
     - Github: AkshatGM6
