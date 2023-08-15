@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -59,7 +60,7 @@ public class RecipeGeneratorActivity extends AppCompatActivity {
         // Initialize other adapters...
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.110.180.253:8000/")  // Replace with your API base URL
+                .baseUrl("http://192.168.1.90:8000/")  // Replace with your API base URL
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiService = retrofit.create(RecipeApiServices.class);
@@ -115,11 +116,28 @@ public class RecipeGeneratorActivity extends AppCompatActivity {
     }
 
 
+//    private void showRecipePopup(String recipeName, String recipeIngredients, String recipeInstructions) {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setTitle(recipeName)
+//                .setMessage("Ingredients: " + recipeIngredients
+//                        + "\nInstructions: " + recipeInstructions)
+//                .setPositiveButton("OK", null)
+//                .show();
+//    }
+
     private void showRecipePopup(String recipeName, String recipeIngredients, String recipeInstructions) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(recipeName)
-                .setMessage("Ingredients: " + recipeIngredients
-                        + "\nInstructions: " + recipeInstructions)
+        View customLayout = getLayoutInflater().inflate(R.layout.custom_recipe_popup, null);
+
+        TextView titleTextView = customLayout.findViewById(R.id.titleTextView);
+        TextView ingredientsTextView = customLayout.findViewById(R.id.ingredientsTextView);
+        TextView instructionsTextView = customLayout.findViewById(R.id.instructionsTextView);
+
+        titleTextView.setText(recipeName);
+        ingredientsTextView.setText(recipeIngredients);
+        instructionsTextView.setText(recipeInstructions);
+
+        builder.setView(customLayout)
                 .setPositiveButton("OK", null)
                 .show();
     }

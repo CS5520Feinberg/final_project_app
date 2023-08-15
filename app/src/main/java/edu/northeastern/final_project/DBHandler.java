@@ -341,6 +341,16 @@ public class DBHandler extends SQLiteOpenHelper {
         return dailySteps;
     }
 
+    public int countTotalSteps() {
+        ArrayList<StepHolder> allSteps = readSteps();
+        int totalSteps = 0;
+
+        for (int i = 0; i < allSteps.size(); i++) {
+            totalSteps += allSteps.get(i).steps;
+        }
+        return totalSteps;
+    }
+
     class syncIntakeFirebase implements Runnable {
         @Override
         public void run() {
@@ -414,8 +424,12 @@ public class DBHandler extends SQLiteOpenHelper {
                 }
             } while (cursorSteps.moveToNext());
         }
-
         cursorSteps.close();
+
+        // Updating total steps
+        int totalSteps = countTotalSteps();
+        mDatabase.child("users").child(targetUserId).child("TotalSteps").setValue(totalSteps);
+        Log.d("uploadStepsFirebase", "Total Steps: " + totalSteps);
     }
 
     public void uploadIntakeFirebase() {
