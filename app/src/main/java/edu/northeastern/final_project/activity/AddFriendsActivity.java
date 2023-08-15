@@ -76,6 +76,7 @@ public class AddFriendsActivity extends AppCompatActivity {
                     .commit();
         }
 
+
         // Set the adapter for the fragment
         searchBoxFragment.setAdapter(add_friends_adapter);
 //

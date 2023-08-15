@@ -26,6 +26,7 @@ import edu.northeastern.final_project.backgroundThreadClass.UploadImageToFirebas
 import edu.northeastern.final_project.dbConnectionHelpers.RealTimeDbConnectionService;
 import edu.northeastern.final_project.entity.Contact;
 import edu.northeastern.final_project.fragments.FollowersFragment;
+import edu.northeastern.final_project.fragments.ScoreCardFragment;
 import edu.northeastern.final_project.interfaces.UserDataFetchedCallback;
 
 public class SocialMediaActivity extends AppCompatActivity {
@@ -39,7 +40,6 @@ public class SocialMediaActivity extends AppCompatActivity {
     protected void onCreate(Bundle SavedInstancesState) {
         super.onCreate(SavedInstancesState);
         setContentView(R.layout.social_media_activity);
-
         setupActivityData();
         ImageView imageView = findViewById(R.id.imageView);
         imagePickerLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -72,6 +72,15 @@ public class SocialMediaActivity extends AppCompatActivity {
         TextView followers_number = socialFragment.findViewById(R.id.text_view_followers_number);
         TextView following_number = socialFragment.findViewById(R.id.text_view_following_number);
         ImageView imageView = socialFragment.findViewById(R.id.imageView);
+        new Thread(()->{
+            if (getSupportFragmentManager().findFragmentByTag(ScoreCardFragment.class.getName()) == null) {
+                ScoreCardFragment scoreCardFragment = new ScoreCardFragment();
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container_view_rv, scoreCardFragment, ScoreCardFragment.class.getName())
+                        .commit();
+            }
+        }).start();
+
         socialFragment.findViewById(R.id.tex_view_followers_text).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

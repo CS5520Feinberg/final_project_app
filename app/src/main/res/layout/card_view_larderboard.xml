@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<androidx.cardview.widget.CardView
+    android:id="@+id/score_card"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    app:layout_constraintTop_toTopOf="parent"
+
+    >
+
+
+    <ImageView
+        android:id="@+id/imageView_user"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        tools:srcCompat="@tools:sample/avatars"
+        android:layout_gravity="start"
+        />
+
+    <TextView
+        android:id="@+id/imageView_user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textColor="@color/pink_border"
+        android:text="name"
+        android:layout_gravity="center"
+        />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        >
+        <ImageButton
+            android:id="@+id/shoe_image"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@color/pink_border"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:src="@drawable/shoe_image"
+            android:scaleType="centerCrop"
+            />
+        <TextView
+            android:id="@+id/score_text_view"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="10"
+            android:gravity="center"
+            app:layout_constraintStart_toEndOf="@id/shoe_image"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

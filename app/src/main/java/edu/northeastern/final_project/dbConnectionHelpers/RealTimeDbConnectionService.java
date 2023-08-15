@@ -71,27 +71,6 @@ public class RealTimeDbConnectionService implements RealTimeFireBaseDBInterface 
         }
     }
 
-    public void fetchContactDetails(String searchInput, ContactFetchListener listener) {
-        FirebaseDatabase dbConnection = new RealTimeDbConnectionService().getConnection();
-        DatabaseReference userRef = dbConnection.getReference("socialmedia").child(searchInput);
-
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    Contact contact = snapshot.getValue(Contact.class);
-                    listener.onContactFetched(contact);
-                } else {
-                    listener.onError("Contact not found");
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                listener.onError(error.getMessage());
-            }
-        });
-    }
 
 
 
@@ -124,6 +103,16 @@ public class RealTimeDbConnectionService implements RealTimeFireBaseDBInterface 
                 Log.e("SaveUserMetaData", "Failed to save user data: " + task.getException());
             }
         });
+
+        DatabaseReference userRefUid = getConnection().getReference("metaDataUid").child(phoneNumber);
+        userRefUid.setValue(uid).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Log.d("SaveUserMetaData", "User data saved to database");
+            } else {
+                Log.e("SaveUserMetaData", "Failed to save user data: " + task.getException());
+            }
+        });
+
     }
 
 
@@ -146,6 +135,7 @@ public class RealTimeDbConnectionService implements RealTimeFireBaseDBInterface 
                             Log.d("Data", "" + data.getName());
                             Log.d("Data", "" + data.getFollower());
                             Log.d("Data", "" + data.getFollowing());
+
                             userDataFetchedCallback.onSuccess(data);
                         }
 
@@ -160,7 +150,6 @@ public class RealTimeDbConnectionService implements RealTimeFireBaseDBInterface 
 
             @Override
             public void onError(Exception ex) {
-                Log.d("Error", ex.getMessage());
                 userDataFetchedCallback.onError(ex.getMessage());
             }
         });
