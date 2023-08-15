@@ -84,45 +84,7 @@ public class ScoreCardFragment extends Fragment {
                                     List<ScoreCard> scoreCards = new ArrayList<>();
                                     int i = 0;
                                     CountDownLatch latch = new CountDownLatch(1);
-//                                    new Thread(()->{
-//                                    for (Contact contact : contacts) {
-//                                        realTimeDbConnectionService.getConnection().getReference("metaDataUid")
-//                                                .child(contact.getPhone_number()).addListenerForSingleValueEvent(new ValueEventListener() {
-//                                                    @Override
-//                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                                                        if (snapshot.exists()) {
-//                                                            String uid = snapshot.getValue(String.class);
-//                                                            realTimeDbConnectionService.getConnection().getReference("users")
-//                                                                    .child(uid).child("TotalSteps")
-//                                                                    .addListenerForSingleValueEvent(new ValueEventListener() {
-//                                                                        @Override
-//                                                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                                                                            Log.d("SNAPSHOT EXISTS", "Step counts retrieved");
-//                                                                            if (snapshot.exists()) {
-//                                                                                int stepCount = snapshot.getValue(Integer.class);
-//                                                                                ScoreCard card = new ScoreCard(contact, stepCount);
-//                                                                                scoreCards.add(card);
-//                                                                            }
-//
-//                                                                        }
-//
-//                                                                        @Override
-//                                                                        public void onCancelled(@NonNull DatabaseError error) {
-//
-//                                                                        }
-//                                                                    });
-//
-//                                                        }
-//                                                    }
-//
-//                                                    @Override
-//                                                    public void onCancelled(@NonNull DatabaseError error) {
-//
-//                                                    }
-//                                                });
-//                                    }
-//                                    latch.countDown();
-//                                    }).start();
+
                                     new Thread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -143,14 +105,17 @@ public class ScoreCardFragment extends Fragment {
                                                     return Integer.compare(o2.getStepCount(), o1.getStepCount());
                                                 }
                                             });
-                                            getActivity().runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    Log.d("Setting adapter",scoreCards.size()+"");
-                                                    adapter.setScoreCards(scoreCards);
-                                                    adapter.notifyDataSetChanged();
-                                                }
-                                            });
+                                            if(getActivity()!=null){
+                                                getActivity().runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        Log.d("Setting adapter",scoreCards.size()+"");
+                                                        adapter.setScoreCards(scoreCards);
+                                                        adapter.notifyDataSetChanged();
+                                                    }
+                                                });
+                                            }
+
                                         }
                                     }).start();
                                 }
