@@ -27,7 +27,7 @@ You can view the app's UI and functionality through these screenshots:
 
 
 You can find demo videos to each of our app's function below :
-- [![Watch the video](https://PLACEHOLDER_IMAGE_URL.png)](https://drive.google.com/file/d/1fv67ecVU1hjA6DYyzNSaZRg_QjeuEhbm/view?usp=sharing)
+- [![Watch the video](https://drive.google.com/thumbnail?id=1RUxqWsPzGAcASO2222b6jLFMDcEur08M)](https://drive.google.com/file/d/1fv67ecVU1hjA6DYyzNSaZRg_QjeuEhbm/view?usp=sharing)
 
 - [![Watch the video](https://PLACEHOLDER_IMAGE_URL.png)](https://drive.google.com/file/d/1HV4COHL0g7GJMJPm6bFEQhG5-oVeF5Q7/view?usp=sharing)
 
