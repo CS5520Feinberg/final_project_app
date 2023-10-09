@@ -27,14 +27,13 @@ You can view the app's UI and functionality through these screenshots:
 
 
 You can find demo videos to each of our app's function below :
-- [![Watch the video](https://drive.google.com/thumbnail?id=1RUxqWsPzGAcASO2222b6jLFMDcEur08M)](https://drive.google.com/file/d/1fv67ecVU1hjA6DYyzNSaZRg_QjeuEhbm/view?usp=sharing)
+- [![Registering steps, caluclating the food intake and analysing them through charts](https://drive.google.com/thumbnail?id=1RUxqWsPzGAcASO2222b6jLFMDcEur08M)](https://drive.google.com/file/d/1fv67ecVU1hjA6DYyzNSaZRg_QjeuEhbm/view?usp=sharing)
 
-- [![Watch the video](https://PLACEHOLDER_IMAGE_URL.png)](https://drive.google.com/file/d/1HV4COHL0g7GJMJPm6bFEQhG5-oVeF5Q7/view?usp=sharing)
+- - [![Real-time Notifications once the goal is reached](https://drive.google.com/thumbnail?id=1U_Kg7lpKa_Q9NQp4GzwJScllYlXoGuZ9)](https://drive.google.com/file/d/12GSYzeIe36NF_FINL0q6Lvfrhv1BXIKN/view?usp=sharing)
 
-- [![Watch the video](https://PLACEHOLDER_IMAGE_URL.png)](https://drive.google.com/file/d/12GSYzeIe36NF_FINL0q6Lvfrhv1BXIKN/view?usp=sharing)
+- [![Generating the custom recipe](https://drive.google.com/thumbnail?id=1FkeCGTBpFvYc74vkRFdz9-HjaWU8o-wp)](https://drive.google.com/file/d/18HL7L_hmJ9wf-siU3uzEUQMCRZ421SAt/view?usp=sharing)
 
-- [![Watch the video](https://PLACEHOLDER_IMAGE_URL.png)](https://drive.google.com/file/d/18HL7L_hmJ9wf-siU3uzEUQMCRZ421SAt/view?usp=sharing)
-
+- [![Following friends and staying social](https://drive.google.com/thumbnail?id=1Qia5EGwQpgS-8KzdTGXg2rc6sB2m3-I0)](https://drive.google.com/file/d/1HV4COHL0g7GJMJPm6bFEQhG5-oVeF5Q7/view?usp=sharing)
 
 
 
