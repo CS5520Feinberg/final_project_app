@@ -22,10 +22,6 @@ NutriPro is an advanced health and nutrition application developed for the Andro
 
 ## App Screenshots
 
-You can view the app's UI and functionality through these screenshots:
-- ![Screenshot 1](YOUR_DIRECT_LINK_TO_THE_FIRST_IMAGE)
-
-
 You can find demo videos to each of our app's function below :
 - [![Registering steps, caluclating the food intake and analysing them through charts](https://drive.google.com/thumbnail?id=1RUxqWsPzGAcASO2222b6jLFMDcEur08M)](https://drive.google.com/file/d/1fv67ecVU1hjA6DYyzNSaZRg_QjeuEhbm/view?usp=sharing)
 
