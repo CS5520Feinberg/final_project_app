@@ -26,6 +26,17 @@ You can view the app's UI and functionality through these screenshots:
 - ![Screenshot 1](YOUR_DIRECT_LINK_TO_THE_FIRST_IMAGE)
 
 
+You can find demo videos to each of our app's function below :
+- [![Watch the video](https://PLACEHOLDER_IMAGE_URL.png)](https://drive.google.com/file/d/1fv67ecVU1hjA6DYyzNSaZRg_QjeuEhbm/view?usp=sharing)
+
+- [![Watch the video](https://PLACEHOLDER_IMAGE_URL.png)](https://drive.google.com/file/d/1HV4COHL0g7GJMJPm6bFEQhG5-oVeF5Q7/view?usp=sharing)
+
+- [![Watch the video](https://PLACEHOLDER_IMAGE_URL.png)](https://drive.google.com/file/d/12GSYzeIe36NF_FINL0q6Lvfrhv1BXIKN/view?usp=sharing)
+
+- [![Watch the video](https://PLACEHOLDER_IMAGE_URL.png)](https://drive.google.com/file/d/18HL7L_hmJ9wf-siU3uzEUQMCRZ421SAt/view?usp=sharing)
+
+
+
 
 
 # Project Structure
